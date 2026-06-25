@@ -1,0 +1,2731 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Огнище — Доставка</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F6F7;
+  --surface:#FFFFFF;
+  --surface-2:#F1F1F3;
+  --surface-3:#E7E7EA;
+  --border:#E6E6E9;
+  --text:#1B1B1D;
+  --text-dim:#79797F;
+  --text-faint:#B7B7BC;
+  --ember:#E2202C;
+  --ember-dim:#B5151F;
+  --ember-glow:#E2202C30;
+  --gold:#C98A1F;
+  --green:#2E9E4F;
+  --red:#D92D20;
+  --radius:14px;
+  --radius-sm:9px;
+  --font-display:'Inter', sans-serif;
+  --font-body:'Inter', sans-serif;
+  --font-mono:'Inter', sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+button{font-family:inherit;cursor:pointer;color:inherit;}
+svg{stroke:currentColor;}
+input,select,textarea{font-family:inherit;}
+a{color:inherit;text-decoration:none;}
+::selection{background:var(--ember-glow);}
+.ai-fab{position:fixed;right:16px;bottom:84px;z-index:60;width:54px;height:54px;border-radius:50%;background:var(--ember);color:#fff;border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer;}
+.ai-fab:active{transform:scale(.94);}
+.ai-panel{position:fixed;left:0;right:0;bottom:0;top:0;z-index:70;background:var(--bg);display:flex;flex-direction:column;max-width:480px;margin:0 auto;}
+.ai-panel-head{display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--ember);color:#fff;flex-shrink:0;}
+.ai-panel-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}
+.ai-bubble{max-width:82%;padding:10px 13px;border-radius:14px;font-size:13.5px;line-height:1.45;white-space:pre-wrap;}
+.ai-bubble.user{align-self:flex-end;background:var(--ember);color:#fff;border-bottom-right-radius:4px;}
+.ai-bubble.bot{align-self:flex-start;background:var(--surface);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:4px;}
+.ai-bubble.typing{align-self:flex-start;background:var(--surface);border:1px solid var(--border);color:var(--text-faint);}
+.ai-panel-foot{flex-shrink:0;display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border);background:var(--surface);}
+.ai-panel-foot input{flex:1;border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:20px;padding:11px 16px;font-size:14px;font-family:inherit;}
+.ai-panel-foot button{flex-shrink:0;width:42px;height:42px;border-radius:50%;background:var(--ember);color:#fff;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.ai-panel-foot button:disabled{opacity:.5;}
+.ai-mic-btn.listening{background:var(--ember-dim);animation:aiPulse 1.1s ease-in-out infinite;}
+@keyframes aiPulse{0%{box-shadow:0 0 0 0 rgba(226,32,44,.5);}70%{box-shadow:0 0 0 10px rgba(226,32,44,0);}100%{box-shadow:0 0 0 0 rgba(226,32,44,0);}}
+.ai-head-btn{background:none;border:none;color:#fff;cursor:pointer;padding:6px;display:flex;align-items:center;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:4px;}
+
+#shell{
+  max-width:480px;
+  margin:0 auto;
+  min-height:100vh;
+  background:var(--bg);
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 0 40px rgba(0,0,0,.06);
+}
+#root{flex:1;padding-bottom:84px;}
+.scr{animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.6;transform:scale(.93);}}
+@media (prefers-reduced-motion: reduce){.scr{animation:none;}}
+
+/* ---------- typography helpers ---------- */
+h1,h2,h3{font-family:var(--font-display);font-weight:800;margin:0;letter-spacing:-.01em;}
+.eyebrow{font-family:var(--font-body);font-weight:800;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ember);}
+.muted{color:var(--text-dim);}
+.mono{font-family:var(--font-body);}
+.price{font-family:var(--font-body);font-weight:800;}
+
+/* ---------- layout helpers ---------- */
+.pad{padding:18px;}
+.row{display:flex;align-items:center;}
+.between{justify-content:space-between;}
+.gap8{gap:8px;}
+.gap12{gap:12px;}
+.col{display:flex;flex-direction:column;}
+.center-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+
+/* ---------- divider ---------- */
+.ember-divider{
+  height:2px;
+  margin:22px 0 18px;
+  background:linear-gradient(90deg, transparent, var(--ember) 18%, var(--gold) 50%, var(--ember) 82%, transparent);
+  position:relative;
+  opacity:.85;
+  border-radius:2px;
+}
+
+/* ---------- buttons ---------- */
+.btn{
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--text);
+  border-radius:11px;
+  padding:13px 18px;
+  font-size:15px;
+  font-weight:600;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transition:transform .12s ease, opacity .12s ease;
+  width:100%;
+}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:linear-gradient(180deg, var(--ember), var(--ember-dim));border:none;color:#fff;}
+.btn-ghost{background:transparent;border:1px solid var(--border);}
+.btn-sm{padding:8px 12px;font-size:13px;width:auto;border-radius:9px;}
+.btn-danger{background:transparent;border:1px solid var(--red);color:var(--red);}
+.btn:disabled{opacity:.4;pointer-events:none;}
+.icon-btn{
+  width:38px;height:38px;border-radius:50%;border:1px solid var(--border);
+  background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:var(--text);
+}
+
+/* ---------- inputs ---------- */
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.field label{font-size:12.5px;color:var(--text-dim);}
+.field input,.field select,.field textarea{
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  color:var(--text);
+  border-radius:10px;
+  padding:11px 13px;
+  font-size:15px;
+  outline:none;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--ember);}
+.field textarea{resize:vertical;min-height:64px;}
+
+/* ---------- header / logo ---------- */
+.logo-mark{
+  width:46px;height:46px;border-radius:13px;
+  background:radial-gradient(circle at 30% 25%, var(--gold), var(--ember) 60%, var(--ember-dim));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 18px -4px var(--ember-glow);
+  color:#fff;overflow:hidden;
+}
+.logo-mark img{width:100%;height:100%;object-fit:cover;display:block;}
+.brand-name{font-family:var(--font-display);font-size:21px;font-weight:800;letter-spacing:-.01em;}
+.topbar{
+  position:sticky;top:0;z-index:5;
+  background:linear-gradient(180deg, var(--bg) 80%, transparent);
+  padding:16px 18px 6px;
+}
+
+/* ---------- solid red app bar (customer screens) ---------- */
+.redbar{
+  position:sticky;top:0;z-index:6;
+  background:linear-gradient(180deg, var(--ember), var(--ember-dim));
+  color:#fff;padding:14px 14px;display:flex;align-items:center;gap:10px;
+}
+.bar-icon{
+  width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.18);border:none;color:#fff;
+  display:flex;align-items:center;justify-content:center;flex:0 0 auto;position:relative;
+}
+.bar-logo{width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex:0 0 auto;color:#fff;overflow:hidden;}
+.bar-logo img{width:100%;height:100%;object-fit:cover;display:block;}
+.bar-title{font-weight:800;font-size:16px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
+.cart-badge{
+  position:absolute;top:-4px;right:-4px;background:#fff;color:var(--ember);font-size:10px;font-weight:800;
+  min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;
+}
+
+/* ---------- cards ---------- */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px;
+}
+.banner{
+  border-radius:var(--radius);
+  padding:16px;
+  background:linear-gradient(120deg, #FFEDEC, #FFF7F2);
+  border:1px solid var(--border);
+  position:relative;
+  overflow:hidden;
+}
+.banner::after{
+  content:"";position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle, var(--ember-glow), transparent 70%);
+}
+
+/* ---------- category grid (home) ---------- */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:6px 18px 18px;}
+.cat-tile{cursor:pointer;}
+.cat-tile-img{
+  width:100%;height:108px;border-radius:14px;overflow:hidden;background:var(--surface-2);
+  display:flex;align-items:center;justify-content:center;font-size:34px;border:1px solid var(--border);
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.cat-tile-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.cat-tile-label{margin-top:8px;font-weight:800;font-size:12.5px;text-align:center;text-transform:uppercase;letter-spacing:.02em;color:var(--text);}
+.cat-tile-desc{margin-top:4px;font-size:11.5px;line-height:1.35;text-align:center;color:var(--text-dim);}
+
+/* ---------- category chips ---------- */
+.chiprow{display:flex;gap:8px;overflow-x:auto;padding:4px 18px 14px;scrollbar-width:none;}
+.chiprow::-webkit-scrollbar{display:none;}
+.chip{
+  flex:0 0 auto;padding:9px 15px;border-radius:20px;font-size:13.5px;font-weight:600;
+  border:1px solid var(--border);background:var(--surface-2);color:var(--text-dim);white-space:nowrap;
+}
+.chip.active{background:var(--ember);color:#fff;border-color:var(--ember);}
+
+/* ---------- promo carousel ---------- */
+.promo-row{display:flex;gap:12px;overflow-x:auto;padding:2px 18px 6px;scrollbar-width:none;}
+.promo-row::-webkit-scrollbar{display:none;}
+.promo-card{
+  flex:0 0 auto;width:210px;height:120px;border-radius:14px;overflow:hidden;position:relative;
+  border:1px solid var(--border);cursor:pointer;background:linear-gradient(135deg,var(--ember),var(--ember-dim));
+}
+.promo-card img{width:100%;height:100%;object-fit:cover;display:block;}
+.promo-card .promo-fade{position:absolute;inset:0;background:linear-gradient(180deg, transparent 35%, rgba(10,7,5,.85));}
+.promo-card .promo-text{position:absolute;bottom:9px;left:11px;right:11px;color:#fff;}
+
+/* ---------- menu item ---------- */
+.menu-item{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:14px 18px;border-bottom:1px solid var(--border);
+}
+.menu-item:last-child{border-bottom:none;}
+.item-emoji{
+  width:58px;height:58px;border-radius:13px;background:var(--surface-2);
+  display:flex;align-items:center;justify-content:center;font-size:24px;flex:0 0 58px;
+  border:1px solid var(--border);overflow:hidden;
+}
+.item-emoji img{width:100%;height:100%;object-fit:cover;display:block;}
+.item-name{font-weight:700;font-size:15px;}
+.item-desc{font-size:12.5px;color:var(--text-dim);margin-top:2px;line-height:1.4;}
+.strike{text-decoration:line-through;color:var(--text-faint);font-size:12.5px;margin-right:6px;}
+.qty-stepper{display:flex;align-items:center;gap:10px;}
+.qty-btn{
+  width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--surface-2);
+  display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text);
+}
+.add-pill{
+  border:1px solid var(--ember);color:var(--ember);background:#fff;border-radius:18px;
+  padding:6px 14px;font-size:13px;font-weight:700;
+}
+
+/* ---------- bottom nav ---------- */
+.tabbar{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;
+  background:rgba(255,255,255,.95);backdrop-filter:blur(10px);
+  border-top:1px solid var(--border);
+  display:flex;justify-content:space-around;padding:10px 6px 14px;z-index:10;
+}
+.tab{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--text-faint);font-size:11px;font-weight:600;background:none;border:none;flex:1;padding:4px;}
+.tab.active{color:var(--ember);}
+.tab svg{stroke:currentColor;}
+
+/* ---------- floating cart bar ---------- */
+.cart-fab{
+  position:fixed;bottom:88px;left:50%;transform:translateX(-50%);width:calc(100% - 36px);max-width:444px;
+  background:linear-gradient(180deg, var(--ember), var(--ember-dim));color:#fff;border-radius:14px;padding:14px 18px;
+  display:flex;justify-content:space-between;align-items:center;font-weight:700;z-index:9;
+  box-shadow:0 8px 24px -6px var(--ember-glow);border:none;
+}
+
+/* ---------- product detail footer ---------- */
+.detail-footer{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;
+  background:#fff;border-top:1px solid var(--border);padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  display:flex;gap:10px;z-index:10;
+}
+.fav-btn{
+  width:48px;height:48px;border-radius:12px;border:1px solid var(--border);background:var(--surface-2);
+  display:flex;align-items:center;justify-content:center;color:var(--text-dim);flex:0 0 auto;
+}
+.fav-btn.active{background:var(--ember-glow);border-color:var(--ember);color:var(--ember);}
+
+/* ---------- toast ---------- */
+#toast{
+  position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-30px);
+  background:#1B1B1D;border:1px solid var(--border);color:#fff;
+  padding:11px 18px;border-radius:30px;font-size:13.5px;font-weight:600;z-index:50;
+  opacity:0;transition:all .25s ease;pointer-events:none;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ---------- order status stepper ---------- */
+.stepper{display:flex;align-items:center;margin:24px 0;}
+.step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;}
+.step-dot{
+  width:16px;height:16px;border-radius:50%;background:var(--surface-2);border:2px solid var(--border);z-index:2;
+}
+.step.lit .step-dot{background:var(--ember);border-color:var(--ember);box-shadow:0 0 12px 2px var(--ember-glow);}
+.step-line{position:absolute;top:7px;left:50%;width:100%;height:2px;background:var(--border);z-index:1;}
+.step.lit .step-line{background:linear-gradient(90deg, var(--ember), var(--gold));}
+.step:last-child .step-line{display:none;}
+.step-label{font-size:10.5px;color:var(--text-faint);margin-top:8px;text-align:center;max-width:64px;}
+.step.lit .step-label{color:var(--text);}
+
+/* ---------- restaurant admin ---------- */
+.admin-tabs{display:flex;gap:6px;padding:0 18px 14px;overflow-x:auto;}
+.admin-tab{padding:9px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-dim);font-size:13px;font-weight:600;white-space:nowrap;flex:0 0 auto;}
+.admin-tab.active{background:#fff;color:var(--ember);border-color:var(--ember);}
+.order-card{border-left:3px solid var(--ember);}
+.badge{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.02em;}
+.badge.pending{background:#FFF1CC;color:#8A6D1B;}
+.badge.preparing{background:#FDE7CC;color:#A35B00;}
+.badge.delivering{background:#DCEBFF;color:#1D5FAE;}
+.badge.delivered{background:#DEF5E1;color:#1F8A3D;}
+.badge.cancelled{background:#FBE0DE;color:#C23A2E;}
+
+/* ---------- modal ---------- */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(20,18,18,.5);z-index:30;
+  display:flex;align-items:flex-end;justify-content:center;
+}
+.modal-sheet{
+  background:var(--surface);border:1px solid var(--border);border-radius:20px 20px 0 0;
+  width:100%;max-width:480px;max-height:88vh;overflow-y:auto;padding:20px 18px 28px;
+  animation:slideup .22s ease;box-shadow:0 -10px 30px rgba(0,0,0,.12);
+}
+@keyframes slideup{from{transform:translateY(40px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 16px;}
+
+.switchrow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+.switch{width:42px;height:24px;border-radius:14px;background:var(--surface-3);border:1px solid var(--border);position:relative;flex:0 0 auto;}
+.switch.on{background:var(--ember);}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s ease;box-shadow:0 1px 3px rgba(0,0,0,.25);}
+.switch.on::after{left:21px;}
+
+.role-card{
+  width:100%;border:1px solid var(--border);background:var(--surface);border-radius:16px;
+  padding:20px;display:flex;align-items:center;gap:14px;text-align:left;color:var(--text);
+}
+.role-card:active{transform:scale(.985);}
+
+.empty-state{text-align:center;padding:50px 24px;color:var(--text-dim);}
+</style>
+</head>
+<body>
+<div id="shell">
+  <div id="root"></div>
+  <div id="ai-chat-slot"></div>
+</div>
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+/* ============================= SUPABASE CLIENT ============================= */
+// ── ЗА ВСЕКИ НОВ РЕСТОРАНТ (deploy на отделно копие на това приложение) ──
+// Попълни тук URL и anon key от Supabase Dashboard > Settings > API на ТОЗИ
+// клиент, преди да публикуваш файла. Ако оставиш и двете празни, приложението
+// ще опита да вземе настройките от ?u=...&k=... в линка, а ако няма — ще
+// покаже еднократен екран за ръчно въвеждане (запазва се в localStorage,
+// само като резервен вариант за бързо тестване).
+const EMBEDDED_SUPABASE_URL = '';   // напр. 'https://xxxxxxxx.supabase.co'
+const EMBEDDED_SUPABASE_KEY = '';   // anon / public key (не service_role!)
+
+const CFG_KEY = 'og_supabase_cfg';
+let SB = null; // will be set after config
+
+function loadConfig(){
+  // 1) Вградена конфигурация — важи за всички устройства и браузъри на този деплой
+  if(EMBEDDED_SUPABASE_URL && EMBEDDED_SUPABASE_KEY){
+    return { url:EMBEDDED_SUPABASE_URL, key:EMBEDDED_SUPABASE_KEY };
+  }
+  // 2) Параметри в линка ?u=...&k=... — позволява един файл да служи на няколко клиента с различни линкове
+  try{
+    const params = new URLSearchParams(window.location.search);
+    const u = params.get('u'); const k = params.get('k');
+    if(u && k){
+      const cfg = { url:decodeURIComponent(u), key:decodeURIComponent(k) };
+      saveConfig(cfg.url, cfg.key); // кешира локално, за да не зависи от линка занапред
+      return cfg;
+    }
+  }catch(e){}
+  // 3) Резервен вариант — ръчно въведена конфигурация, запазена локално в този браузър
+  try{ return JSON.parse(localStorage.getItem(CFG_KEY)); }catch(e){ return null; }
+}
+function saveConfig(url, key){
+  localStorage.setItem(CFG_KEY, JSON.stringify({ url, key }));
+}
+
+function initSupabase(url, key){
+  const { createClient } = window.supabase;
+  SB = createClient(url, key, {
+    realtime:{ params:{ eventsPerSecond:10 } }
+  });
+  return SB;
+}
+
+/* ============================= AI ASSISTANT (Groq) ============================= */
+// ВНИМАНИЕ: AI заявките минават през Cloudflare Worker прокси (виж файла
+// ognishte-ai-worker.js) — реалните API ключове се пазят там като Worker
+// Secrets, НЕ тук в кода на сайта. Това е безопасно за публикуване на GitHub.
+const EMBEDDED_WORKER_URL = 'https://weathered-silence-17f6.lenkov77.workers.dev/'; // Cloudflare Worker прокси за AI заявки
+const WORKER_SHARED_SECRET = ''; // по избор — трябва да съвпада с APP_SECRET във Worker-а
+const GROQ_MODEL = 'llama-3.3-70b-versatile';
+const GROQ_FALLBACK_MODELS = ['llama-3.1-8b-instant'];
+const OPENROUTER_MODELS = ['meta-llama/llama-3.3-70b-instruct:free', 'deepseek/deepseek-chat-v3.1:free', 'openrouter/free'];
+
+/* ============================= ICONS ============================= */
+function icon(name, size){
+  size = size || 22;
+  const s = `width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"`;
+  const map = {
+    menu:`<svg ${s}><circle cx="8" cy="7" r="2.6"/><path d="M8 12v7"/><path d="M16 5v6"/><circle cx="16" cy="14" r="2.6"/><path d="M16 17v2"/></svg>`,
+    cart:`<svg ${s}><path d="M4 6h2l1.6 10.2A2 2 0 0 0 9.5 18h7.8a2 2 0 0 0 2-1.7L20.5 9H6.2"/><circle cx="9.5" cy="21" r="1.3"/><circle cx="17" cy="21" r="1.3"/></svg>`,
+    user:`<svg ${s}><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>`,
+    box:`<svg ${s}><path d="M3.5 8 12 4l8.5 4-8.5 4-8.5-4Z"/><path d="M3.5 8v8l8.5 4 8.5-4V8"/><path d="M12 12v8"/></svg>`,
+    list:`<svg ${s}><path d="M9 6h11"/><path d="M9 12h11"/><path d="M9 18h11"/><circle cx="4.2" cy="6" r="1.4"/><circle cx="4.2" cy="12" r="1.4"/><circle cx="4.2" cy="18" r="1.4"/></svg>`,
+    tag:`<svg ${s}><path d="M11 4h6a1 1 0 0 1 1 1v6L9.5 19.5a1.5 1.5 0 0 1-2.1 0L4 16.1a1.5 1.5 0 0 1 0-2.1L11 4Z"/><circle cx="14.3" cy="7.7" r="1.3"/></svg>`,
+    star:`<svg ${s}><path d="M12 3.5l2.6 5.4 5.9.7-4.3 4.1 1.1 5.9L12 16.8l-5.3 2.8 1.1-5.9-4.3-4.1 5.9-.7Z"/></svg>`,
+    chevR:`<svg ${s}><path d="M9 5l7 7-7 7"/></svg>`,
+    chevL:`<svg ${s}><path d="M15 5l-7 7 7 7"/></svg>`,
+    plus:`<svg ${s}><path d="M12 5v14"/><path d="M5 12h14"/></svg>`,
+    minus:`<svg ${s}><path d="M5 12h14"/></svg>`,
+    check:`<svg ${s}><path d="M5 12.5l4.5 4.5L19 7"/></svg>`,
+    x:`<svg ${s}><path d="M6 6l12 12"/><path d="M18 6 6 18"/></svg>`,
+    sparkle:`<svg ${s}><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/><path d="M12 9a3 3 0 0 0 3 3 3 3 0 0 0-3 3 3 3 0 0 0-3-3 3 3 0 0 0 3-3Z"/></svg>`,
+    send:`<svg ${s}><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7Z"/></svg>`,
+    mic:`<svg ${s}><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><path d="M12 18v4"/><path d="M9 22h6"/></svg>`,
+    speaker:`<svg ${s}><path d="M11 5 6 9H3v6h3l5 4Z"/><path d="M16 8.5a4.5 4.5 0 0 1 0 7"/><path d="M19 5.5a8 8 0 0 1 0 13"/></svg>`,
+    speakerOff:`<svg ${s}><path d="M11 5 6 9H3v6h3l5 4Z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>`,
+    cash:`<svg ${s}><rect x="3" y="6.5" width="18" height="11" rx="2"/><circle cx="12" cy="12" r="2.6"/></svg>`,
+    card:`<svg ${s}><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 9.5h18"/></svg>`,
+    pencil:`<svg ${s}><path d="M4 20l1-4L16 5l3 3L8 19l-4 1Z"/></svg>`,
+    trash:`<svg ${s}><path d="M5 7h14"/><path d="M9 7V5h6v2"/><path d="M7 7l1 13h8l1-13"/></svg>`,
+    flame:`<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 3-3 4-3 8a4 4 0 0 0 8 0c0-2-1-3-1-3 1 2-1 3-1 1 0-2-3-3-3-6Zm-2 11a4 4 0 0 0 8 0c0-1.2-.4-2-.9-2.7.2 2.7-1.6 4.2-3.6 4.2-2.3 0-3.9-1.7-3.5-4.2-.6.7-1 1.5 0 2.7"/></svg>`,
+    truck:`<svg ${s}><rect x="2.5" y="8" width="11" height="8" rx="1"/><path d="M13.5 11h3.5l3 3v2h-6.5"/><circle cx="6.5" cy="18" r="1.6"/><circle cx="16.5" cy="18" r="1.6"/></svg>`,
+    image:`<svg ${s}><rect x="3" y="4.5" width="18" height="15" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M4 17l5.5-5.5 3.5 3.5 2.5-2.5 4.5 4.5"/></svg>`,
+    db:`<svg ${s}><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v4c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 10v4c0 1.7 3.6 3 8 3s8-1.3 8-3v-4"/></svg>`,
+    heart:`<svg ${s}><path d="M12 20.5s-7.8-4.4-9.7-9.3C1 8 2.4 4.7 5.8 4.1 8 3.7 10.2 4.9 12 7.5c1.8-2.6 4-3.8 6.2-3.4 3.4.6 4.8 3.9 3.5 7.1-1.9 4.9-9.7 9.3-9.7 9.3Z"/></svg>`,
+    share:`<svg ${s}><circle cx="18" cy="5" r="2.4"/><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="19" r="2.4"/><path d="M8.2 10.8 15.8 6.2"/><path d="M8.2 13.2 15.8 17.8"/></svg>`
+    ,phone:`<svg ${s}><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.7 19.7 0 0 1-8.6-3.1 19.3 19.3 0 0 1-6-6A19.7 19.7 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.7.6 2.5a2 2 0 0 1-.4 2.1L8 9.6a16 16 0 0 0 6.4 6.4l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.6.5 2.5.6a2 2 0 0 1 1.7 2Z"/></svg>`
+  };
+  return map[name] || '';
+}
+
+/* ============================= DEFAULT SEED DATA ============================= */
+const DEFAULT_CATEGORIES = [
+  {id:'c1', name:'Предястия', sort_order:0},
+  {id:'c2', name:'Скара', sort_order:1},
+  {id:'c3', name:'Салати', sort_order:2},
+  {id:'c4', name:'Гарнитури', sort_order:3},
+  {id:'c5', name:'Десерти', sort_order:4},
+  {id:'c6', name:'Напитки', sort_order:5}
+];
+const DEFAULT_ITEMS = [
+  {id:'i1', category_id:'c1', name:'Таратор', description:'Студена супа с кисело мляко, краставица и копър', price:2.30, emoji:'🥣', available:true, image:null},
+  {id:'i2', category_id:'c1', name:'Боб чорба', description:'Гъста чорба с боб, чушка и подправки', price:2.55, emoji:'🍲', available:true, image:null},
+  {id:'i3', category_id:'c2', name:'Кебапче (2 бр.)', description:'На скара, поднесено с хляб', price:3.30, emoji:'🍢', available:true, image:null},
+  {id:'i4', category_id:'c2', name:'Шишче свинско', description:'Маринована свинска плешка, на жар', price:3.55, emoji:'🍡', available:true, image:null},
+  {id:'i5', category_id:'c2', name:'Пилешко филе на скара', description:'С билки и чесново масло', price:4.35, emoji:'🍗', available:true, image:null},
+  {id:'i6', category_id:'c2', name:'Кюфте', description:'Класическо, на скара', price:2.80, emoji:'🍖', available:true, image:null},
+  {id:'i7', category_id:'c3', name:'Шопска салата', description:'Домати, краставици, сирене, чушки', price:3.85, emoji:'🥗', available:true, image:null},
+  {id:'i8', category_id:'c3', name:'Снежанка', description:'Кисело мляко, краставици, чесън, орехи', price:3.05, emoji:'🥒', available:true, image:null},
+  {id:'i9', category_id:'c4', name:'Пържени картофи', description:'Хрупкави, със сол и подправки', price:1.80, emoji:'🍟', available:true, image:null},
+  {id:'i10', category_id:'c4', name:'Ориз', description:'На пара, с масло', price:1.55, emoji:'🍚', available:true, image:null},
+  {id:'i11', category_id:'c5', name:'Баклава', description:'С орехи и мед', price:2.05, emoji:'🍰', available:true, image:null},
+  {id:'i12', category_id:'c5', name:'Палачинки с мед', description:'Три броя, топли', price:2.30, emoji:'🥞', available:true, image:null},
+  {id:'i13', category_id:'c6', name:'Минерална вода', description:'0.5 л', price:0.75, emoji:'💧', available:true, image:null},
+  {id:'i14', category_id:'c6', name:'Кока-Кола', description:'0.33 л', price:1.30, emoji:'🥤', available:true, image:null},
+  {id:'i15', category_id:'c6', name:'Айран', description:'Домашен, 0.33 л', price:1.05, emoji:'🥛', available:true, image:null}
+];
+const DEFAULT_PROMOS = [
+  {id:'p1', title:'-15% на скара днес', description:'Отстъпката се прилага автоматично на всички ястия от категория Скара.', image:null, type:'auto', scope:'category', category_id:'c2', percent:15, code:null, combo_items:null, combo_price:0, active:true},
+  {id:'p2', title:'Добре дошъл', description:'Код за нови клиенти.', image:null, type:'code', scope:'order', category_id:null, percent:10, code:'DOBREDOSHAL10', combo_items:null, combo_price:0, active:true},
+  {id:'p3', title:'Комбо: Кебапче + Кюфте', description:'Перфектно изкушение от скарата, на специална цена.', image:null, type:'combo', scope:null, category_id:null, percent:0, code:null, combo_items:[{itemId:'i3', qty:1},{itemId:'i6', qty:1}], combo_price:7.00, active:true}
+];
+const DEFAULT_RESTAURANT = {
+  id:1, name:'Огнище', tagline:'Скара и домашна кухня · доставка до адрес', contact_phone:'', cover_image:null, logo_image:null,
+  payment_methods:['cash','online','card_on_delivery'],
+  loyalty:{pointsPerLev:1, deliveryFee:1.30, tiers:[{name:'Бронз',minPoints:0,percent:0},{name:'Сребро',minPoints:150,percent:5},{name:'Злато',minPoints:400,percent:10}]}
+};
+const PAYMENT_METHODS = [
+  { id:'cash', label:'В брой при доставка', shortLabel:'в брой', icon:'cash' },
+  { id:'online', label:'Онлайн плащане с карта', shortLabel:'онлайн', icon:'card' },
+  { id:'card_on_delivery', label:'С карта при доставка (ПОС у куриера)', shortLabel:'с карта при доставка', icon:'card' }
+];
+function enabledPaymentMethods(){
+  const ids = (App.state.restaurant.payment_methods && App.state.restaurant.payment_methods.length) ? App.state.restaurant.payment_methods : ['cash'];
+  return PAYMENT_METHODS.filter(m=>ids.includes(m.id));
+}
+function paymentLabel(pm, short){
+  const m = PAYMENT_METHODS.find(x=>x.id===pm);
+  return m ? (short ? m.shortLabel : m.label) : (short ? pm : pm);
+}
+
+/* ============================= GLOBAL STATE ============================= */
+const App = {
+  state:{
+    screen:'setup',
+    categories:[], items:[], promos:[], orders:[],
+    loyalty: DEFAULT_RESTAURANT.loyalty,
+    profile:null, cart:[],
+    restaurant: DEFAULT_RESTAURANT,
+    authMode:'register',
+    activeCategory:'all',
+    viewingItemId:null, viewingPromoId:null,
+    custTab:'menu', restTab:'orders',
+    restUnlocked:false,
+    trackOrderId:null,
+    promoCodeInput:'', promoCodeApplied:null,
+    editingItem:null, editingPromo:null, editingCategory:null,
+    showItemModal:false, showPromoModal:false,
+    showAdminEntry:false,
+    addressEdit:'', guestName:'', guestPhone:'', guestAddress:'', paymentMethod:'cash',
+    orderNotes:'', orderCutlery:false,
+    cardNum:'', cardExp:'', cardCvc:'', payProcessing:false,
+    aiChatOpen:false, aiMessages:[], aiHistory:[], aiThinking:false, aiInput:'', aiOrderPlaced:false,
+    aiVoiceEnabled:false, aiListening:false, aiOrderSummaryShown:false,
+    setupError:'', setupLoading:false, initLoading:true
+  }
+};
+function setState(patch){ Object.assign(App.state, patch); render(); }
+
+/* ============================= DATABASE LAYER ============================= */
+const DB = {
+
+  // ---------- helpers ----------
+  _toItem(row){
+    const ids = (row.category_ids && row.category_ids.length) ? row.category_ids : (row.category_id ? [row.category_id] : []);
+    return { id:row.id, categoryIds:ids, name:row.name, desc:row.description||'',
+             price:parseFloat(row.price), emoji:row.emoji||'🍽️', image:row.image||null, available:row.available };
+  },
+  _toPromo(row){
+    return { id:row.id, title:row.title, desc:row.description||'', image:row.image||null,
+             type:row.type, scope:row.scope||'order', categoryId:row.category_id||null,
+             percent:parseFloat(row.percent)||0, code:row.code||null,
+             comboItems:row.combo_items||null, comboPrice:parseFloat(row.combo_price)||0,
+             active:row.active };
+  },
+  _toOrder(row){
+    return { id:row.id, orderNum:row.order_num, createdAt:new Date(row.created_at).getTime(),
+             customer:{ username:row.customer_username, name:row.customer_name, phone:row.customer_phone, address:row.customer_address },
+             items:row.items, paymentMethod:row.payment_method, totals:row.totals, status:row.status,
+             notes:row.notes||'', cutlery:!!row.cutlery,
+             source: row.source || 'app' };
+  },
+
+  // ---------- load all data ----------
+  async loadAll(){
+    const [catRes, itemRes, promoRes, orderRes, restRes] = await Promise.all([
+      SB.from('categories').select('*').order('sort_order'),
+      SB.from('menu_items').select('*'),
+      SB.from('promotions').select('*'),
+      SB.from('orders').select('*').order('created_at', { ascending:false }),
+      SB.from('restaurant_settings').select('*').eq('id', 1).maybeSingle()
+    ]);
+
+    if(catRes.error) throw catRes.error;
+    if(!catRes.data || catRes.data.length===0){ await DB.seed(); return DB.loadAll(); }
+
+    const cats   = (catRes.data||[]).map(r=>({ id:r.id, name:r.name, description:r.description||'', image:r.image||null }));
+    const items  = (itemRes.data||[]).map(DB._toItem);
+    const promos = (promoRes.data||[]).map(DB._toPromo);
+    const orders = (orderRes.data||[]).map(DB._toOrder);
+    let rest = DEFAULT_RESTAURANT;
+    if(restRes.data){
+      const r = restRes.data;
+      rest = { id:1, name:r.name, tagline:r.tagline, contact_phone:r.contact_phone||'', cover_image:r.cover_image||null, logo_image:r.logo_image||null,
+               payment_methods: (r.payment_methods && r.payment_methods.length) ? r.payment_methods : DEFAULT_RESTAURANT.payment_methods,
+               loyalty: r.loyalty || DEFAULT_RESTAURANT.loyalty };
+    }
+    return { cats, items, promos, orders, rest };
+  },
+
+  // ---------- seed default data (first run) ----------
+  async seed(){
+    await SB.from('restaurant_settings').upsert([{ id:1, name:DEFAULT_RESTAURANT.name, tagline:DEFAULT_RESTAURANT.tagline, contact_phone:'', cover_image:null, logo_image:null, payment_methods:DEFAULT_RESTAURANT.payment_methods, loyalty:DEFAULT_RESTAURANT.loyalty }]);
+    await SB.from('categories').upsert(DEFAULT_CATEGORIES.map(c=>({ id:c.id, name:c.name, description:c.description||'', sort_order:c.sort_order, image:null })));
+    await SB.from('menu_items').upsert(DEFAULT_ITEMS.map(i=>({ id:i.id, category_id:i.category_id, category_ids:[i.category_id], name:i.name, description:i.description, price:i.price, emoji:i.emoji, image:null, available:i.available })));
+    await SB.from('promotions').upsert(DEFAULT_PROMOS.map(p=>({ id:p.id, title:p.title, description:p.description, image:null, type:p.type, scope:p.scope||null, category_id:p.category_id||null, percent:p.percent, code:p.code||null, combo_items:p.combo_items||null, combo_price:p.combo_price||0, active:p.active })));
+  },
+
+  // ---------- categories ----------
+  async saveCategory(cat){
+    const { error } = await SB.from('categories').upsert([{ id:cat.id, name:cat.name, description:cat.description||'', sort_order: cat.sort_order ?? 0, image: cat.image||null }]);
+    if(error) throw error;
+  },
+  async deleteCategory(id){
+    const { error } = await SB.from('categories').delete().eq('id', id);
+    if(error) throw error;
+  },
+
+  // ---------- menu items ----------
+  async saveItem(item){
+    const row = { id:item.id, category_ids:item.categoryIds, category_id:item.categoryIds[0]||null, name:item.name, description:item.desc||'', price:item.price, emoji:item.emoji, image:item.image||null, available:item.available };
+    const { error } = await SB.from('menu_items').upsert([row]);
+    if(error) throw error;
+  },
+  async deleteItem(id){
+    const { error } = await SB.from('menu_items').delete().eq('id', id);
+    if(error) throw error;
+  },
+
+  // ---------- promotions ----------
+  async savePromo(promo){
+    const row = { id:promo.id, title:promo.title, description:promo.desc||'', image:promo.image||null, type:promo.type, scope:promo.scope||null, category_id:promo.categoryId||null, percent:promo.percent||0, code:promo.code||null, combo_items:promo.comboItems||null, combo_price:promo.comboPrice||0, active:promo.active };
+    const { error } = await SB.from('promotions').upsert([row]);
+    if(error) throw error;
+  },
+  async deletePromo(id){
+    const { error } = await SB.from('promotions').delete().eq('id', id);
+    if(error) throw error;
+  },
+
+  // ---------- restaurant settings ----------
+  async saveRestaurant(data){
+    const { error } = await SB.from('restaurant_settings').upsert([{ id:1, name:data.name, tagline:data.tagline, contact_phone:data.contact_phone||'', cover_image:data.cover_image||null, logo_image:data.logo_image||null, payment_methods:data.payment_methods||App.state.restaurant.payment_methods, loyalty:App.state.loyalty }]);
+    if(error) throw error;
+  },
+  async saveLoyalty(loyalty){
+    const r = App.state.restaurant;
+    const { error } = await SB.from('restaurant_settings').upsert([{ id:1, name:r.name, tagline:r.tagline, contact_phone:r.contact_phone||'', cover_image:r.cover_image||null, logo_image:r.logo_image||null, payment_methods:r.payment_methods, loyalty }]);
+    if(error) throw error;
+  },
+
+  // ---------- customers ----------
+  async register(username, password, name, phone, address){
+    const { data:existing } = await SB.from('customers').select('id').ilike('username', username).maybeSingle();
+    if(existing) return { error:'Потребителското име вече съществува.' };
+    const { data, error } = await SB.from('customers').insert([{ username, password, name, phone, address, points:0 }]).select().single();
+    return { data, error:error ? error.message : null };
+  },
+  async login(username, password){
+    const { data, error } = await SB.from('customers').select('*').ilike('username', username).eq('password', password).maybeSingle();
+    if(error) return { data:null, error:error.message };
+    if(!data) return { data:null, error:'Грешно потребителско име или парола.' };
+    return { data, error:null };
+  },
+  async updatePoints(username, points){
+    await SB.from('customers').update({ points }).ilike('username', username);
+  },
+
+  // ---------- orders ----------
+  async saveOrder(order){
+    const row = { id:order.id, order_num:order.orderNum, customer_username:order.customer.username||null,
+      customer_name:order.customer.name, customer_phone:order.customer.phone, customer_address:order.customer.address,
+      items:order.items, payment_method:order.paymentMethod, totals:order.totals, status:order.status,
+      notes:order.notes||'', cutlery:!!order.cutlery, source:order.source||'app' };
+    const { error } = await SB.from('orders').insert([row]);
+    if(error) throw error;
+  },
+  async updateOrderStatus(id, status){
+    const { error } = await SB.from('orders').update({ status }).eq('id', id);
+    if(error) throw error;
+  },
+
+  // ---------- realtime ----------
+  subscribeOrders(callback){
+    const channel = SB.channel('orders-realtime')
+      .on('postgres_changes', { event:'*', schema:'public', table:'orders' }, async () => {
+        const { data } = await SB.from('orders').select('*').order('created_at',{ascending:false});
+        if(data) callback(data.map(DB._toOrder));
+      })
+      .subscribe();
+    return channel;
+  }
+};
+
+/* ============================= SESSION (localStorage) ============================= */
+function sessionGet(){ try{ return JSON.parse(localStorage.getItem('og_session')); }catch(e){ return null; } }
+function sessionSet(val){ localStorage.setItem('og_session', JSON.stringify(val)); }
+function sessionClear(){ localStorage.removeItem('og_session'); }
+function cartGet(){ try{ return JSON.parse(localStorage.getItem('og_cart'))||[]; }catch(e){ return []; } }
+function cartSet(cart){ localStorage.setItem('og_cart', JSON.stringify(cart)); }
+
+/* ============================= INIT ============================= */
+let _realtimeChannel = null;
+
+async function init(){
+  render();
+  const cfg = loadConfig();
+  if(!cfg){ setState({ screen:'setup', initLoading:false }); return; }
+
+  try{
+    initSupabase(cfg.url, cfg.key);
+    const { cats, items, promos, orders, rest } = await DB.loadAll();
+
+    App.state.categories = cats;
+    App.state.items = items;
+    App.state.promos = promos;
+    App.state.orders = orders;
+    App.state.restaurant = rest;
+    App.state.loyalty = rest.loyalty || DEFAULT_RESTAURANT.loyalty;
+    App.state.cart = cartGet();
+
+    const session = sessionGet();
+    if(session && session.username){
+      const { data } = await SB.from('customers').select('*').ilike('username', session.username).maybeSingle();
+      if(data) App.state.profile = { username:data.username, name:data.name, phone:data.phone, address:data.address, points:data.points };
+    }
+
+    // Realtime subscription — replaces polling completely
+    if(_realtimeChannel) SB.removeChannel(_realtimeChannel);
+    _realtimeChannel = DB.subscribeOrders(orders => {
+      App.state.orders = orders;
+      const s = App.state.screen;
+      if(s==='cust-track' || App.state.restUnlocked) render();
+    });
+
+    setState({ screen:'role', initLoading:false, setupLoading:false });
+  }catch(e){
+    console.error(e);
+    setState({ screen:'setup', setupError:'Грешка при свързване: ' + (e.message||e), initLoading:false, setupLoading:false });
+  }
+}
+
+/* ============================= UTIL ============================= */
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function lv(n){ return n.toFixed(2) + ' €'; }
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function categoryName(id){ const c = App.state.categories.find(c=>c.id===id); return c ? c.name : ''; }
+function itemById(id){ return App.state.items.find(i=>i.id===id); }
+function thumbHtml(item){ return item.image ? `<img src="${item.image}" alt="">` : (item.emoji || '🍽️'); }
+
+function effectivePrice(item){
+  let price = item.price;
+  App.state.promos.filter(p=>p.active && p.type==='auto' && p.scope==='category' && (item.categoryIds||[]).includes(p.categoryId)).forEach(p=>{
+    price = price * (1 - p.percent/100);
+  });
+  return price;
+}
+function tierFor(points){
+  const tiers = (App.state.loyalty.tiers||[]).slice().sort((a,b)=>a.minPoints-b.minPoints);
+  let cur = tiers[0] || {name:'Бронз',minPoints:0,percent:0};
+  tiers.forEach(t=>{ if(points >= t.minPoints) cur = t; });
+  return cur;
+}
+function cartLines(){
+  return App.state.cart.map(c=>{
+    if(c.itemId){
+      const item = itemById(c.itemId); if(!item) return null;
+      return { ...c, kind:'item', name:item.name, unitPrice:effectivePrice(item) };
+    }
+    if(c.comboId){
+      const combo = App.state.promos.find(p=>p.id===c.comboId && p.type==='combo' && p.active); if(!combo) return null;
+      return { ...c, kind:'combo', name:combo.title, unitPrice:combo.comboPrice };
+    }
+    return null;
+  }).filter(Boolean);
+}
+function cartTotals(){
+  const lines = cartLines();
+  const subtotal = lines.reduce((s,l)=>s + l.unitPrice*l.qty, 0);
+  let discountPct = 0;
+  App.state.promos.filter(p=>p.active && p.type==='auto' && p.scope==='order').forEach(p=>discountPct += p.percent);
+  if(App.state.promoCodeApplied) discountPct += App.state.promoCodeApplied.percent;
+  const tier = App.state.profile ? tierFor(App.state.profile.points||0) : null;
+  if(tier) discountPct += tier.percent;
+  const discount = subtotal * (discountPct/100);
+  const deliveryFee = App.state.loyalty.deliveryFee||1.30;
+  const total = Math.max(0, subtotal - discount) + deliveryFee;
+  const pointsEarned = Math.floor(Math.max(0,subtotal-discount) * (App.state.loyalty.pointsPerLev||1));
+  return { subtotal, discount, discountPct, deliveryFee, total, pointsEarned, tier };
+}
+
+/* ============================= RENDER DISPATCH ============================= */
+/* ============================= NEW-ORDER ALARM ============================= */
+let _audioCtx = null;
+let _alarmTimer = null;
+let _alarmOn = false;
+
+function ensureAudioCtx(){
+  try{
+    if(!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(_audioCtx.state === 'suspended') _audioCtx.resume();
+  }catch(e){ /* audio unsupported, ignore */ }
+  return _audioCtx;
+}
+function playAlarmBeep(){
+  const ctx = _audioCtx;
+  if(!ctx) return;
+  const now = ctx.currentTime;
+  [ [880, now], [1100, now+0.4] ].forEach(([freq, t])=>{
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine'; osc.frequency.value = freq;
+    osc.connect(gain); gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.35, t+0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t+0.35);
+    osc.start(t); osc.stop(t+0.36);
+  });
+}
+function startAlarm(){
+  if(_alarmOn) return;
+  _alarmOn = true;
+  ensureAudioCtx();
+  playAlarmBeep();
+  _alarmTimer = setInterval(playAlarmBeep, 1700);
+}
+function stopAlarm(){
+  if(!_alarmOn) return;
+  _alarmOn = false;
+  clearInterval(_alarmTimer);
+  _alarmTimer = null;
+}
+function pendingOrdersCount(){
+  return App.state.orders.filter(o=>o.status==='pending').length;
+}
+function checkAlarm(){
+  if(!App.state.restUnlocked){ stopAlarm(); return; }
+  if(pendingOrdersCount() > 0) startAlarm(); else stopAlarm();
+}
+function alarmBanner(){
+  if(!_alarmOn || App.state.screen==='rest-orders') return '';
+  const n = pendingOrdersCount();
+  return `<button onclick="App.goRestTab('orders')" style="position:sticky;top:0;z-index:8;width:100%;background:var(--red);color:#fff;border:none;padding:11px 14px;font-weight:700;font-size:13.5px;display:flex;align-items:center;justify-content:center;gap:8px;">
+    🔔 ${n} ${n===1?'нова поръчка':'нови поръчки'} — натисни за преглед
+  </button>`;
+}
+
+function render(){
+  if(App.state.initLoading){
+    document.getElementById('root').innerHTML = `<div class="center-screen"><div class="logo-mark" style="width:56px;height:56px;border-radius:16px;animation:pulse 1.4s ease infinite;">${icon('flame',28)}</div><div class="muted" style="margin-top:16px;font-size:13.5px;">Зарежда се…</div></div>`;
+    return;
+  }
+  const root = document.getElementById('root');
+  const s = App.state.screen;
+  const map = {
+    'setup': scrSetup,
+    'role': scrRole, 'cust-auth': scrCustAuth, 'cust-menu': scrCustMenu, 'cust-category': scrCustCategory, 'cust-cart': scrCustCart,
+    'cust-checkout': scrCustCheckout, 'cust-track': scrCustTrack, 'cust-profile': scrCustProfile,
+    'cust-dish': scrCustDish, 'cust-promo': scrCustPromo,
+    'rest-pass': scrRestPass, 'rest-orders': scrRestOrders, 'rest-menu': scrRestMenu,
+    'rest-promo': scrRestPromo, 'rest-loyalty': scrRestLoyalty, 'rest-design': scrRestDesign
+  };
+  root.innerHTML = (map[s] || scrRole)();
+  const fab = document.getElementById('cart-fab-slot');
+  if(fab) fab.innerHTML = cartFab();
+  const aiSlot = document.getElementById('ai-chat-slot');
+  if(aiSlot) aiSlot.innerHTML = aiChatSlot();
+  if(App.state.aiChatOpen){ const body=document.getElementById('ai-panel-body'); if(body) body.scrollTop = body.scrollHeight; }
+  checkAlarm();
+}
+
+/* ============================= SETUP SCREEN ============================= */
+function scrSetup(){
+  const err = App.state.setupError;
+  return `<div class="scr center-screen" style="gap:0;">
+    <div class="logo-mark" style="width:58px;height:58px;border-radius:16px;margin-bottom:16px;">${icon('flame',28)}</div>
+    <h2 style="font-size:20px;margin-bottom:4px;">Свързване с Supabase</h2>
+    <div class="muted" style="font-size:13px;text-align:center;margin-bottom:22px;max-width:320px;">
+      Въведи данните от твоя Supabase проект.<br>
+      <a href="https://supabase.com/dashboard" target="_blank" style="color:var(--ember);">supabase.com/dashboard</a> → Settings → API
+    </div>
+    ${err ? `<div style="background:#FBE0DE;border:1px solid var(--red);border-radius:10px;padding:11px 14px;font-size:13px;color:var(--red);margin-bottom:14px;width:100%;">${err}</div>` : ''}
+    <div class="field" style="width:100%;"><label>Project URL</label>
+      <input id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co" autocapitalize="off" spellcheck="false"></div>
+    <div class="field" style="width:100%;"><label>Anon public key</label>
+      <input id="sb-key" placeholder="eyJ…" autocapitalize="off" spellcheck="false"></div>
+    <button class="btn btn-primary" style="width:100%;" onclick="App.connectSupabase()" ${App.state.setupLoading?'disabled':''}>
+      ${App.state.setupLoading ? 'Свързване…' : 'Свържи се'}
+    </button>
+    <div class="muted" style="margin-top:18px;font-size:11.5px;text-align:center;line-height:1.7;max-width:340px;">
+      <b style="color:var(--text);">SQL за Supabase SQL Editor:</b><br>
+      <button class="btn btn-ghost btn-sm" style="margin-top:6px;" onclick="App.showSQL()">Виж SQL setup скрипта</button>
+    </div>
+    ${App.state.showSQLModal ? sqlModal() : ''}
+  </div>`;
+}
+App.connectSupabase = async function(){
+  const url = (document.getElementById('sb-url').value||'').trim().replace(/\/$/, '');
+  const key = (document.getElementById('sb-key').value||'').trim();
+  if(!url || !key){ toast('Попълни и двете полета'); return; }
+  setState({ setupLoading:true, setupError:'' });
+  try{
+    saveConfig(url, key);
+    await init();
+  }catch(e){
+    setState({ setupLoading:false, setupError:'Неуспешно свързване: ' + (e.message||e) });
+  }
+};
+App.showSQL = function(){ setState({ showSQLModal:true }); };
+App.hideSQL = function(){ setState({ showSQLModal:false }); };
+const SQL_SCRIPT = `-- Изпълни в Supabase > SQL Editor
+
+create table if not exists restaurant_settings (
+  id integer primary key default 1,
+  name text default 'Огнище',
+  tagline text default 'Скара и домашна кухня',
+  contact_phone text default '',
+  cover_image text,
+  logo_image text,
+  loyalty jsonb default '{}'::jsonb,
+  payment_methods jsonb default '["cash","online","card_on_delivery"]'::jsonb
+);
+insert into restaurant_settings (id) values (1) on conflict do nothing;
+alter table restaurant_settings add column if not exists logo_image text;
+alter table restaurant_settings add column if not exists contact_phone text default '';
+alter table restaurant_settings add column if not exists payment_methods jsonb default '["cash","online","card_on_delivery"]'::jsonb;
+
+create table if not exists categories (
+  id text primary key,
+  name text not null,
+  description text default '',
+  sort_order integer default 0,
+  image text
+);
+
+create table if not exists menu_items (
+  id text primary key,
+  category_id text,
+  category_ids text[],
+  name text not null,
+  description text default '',
+  price numeric(10,2) default 0,
+  emoji text default '🍽️',
+  image text,
+  available boolean default true
+);
+alter table categories add column if not exists image text;
+alter table categories add column if not exists description text default '';
+alter table menu_items add column if not exists category_ids text[];
+update menu_items set category_ids = array[category_id] where category_ids is null and category_id is not null;
+
+create table if not exists promotions (
+  id text primary key,
+  title text not null,
+  description text default '',
+  image text,
+  type text default 'auto',
+  scope text,
+  category_id text,
+  percent numeric(5,2) default 0,
+  code text,
+  combo_items jsonb,
+  combo_price numeric(10,2) default 0,
+  active boolean default true
+);
+
+create table if not exists customers (
+  id uuid primary key default gen_random_uuid(),
+  username text unique not null,
+  password text not null,
+  name text not null,
+  phone text not null,
+  address text not null,
+  points integer default 0,
+  created_at timestamptz default now()
+);
+
+create table if not exists orders (
+  id text primary key,
+  order_num text not null,
+  customer_username text,
+  customer_name text not null,
+  customer_phone text not null,
+  customer_address text not null,
+  items jsonb default '[]'::jsonb,
+  payment_method text default 'cash',
+  totals jsonb default '{}'::jsonb,
+  status text default 'pending',
+  source text default 'app',
+  notes text default '',
+  cutlery boolean default false,
+  created_at timestamptz default now()
+);
+alter table orders add column if not exists source text default 'app';
+alter table orders add column if not exists notes text default '';
+alter table orders add column if not exists cutlery boolean default false;
+
+-- RLS: разреши достъп на anon ключ
+alter table restaurant_settings enable row level security;
+alter table categories enable row level security;
+alter table menu_items enable row level security;
+alter table promotions enable row level security;
+alter table customers enable row level security;
+alter table orders enable row level security;
+
+do $$ begin
+  if not exists (select 1 from pg_policies where tablename='restaurant_settings' and policyname='allow all') then
+    create policy "allow all" on restaurant_settings for all using (true) with check (true);
+  end if;
+  if not exists (select 1 from pg_policies where tablename='categories' and policyname='allow all') then
+    create policy "allow all" on categories for all using (true) with check (true);
+  end if;
+  if not exists (select 1 from pg_policies where tablename='menu_items' and policyname='allow all') then
+    create policy "allow all" on menu_items for all using (true) with check (true);
+  end if;
+  if not exists (select 1 from pg_policies where tablename='promotions' and policyname='allow all') then
+    create policy "allow all" on promotions for all using (true) with check (true);
+  end if;
+  if not exists (select 1 from pg_policies where tablename='customers' and policyname='allow all') then
+    create policy "allow all" on customers for all using (true) with check (true);
+  end if;
+  if not exists (select 1 from pg_policies where tablename='orders' and policyname='allow all') then
+    create policy "allow all" on orders for all using (true) with check (true);
+  end if;
+end $$;
+
+-- Realtime за поръчки
+alter publication supabase_realtime add table orders;`;
+
+function sqlModal(){
+  return `<div class="modal-overlay" onclick="if(event.target===this) App.hideSQL()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="row between" style="margin-bottom:12px;">
+        <h3 style="font-size:16px;">SQL Setup скрипт</h3>
+        <button class="btn btn-ghost btn-sm" onclick="App.copySQL()">Копирай</button>
+      </div>
+      <pre style="background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:11px;overflow-x:auto;white-space:pre-wrap;color:var(--text-dim);line-height:1.5;max-height:55vh;overflow-y:auto;">${SQL_SCRIPT}</pre>
+      <div class="muted" style="font-size:12px;margin-top:10px;">1. Отиди в Supabase → SQL Editor → New query<br>2. Постави скрипта и изпълни<br>3. Върни се тук и въведи URL и anon key</div>
+    </div>
+  </div>`;
+}
+App.copySQL = function(){
+  navigator.clipboard.writeText(SQL_SCRIPT).then(()=>toast('SQL скриптът е копиран')).catch(()=>toast('Избери и копирай ръчно'));
+};
+
+/* ============================= SHARED PIECES ============================= */
+function logoMark(){
+  const img = App.state.restaurant.logo_image;
+  return img ? `<img src="${img}" alt="">` : icon('flame', 24);
+}
+function brandHeader(small){
+  const r = App.state.restaurant;
+  const img = r.logo_image;
+  return `<div class="row gap12" style="padding:${small?'0':'4px 0 2px'}">
+    <div class="logo-mark" style="${small?'width:36px;height:36px;border-radius:10px;':''}">${img ? `<img src="${img}" alt="">` : icon('flame', small?18:24)}</div>
+    <div>
+      <div class="brand-name" style="${small?'font-size:17px;':''}">${r.name}</div>
+      ${small?'':`<div class="muted" style="font-size:12.5px;margin-top:1px;">${r.tagline}</div>`}
+    </div>
+  </div>`;
+}
+function cartBadge(){
+  const count = cartLines().reduce((s,l)=>s+l.qty,0);
+  return count>0 ? `<span class="cart-badge">${count>99?'99+':count}</span>` : '';
+}
+function custBar(title, opts){
+  opts = opts || {};
+  const back = !!opts.back;
+  const onBack = opts.onBack || "App.goCustTab('menu')";
+  const showCart = opts.cart !== false;
+  const img = App.state.restaurant.logo_image;
+  const phone = (App.state.restaurant.contact_phone||'').trim();
+  const tel = phone.replace(/[^\d+]/g,'');
+  return `<div class="redbar">
+    ${back
+      ? `<button class="bar-icon" onclick="${onBack}">${icon('chevL',20)}</button>`
+      : `<div class="bar-logo">${img ? `<img src="${img}" alt="">` : icon('flame',16)}</div>`}
+    <div class="bar-title">${title}</div>
+    ${phone ? `<a class="bar-icon" href="tel:${tel}" title="${phone}">${icon('phone',17)}</a>` : ''}
+    ${showCart ? `<button class="bar-icon" onclick="App.goCustTab('cart')">${icon('cart',19)}${cartBadge()}</button>` : ''}
+  </div>`;
+}
+function custTabbar(){
+  const t = App.state.custTab;
+  const tabs = [['menu','Меню','menu'],['cart','Количка','cart'],['profile','Профил','user']];
+  return `<div class="tabbar">
+    ${tabs.map(([id,label,ic])=>`
+      <button class="tab ${t===id?'active':''}" onclick="App.goCustTab('${id}')">
+        ${icon(ic,21)}<span>${label}</span>
+      </button>`).join('')}
+  </div>`;
+}
+App.goCustTab = function(tab){
+  setState({ custTab:tab, screen: tab==='cart' ? 'cust-cart' : (tab==='profile' ? 'cust-profile' : 'cust-menu') });
+};
+function cartFab(){
+  if(App.state.screen!=='cust-menu' && App.state.screen!=='cust-category') return '';
+  const lines = cartLines(); if(lines.length===0) return '';
+  const count = lines.reduce((s,l)=>s+l.qty,0);
+  const t = cartTotals();
+  return `<button class="cart-fab" onclick="App.goCustTab('cart')">
+    <span>${count} ${count===1?'продукт':'продукта'}</span>
+    <span class="mono">${lv(t.total)} ${icon('chevR',16)}</span>
+  </button>`;
+}
+
+/* ---------- favorites (per-device) ---------- */
+function favGet(){ try{ return JSON.parse(localStorage.getItem('og_favorites'))||[]; }catch(e){ return []; } }
+function favSet(arr){ localStorage.setItem('og_favorites', JSON.stringify(arr)); }
+App.toggleFavorite = function(itemId){
+  let favs = favGet();
+  favs = favs.includes(itemId) ? favs.filter(id=>id!==itemId) : [...favs, itemId];
+  favSet(favs);
+  render();
+};
+
+/* ---------- category thumbnail: own photo first, else derived from a dish in it ---------- */
+function categoryThumb(catId){
+  const cat = App.state.categories.find(c=>c.id===catId);
+  if(cat && cat.image) return `<img src="${cat.image}" alt="">`;
+  const itemsInCat = App.state.items.filter(i=>(i.categoryIds||[]).includes(catId));
+  const withImg = itemsInCat.find(i=>i.image);
+  if(withImg) return `<img src="${withImg.image}" alt="">`;
+  const first = itemsInCat[0];
+  return first ? (first.emoji||'🍽️') : '🍽️';
+}
+
+/* ============================= ROLE SELECT ============================= */
+function scrRole(){
+  return `<div class="scr center-screen" style="min-height:100vh;">
+    <div class="col" style="align-items:center;gap:6px;margin-bottom:36px;">
+      <div class="logo-mark" style="width:64px;height:64px;border-radius:18px;margin-bottom:14px;cursor:pointer;user-select:none;" title="Задръж за админ вход" onpointerdown="App.startAdminReveal()" onpointerup="App.cancelAdminReveal()" onpointerleave="App.cancelAdminReveal()" onpointercancel="App.cancelAdminReveal()" oncontextmenu="return false">${App.state.restaurant.logo_image ? `<img src="${App.state.restaurant.logo_image}" alt="">` : icon('flame',32)}</div>
+      <h1 style="font-size:28px;">${App.state.restaurant.name}</h1>
+      <div class="muted" style="font-size:13px;">${App.state.restaurant.tagline}</div>
+    </div>
+    <div class="col gap12" style="width:100%;">
+      <button class="role-card" onclick="App.enterCustomer()">
+        <div class="icon-btn" style="background:var(--ember-glow);border-color:var(--ember);">${icon('user',20)}</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;">Поръчвам храна</div>
+          <div class="muted" style="font-size:12.5px;">Разгледай менюто и поръчай до адрес</div>
+        </div>
+        <div style="margin-left:auto;color:var(--text-faint);">${icon('chevR',18)}</div>
+      </button>
+      <button class="role-card" onclick="App.enterGuest()">
+        <div class="icon-btn" style="background:#7B519C20;border-color:#7B519C;color:#7B519C;">${icon('phone',18)}</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;">Поръчай чрез Viber</div>
+          <div class="muted" style="font-size:12.5px;">Без регистрация — само име, телефон и адрес</div>
+        </div>
+        <div style="margin-left:auto;color:var(--text-faint);">${icon('chevR',18)}</div>
+      </button>
+      ${App.state.showAdminEntry ? `<button class="role-card" onclick="App.goRest()">
+        <div class="icon-btn">${icon('box',20)}</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;">Вход за ресторанта</div>
+          <div class="muted" style="font-size:12.5px;">Поръчки, меню, промоции, лоялност</div>
+        </div>
+        <div style="margin-left:auto;color:var(--text-faint);">${icon('chevR',18)}</div>
+      </button>` : ''}
+      <button class="btn btn-ghost btn-sm" style="margin-top:4px;" onclick="App.resetConfig()">
+        ${icon('db',14)} Смени Supabase проект
+      </button>
+    </div>
+  </div>`;
+}
+App.startAdminReveal = function(){
+  clearTimeout(App._adminRevealTimer);
+  App._adminRevealTimer = setTimeout(()=>{
+    App.state.showAdminEntry = true;
+    render();
+    toast('Админ входът е отключен');
+  }, 800);
+};
+App.cancelAdminReveal = function(){
+  clearTimeout(App._adminRevealTimer);
+};
+App.enterCustomer = function(){
+  setState({ screen: App.state.profile ? 'cust-menu' : 'cust-auth', custTab:'menu', showAdminEntry:false,
+             authMode: App.state.profile ? 'login' : 'register' });
+};
+App.enterGuest = function(){
+  setState({ screen:'cust-menu', custTab:'menu', showAdminEntry:false, profile:null, isGuestMode:true });
+};
+App.goRest = function(){ setState({ screen: App.state.restUnlocked ? 'rest-orders' : 'rest-pass' }); };
+App.resetConfig = function(){
+  localStorage.removeItem(CFG_KEY);
+  sessionClear();
+  SB = null;
+  setState({ screen:'setup', setupError:'', setupLoading:false, profile:null, restUnlocked:false, showAdminEntry:false });
+};
+
+/* ============================= CUSTOMER: AUTH ============================= */
+function scrCustAuth(){
+  const mode = App.state.authMode;
+  return `<div class="scr">
+    ${custBar(mode==='login' ? 'Вход' : 'Регистрация', { back:true, onBack:"setState({screen:'role'})", cart:false })}
+    <div class="pad">
+    <div style="margin-bottom:16px;">
+      <div class="eyebrow">${mode==='login' ? 'Вход' : 'Регистрация'}</div>
+      <h2 style="font-size:23px;margin-top:4px;">${mode==='login' ? 'Здравей отново!' : 'Здравей! Да се запознаем'}</h2>
+    </div>
+    ${mode==='register' ? `
+      <div class="field"><label>Име</label><input id="f-name" placeholder="напр. Мария Иванова"></div>
+      <div class="field"><label>Телефон</label><input id="f-phone" placeholder="08xx xxx xxx" inputmode="tel"></div>
+      <div class="field"><label>Адрес за доставка</label><textarea id="f-addr" placeholder="Улица, номер, град"></textarea></div>
+      <div class="ember-divider" style="margin:14px 0 16px;"></div>` : ''}
+    <div class="field"><label>Потребителско име</label><input id="f-username" placeholder="напр. maria88" autocapitalize="off"></div>
+    <div class="field"><label>Парола</label><input id="f-password" type="password" placeholder="••••••"></div>
+    <button class="btn btn-primary" onclick="${mode==='login' ? 'App.loginCustomer()' : 'App.registerCustomer()'}">
+      ${mode==='login' ? 'Влез' : 'Регистрирай се'}
+    </button>
+    <button class="btn btn-ghost" style="margin-top:10px;" onclick="App.switchAuthMode('${mode==='login'?'register':'login'}')">
+      ${mode==='login' ? 'Нямаш профил? Регистрирай се' : 'Вече имаш профил? Влез'}
+    </button>
+    </div>
+  </div>`;
+}
+App.switchAuthMode = function(mode){ setState({ authMode:mode }); };
+App.registerCustomer = async function(){
+  const name = document.getElementById('f-name').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
+  const addr = document.getElementById('f-addr').value.trim();
+  const username = document.getElementById('f-username').value.trim();
+  const password = document.getElementById('f-password').value;
+  if(!name||!phone||!addr||!username||!password){ toast('Попълни всички полета'); return; }
+  if(password.length<4){ toast('Паролата трябва да е поне 4 символа'); return; }
+  const { data, error } = await DB.register(username, password, name, phone, addr);
+  if(error){ toast(error); return; }
+  const profile = { username:data.username, name:data.name, phone:data.phone, address:data.address, points:0 };
+  sessionSet({ username:profile.username });
+  setState({ profile, screen:'cust-menu', custTab:'menu' });
+  toast('Добре дошъл/а, ' + name + '!');
+};
+App.loginCustomer = async function(){
+  const username = document.getElementById('f-username').value.trim();
+  const password = document.getElementById('f-password').value;
+  if(!username||!password){ toast('Въведи потребителско име и парола'); return; }
+  const { data, error } = await DB.login(username, password);
+  if(error){ toast(error); return; }
+  const profile = { username:data.username, name:data.name, phone:data.phone, address:data.address, points:data.points };
+  sessionSet({ username:profile.username });
+  setState({ profile, screen:'cust-menu', custTab:'menu' });
+  toast('Здравей, ' + data.name + '!');
+};
+
+/* ============================= CUSTOMER: MENU (category grid home) ============================= */
+function scrCustMenu(){
+  const cats = App.state.categories;
+  const r = App.state.restaurant;
+  const activePromos = App.state.promos.filter(p=>p.active);
+  return `<div class="scr">
+    ${custBar(r.name, { back:false })}
+    ${r.cover_image ? `
+      <div style="position:relative;height:130px;overflow:hidden;">
+        <img src="${r.cover_image}" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>` : ''}
+    ${activePromos.length>0 ? `<div class="promo-row" style="margin-top:14px;">${activePromos.map(p=>promoCardHtml(p)).join('')}</div>` : ''}
+    <div class="pad" style="padding-bottom:0;${activePromos.length>0?'padding-top:6px;':'padding-top:16px;'}">
+      <div class="eyebrow">Избери категория</div>
+    </div>
+    ${cats.length===0 ? `<div class="empty-state">Менюто все още няма категории.</div>` :
+      `<div class="cat-grid">${cats.map(c=>catTileHtml(c)).join('')}</div>`}
+    <div id="cart-fab-slot">${cartFab()}</div>
+    ${custTabbar()}
+  </div>`;
+}
+function catTileHtml(cat){
+  return `<div class="cat-tile" onclick="App.openCategory('${cat.id}')">
+    <div class="cat-tile-img">${categoryThumb(cat.id)}</div>
+    <div class="cat-tile-label">${cat.name}</div>
+    ${cat.description ? `<div class="cat-tile-desc">${cat.description}</div>` : ''}
+  </div>`;
+}
+App.openCategory = function(id){ setState({ screen:'cust-category', activeCategory:id }); };
+
+/* ============================= CUSTOMER: CATEGORY (product list) ============================= */
+function scrCustCategory(){
+  const cat = App.state.categories.find(c=>c.id===App.state.activeCategory);
+  const items = App.state.items.filter(i=>i.available && (i.categoryIds||[]).includes(App.state.activeCategory));
+  const categoryIntro = cat && cat.description ? `<div class="pad" style="padding-bottom:4px;"><div class="muted" style="font-size:13.5px;line-height:1.45;">${cat.description}</div></div>` : '';
+  return `<div class="scr">
+    ${custBar(cat ? cat.name : 'Категория', { back:true, onBack:"App.goCustTab('menu')" })}
+    ${categoryIntro}
+    ${items.length===0 ? `<div class="empty-state">Няма продукти в тази категория.</div>` : items.map(item=>menuItemRow(item)).join('')}
+    <div id="cart-fab-slot">${cartFab()}</div>
+  </div>`;
+}
+function promoBlurb(p){
+  if(p.type==='combo') return `Комбо · ${lv(p.comboPrice||0)}`;
+  if(p.type==='code') return `Код ${p.code} · -${p.percent}%`;
+  return `-${p.percent}% ${p.scope==='category' ? 'на ' + categoryName(p.categoryId) : 'от поръчката'}`;
+}
+function promoCardHtml(p){
+  return `<div class="promo-card" onclick="App.openPromo('${p.id}')">
+    ${p.image ? `<img src="${p.image}" alt="">` : ''}
+    <div class="promo-fade"></div>
+    <div class="promo-text">
+      <div style="font-weight:700;font-size:12.5px;line-height:1.25;">${p.title}</div>
+      <div style="font-size:11px;color:#FFD9A8;margin-top:3px;">${promoBlurb(p)}</div>
+    </div>
+  </div>`;
+}
+function menuItemRow(item){
+  const inCart = App.state.cart.find(c=>c.itemId===item.id);
+  const price = effectivePrice(item);
+  const discounted = price < item.price - 0.001;
+  return `<div class="menu-item" style="cursor:pointer;" onclick="App.openDish('${item.id}')">
+    <div class="item-emoji">${thumbHtml(item)}</div>
+    <div style="flex:1;">
+      <div class="item-name">${item.name}</div>
+      <div class="item-desc">${item.desc||''}</div>
+      <div style="margin-top:8px;" class="row between">
+        <div>
+          ${discounted ? `<span class="strike">${lv(item.price)}</span>` : ''}
+          <span class="price" style="color:${discounted?'var(--ember)':'var(--text)'}">${lv(price)}</span>
+        </div>
+        ${inCart ? `
+          <div class="qty-stepper" onclick="event.stopPropagation()">
+            <button class="qty-btn" onclick="App.changeQty('${item.id}',-1)">${icon('minus',14)}</button>
+            <span class="mono" style="min-width:16px;text-align:center;">${inCart.qty}</span>
+            <button class="qty-btn" onclick="App.changeQty('${item.id}',1)">${icon('plus',14)}</button>
+          </div>` : `<button class="add-pill" onclick="event.stopPropagation(); App.changeQty('${item.id}',1)">Добави</button>`}
+      </div>
+    </div>
+  </div>`;
+}
+App.setCat = function(id){ setState({ activeCategory:id }); };
+App.changeQty = function(itemId, delta){
+  const cart = App.state.cart;
+  const line = cart.find(c=>c.itemId===itemId);
+  if(line){ line.qty += delta; if(line.qty<=0) App.state.cart = cart.filter(c=>c.itemId!==itemId); }
+  else if(delta>0){ cart.push({ itemId, qty:1 }); }
+  cartSet(App.state.cart); render();
+};
+
+/* ============================= CUSTOMER: DISH DETAIL ============================= */
+App.openDish = function(id){ setState({ screen:'cust-dish', viewingItemId:id }); };
+function scrCustDish(){
+  const item = itemById(App.state.viewingItemId);
+  if(!item) return `<div class="scr">${custBar('Ястие', { back:true })}<div class="empty-state">Ястието не е намерено.</div></div>`;
+  const inCart = App.state.cart.find(c=>c.itemId===item.id);
+  const price = effectivePrice(item);
+  const discounted = price < item.price - 0.001;
+  const isFav = favGet().includes(item.id);
+  return `<div class="scr">
+    ${custBar(item.name, { back:true, onBack:"App.goCustTab('menu')" })}
+    ${item.image ? `<img src="${item.image}" style="width:100%;height:230px;object-fit:cover;display:block;">` :
+      `<div style="width:100%;height:200px;display:flex;align-items:center;justify-content:center;font-size:68px;background:var(--surface-2);">${item.emoji||'🍽️'}</div>`}
+    <div class="pad" style="padding-bottom:4px;">
+      <div class="eyebrow">${(item.categoryIds||[]).map(id=>categoryName(id)).filter(Boolean).join(' · ')}</div>
+      <h2 style="font-size:22px;margin-top:5px;">${item.name}</h2>
+      <div style="margin-top:8px;">
+        ${discounted ? `<span class="strike" style="font-size:14px;">${lv(item.price)}</span>` : ''}
+        <span class="price" style="font-size:22px;color:var(--ember);">${lv(price)}</span>
+      </div>
+      <div class="ember-divider"></div>
+      <div class="eyebrow" style="margin-bottom:6px;">Описание</div>
+      <div class="muted" style="font-size:14px;line-height:1.6;">${item.desc || 'Няма добавено описание.'}</div>
+      ${inCart ? `
+        <div class="row between" style="margin-top:18px;">
+          <span class="muted" style="font-size:13.5px;">Количество в количката</span>
+          <div class="qty-stepper">
+            <button class="qty-btn" onclick="App.changeQty('${item.id}',-1)">${icon('minus',14)}</button>
+            <span class="mono" style="min-width:18px;text-align:center;">${inCart.qty}</span>
+            <button class="qty-btn" onclick="App.changeQty('${item.id}',1)">${icon('plus',14)}</button>
+          </div>
+        </div>` : ''}
+    </div>
+    <div style="height:92px;"></div>
+    <div class="detail-footer">
+      <button class="fav-btn ${isFav?'active':''}" onclick="App.toggleFavorite('${item.id}')">${icon('heart',20)}</button>
+      ${inCart
+        ? `<button class="btn btn-primary" style="flex:1;width:auto;" onclick="App.goCustTab('cart')">Към количката</button>`
+        : `<button class="btn btn-primary" style="flex:1;width:auto;" onclick="App.changeQty('${item.id}',1)">Добави в количката · ${lv(price)}</button>`}
+    </div>
+  </div>`;
+}
+
+/* ============================= CUSTOMER: PROMO DETAIL ============================= */
+App.openPromo = function(id){ setState({ screen:'cust-promo', viewingPromoId:id }); };
+function scrCustPromo(){
+  const p = App.state.promos.find(x=>x.id===App.state.viewingPromoId);
+  if(!p) return `<div class="scr">${custBar('Промоция', { back:true })}<div class="empty-state">Промоцията не е намерена.</div></div>`;
+  return `<div class="scr">
+    ${custBar('Промоция', { back:true, onBack:"App.goCustTab('menu')" })}
+    ${p.image ? `<img src="${p.image}" style="width:100%;height:220px;object-fit:cover;display:block;">` :
+      `<div style="width:100%;height:160px;background:linear-gradient(135deg,var(--ember),var(--ember-dim));"></div>`}
+    <div class="pad">
+      <h2 style="font-size:22px;">${p.title}</h2>
+      ${p.desc ? `<div class="muted" style="font-size:13.5px;margin-top:6px;line-height:1.5;">${p.desc}</div>` : ''}
+      <div class="ember-divider"></div>
+      ${promoDetailBody(p)}
+    </div>
+  </div>`;
+}
+function promoDetailBody(p){
+  if(p.type==='combo'){
+    const lines = (p.comboItems||[]).map(ci=>{ const it=itemById(ci.itemId); return it?{it,qty:ci.qty}:null; }).filter(Boolean);
+    const normalTotal = lines.reduce((s,l)=>s+l.it.price*l.qty, 0);
+    return `<div class="col gap8">${lines.map(l=>`<div class="row between" style="font-size:14px;"><span>${l.qty}× ${l.it.name}</span><span class="muted mono">${lv(l.it.price*l.qty)}</span></div>`).join('')}</div>
+      <div class="row between" style="margin-top:12px;align-items:baseline;">
+        ${normalTotal > p.comboPrice ? `<span class="strike" style="font-size:14px;">${lv(normalTotal)}</span>` : '<span></span>'}
+        <span class="price" style="font-size:21px;color:var(--ember);">${lv(p.comboPrice||0)}</span>
+      </div>
+      <button class="btn btn-primary" style="margin-top:16px;" onclick="App.addComboToCart('${p.id}')">Добави комбото в количката</button>`;
+  }
+  if(p.type==='code'){
+    return `<div class="card" style="text-align:center;">
+      <div class="muted" style="font-size:12.5px;">Промо код</div>
+      <div class="mono" style="font-size:22px;font-weight:700;color:var(--gold);margin-top:4px;">${p.code}</div>
+      <div class="muted" style="font-size:12.5px;margin-top:6px;">-${p.percent}% от поръчката</div>
+    </div>
+    <button class="btn btn-primary" style="margin-top:16px;" onclick="App.useCodeFromPromo('${p.id}')">Приложи в количката</button>`;
+  }
+  return `<div class="card"><div style="font-weight:700;font-size:15px;">-${p.percent}% ${p.scope==='category' ? 'на ' + categoryName(p.categoryId) : 'от цялата поръчка'}</div><div class="muted" style="font-size:12.5px;margin-top:4px;">Прилага се автоматично.</div></div>
+    <button class="btn btn-primary" style="margin-top:16px;" onclick="App.goCustTab('menu')">Разгледай менюто</button>`;
+}
+App.useCodeFromPromo = function(id){
+  const p = App.state.promos.find(x=>x.id===id); if(!p) return;
+  App.state.promoCodeApplied = p; App.state.promoCodeInput = p.code;
+  setState({ screen:'cust-cart', custTab:'cart' }); toast('Кодът е приложен');
+};
+App.addComboToCart = function(comboId){
+  const cart = App.state.cart;
+  const line = cart.find(c=>c.comboId===comboId);
+  if(line) line.qty+=1; else cart.push({ comboId, qty:1 });
+  cartSet(cart); setState({ screen:'cust-cart', custTab:'cart' }); toast('Комбото е добавено');
+};
+App.changeComboQty = function(comboId, delta){
+  const cart = App.state.cart;
+  const line = cart.find(c=>c.comboId===comboId);
+  if(line){ line.qty+=delta; if(line.qty<=0) App.state.cart = cart.filter(c=>c.comboId!==comboId); }
+  cartSet(App.state.cart); render();
+};
+
+/* ============================= CUSTOMER: CART ============================= */
+function scrCustCart(){
+  const lines = cartLines(); const t = cartTotals();
+  return `<div class="scr">
+    ${custBar('Количка', { cart:false })}
+    <div class="pad">
+    ${lines.length===0 ? `<div class="empty-state">Количката е празна.</div>` : `
+      <div class="card col gap8" style="padding:6px 14px;">
+        ${lines.map(l=>`
+          <div class="row between" style="padding:10px 0;border-bottom:1px solid var(--border);">
+            <div style="flex:1;">
+              <div style="font-weight:600;font-size:14px;">${l.name}${l.kind==='combo' ? ' <span class="badge" style="background:var(--surface-3);color:var(--gold);">Комбо</span>' : ''}</div>
+              <div class="price" style="font-size:12.5px;color:var(--text-dim);margin-top:2px;">${lv(l.unitPrice)} × ${l.qty}</div>
+            </div>
+            <div class="qty-stepper">
+              <button class="qty-btn" onclick="${l.kind==='combo' ? `App.changeComboQty('${l.comboId}',-1)` : `App.changeQty('${l.itemId}',-1)`}">${icon('minus',14)}</button>
+              <span class="mono">${l.qty}</span>
+              <button class="qty-btn" onclick="${l.kind==='combo' ? `App.changeComboQty('${l.comboId}',1)` : `App.changeQty('${l.itemId}',1)`}">${icon('plus',14)}</button>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div class="field" style="margin-top:18px;"><label>Промо код</label>
+        <div class="row gap8">
+          <input id="promo-input" placeholder="напр. DOBREDOSHAL10" value="${App.state.promoCodeInput}" style="flex:1;background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:11px 13px;">
+          <button class="btn btn-ghost btn-sm" onclick="App.applyPromoCode()">Приложи</button>
+        </div>
+        ${App.state.promoCodeApplied ? `<div style="color:var(--green);font-size:12.5px;">Код приложен: -${App.state.promoCodeApplied.percent}%</div>` : ''}
+      </div>
+      <div class="ember-divider"></div>
+      <div class="col gap8" style="font-size:14px;">
+        <div class="row between"><span class="muted">Сума</span><span class="mono">${lv(t.subtotal)}</span></div>
+        ${t.discountPct>0 ? `<div class="row between" style="color:var(--green);"><span>Отстъпка (${t.discountPct}%)</span><span class="mono">-${lv(t.discount)}</span></div>` : ''}
+        <div class="row between"><span class="muted">Доставка</span><span class="mono">${lv(t.deliveryFee)}</span></div>
+        <div class="row between" style="font-weight:700;font-size:16px;margin-top:6px;"><span>Общо</span><span class="mono">${lv(t.total)}</span></div>
+        ${App.state.profile ? `<div class="muted" style="font-size:12px;">+${t.pointsEarned} точки лоялност ${t.tier&&t.tier.percent>0?`· ниво ${t.tier.name} (-${t.tier.percent}%)`:''}` : ''}
+      </div>
+      <button class="btn btn-primary" style="margin-top:18px;" onclick="App.goCheckout()">Към плащане</button>
+    `}
+    </div>
+    ${custTabbar()}
+  </div>`;
+}
+App.applyPromoCode = function(){
+  const code = document.getElementById('promo-input').value.trim().toUpperCase();
+  const promo = App.state.promos.find(p=>p.active && p.type==='code' && (p.code||'').toUpperCase()===code);
+  if(promo){ App.state.promoCodeApplied = promo; App.state.promoCodeInput = code; toast('Промо кодът е приложен'); }
+  else { App.state.promoCodeApplied = null; toast('Невалиден или изтекъл код'); }
+  render();
+};
+App.goCheckout = function(){
+  const p = App.state.profile;
+  setState({
+    screen:'cust-checkout',
+    addressEdit: p ? p.address : App.state.guestAddress,
+    guestName: App.state.guestName || '',
+    guestPhone: App.state.guestPhone || '',
+    guestAddress: App.state.guestAddress || ''
+  });
+};
+
+/* ============================= CUSTOMER: CHECKOUT ============================= */
+function scrCustCheckout(){
+  const t = cartTotals(); const pm = App.state.paymentMethod; const isGuest = !App.state.profile;
+  const contactPhone = (App.state.restaurant.contact_phone||'').trim();
+  const methods = enabledPaymentMethods();
+  return `<div class="scr">
+    ${custBar('Плащане и доставка', { back:true, onBack:"App.goCustTab('cart')", cart:false })}
+    <div class="pad">
+    ${isGuest ? `
+      <div class="eyebrow" style="margin-bottom:8px;">Поръчка без регистрация</div>
+      <div class="field"><label>Име и фамилия</label><input id="guest-name" value="${App.state.guestName}" oninput="App.state.guestName=this.value" placeholder="Иван Иванов"></div>
+      <div class="field"><label>Телефон</label><input id="guest-phone" value="${App.state.guestPhone}" oninput="App.state.guestPhone=this.value" placeholder="08xx xxx xxx" inputmode="tel"></div>
+      <div class="field"><label>Адрес за доставка</label><textarea id="guest-address" oninput="App.state.guestAddress=this.value;App.state.addressEdit=this.value" placeholder="Град, квартал, улица, номер">${App.state.guestAddress}</textarea></div>
+      <div class="muted" style="font-size:12.5px;line-height:1.45;">Поръчката ще се запише в админ панела и ще се отвори Viber с готов текст за изпращане към ресторанта.</div>
+    ` : `
+      <div class="field"><label>Адрес за доставка</label>
+        <textarea id="checkout-addr" oninput="App.state.addressEdit=this.value">${App.state.addressEdit}</textarea>
+      </div>
+      <div class="eyebrow" style="margin:18px 0 8px;">Начин на плащане</div>
+      <div class="col gap8">
+        ${methods.map(m=>`
+        <button class="role-card" style="padding:14px;${pm===m.id?'border-color:var(--ember);':''}" onclick="App.setPayment('${m.id}')">
+          <div class="icon-btn" style="${pm===m.id?'border-color:var(--ember);color:var(--ember);':''}">${icon(m.icon,18)}</div>
+          <div style="font-weight:600;font-size:14px;">${m.label}</div>
+          <div style="margin-left:auto;">${pm===m.id?icon('check',18):''}</div>
+        </button>`).join('')}
+      </div>
+    `}
+    ${!isGuest && pm==='online' ? `
+      <div class="card" style="margin-top:14px;">
+        <div class="field"><label>Номер на картата</label><input id="card-num" maxlength="19" placeholder="0000 0000 0000 0000" oninput="App.state.cardNum=this.value"></div>
+        <div class="row gap8">
+          <div class="field" style="flex:1;"><label>Валидност</label><input id="card-exp" maxlength="5" placeholder="MM/ГГ" oninput="App.state.cardExp=this.value"></div>
+          <div class="field" style="flex:1;"><label>CVC</label><input id="card-cvc" maxlength="3" placeholder="•••" oninput="App.state.cardCvc=this.value"></div>
+        </div>
+        <div class="muted" style="font-size:11.5px;">Демо плащане — без реално таксуване.</div>
+      </div>` : ''}
+    ${!isGuest && pm==='card_on_delivery' ? `
+      <div class="muted" style="font-size:12.5px;margin-top:10px;line-height:1.45;">Куриерът ще донесе мобилен ПОС терминал за разплащане с карта при доставка.</div>
+    ` : ''}
+    <div class="eyebrow" style="margin:18px 0 8px;">Допълнителни инструкции</div>
+    <div class="field"><textarea id="order-notes" oninput="App.state.orderNotes=this.value" placeholder="напр. без лук, позвънете преди да дойдете, оставете пред врата...">${App.state.orderNotes}</textarea></div>
+    <label class="row gap8" style="align-items:center;cursor:pointer;margin-top:6px;" onclick="event.preventDefault();App.state.orderCutlery=!App.state.orderCutlery;render();">
+      <input type="checkbox" ${App.state.orderCutlery?'checked':''} style="width:18px;height:18px;accent-color:var(--ember);" onclick="event.stopPropagation();App.state.orderCutlery=this.checked;">
+      <span style="font-size:14px;">Желаете ли прибори?</span>
+    </label>
+    <div class="ember-divider"></div>
+    <div class="row between" style="font-weight:700;font-size:17px;"><span>Общо за плащане</span><span class="mono">${lv(t.total)}</span></div>
+    ${isGuest ? `
+      <button class="btn btn-primary" style="margin-top:18px;" onclick="App.placeViberOrder()" ${App.state.payProcessing||!contactPhone?'disabled':''}>
+        ${contactPhone ? (App.state.payProcessing ? 'Подготовка...' : 'Поръчай чрез Viber') : 'Добави телефон на ресторанта'}
+      </button>
+    ` : `
+      <button class="btn btn-primary" style="margin-top:18px;" onclick="App.placeOrder()" ${App.state.payProcessing?'disabled':''}>
+        ${App.state.payProcessing ? 'Обработка...' : (pm==='online' ? `Плати ${lv(t.total)}` : 'Потвърди поръчката')}
+      </button>
+      <button class="btn btn-ghost" style="margin-top:10px;" onclick="App.placeViberOrder()" ${App.state.payProcessing||!contactPhone?'disabled':''}>Поръчай чрез Viber</button>
+    `}
+    </div>
+  </div>`;
+}
+App.setPayment = function(method){ setState({ paymentMethod:method }); };
+App.placeOrder = async function(){
+  if(!App.state.addressEdit||App.state.addressEdit.trim().length<3){ toast('Въведи адрес за доставка'); return; }
+  if(App.state.paymentMethod==='online'){
+    const { cardNum, cardExp, cardCvc } = App.state;
+    if(cardNum.replace(/\s/g,'').length<16||cardExp.length<4||cardCvc.length<3){ toast('Въведи валидни данни на картата'); return; }
+    setState({ payProcessing:true }); await new Promise(r=>setTimeout(r,1100));
+  }
+  const t = cartTotals(); const lines = cartLines();
+  const orderNum = 'ОГ-' + String(App.state.orders.length+1).padStart(4,'0');
+  const order = {
+    id:uid(), orderNum, createdAt:Date.now(),
+    customer:{ username:App.state.profile.username, name:App.state.profile.name, phone:App.state.profile.phone, address:App.state.addressEdit },
+    items:lines.map(l=>({ name:l.name, qty:l.qty, price:l.unitPrice })),
+    paymentMethod:App.state.paymentMethod, totals:t, status:'pending',
+    notes:(App.state.orderNotes||'').trim(), cutlery:!!App.state.orderCutlery
+  };
+  try{
+    await DB.saveOrder(order);
+    await DB.updatePoints(App.state.profile.username, (App.state.profile.points||0) + t.pointsEarned);
+    const profile = { ...App.state.profile, points:(App.state.profile.points||0) + t.pointsEarned };
+    App.state.profile = profile;
+    App.state.cart = []; cartSet([]);
+    setState({ screen:'cust-track', trackOrderId:order.id, payProcessing:false, promoCodeApplied:null, promoCodeInput:'', cardNum:'', cardExp:'', cardCvc:'', orderNotes:'', orderCutlery:false });
+    toast('Поръчката е изпратена!');
+  }catch(e){ setState({ payProcessing:false }); toast('Грешка: ' + e.message); }
+};
+App.placeViberOrder = async function(){
+  const name = (App.state.guestName||'').trim();
+  const phone = (App.state.guestPhone||'').trim();
+  const address = (App.state.guestAddress||'').trim();
+  const contactPhone = (App.state.restaurant.contact_phone||'').trim();
+  if(!name||name.length<2){ toast('Въведи име и фамилия'); return; }
+  if(!phone||phone.length<6){ toast('Въведи валиден телефон'); return; }
+  if(!address||address.length<3){ toast('Въведи адрес за доставка'); return; }
+  if(!contactPhone){ toast('Ресторантът все още няма зададен телефон'); return; }
+  setState({ payProcessing:true });
+  const t = cartTotals(); const lines = cartLines();
+  const orderNum = 'ОГ-' + String(App.state.orders.length+1).padStart(4,'0');
+  const order = {
+    id:uid(), orderNum, createdAt:Date.now(),
+    customer:{ username:null, name, phone, address },
+    items:lines.map(l=>({ name:l.name, qty:l.qty, price:l.unitPrice })),
+    paymentMethod:'cash', totals:t, status:'pending', source:'viber',
+    notes:(App.state.orderNotes||'').trim(), cutlery:!!App.state.orderCutlery
+  };
+  try{
+    await DB.saveOrder(order);
+    App.state.orders = [order, ...App.state.orders];
+    App.state.cart = []; cartSet([]);
+    const text = orderShareText(order);
+    window.open('viber://forward?text=' + encodeURIComponent(text), '_blank');
+    setState({ screen:'cust-track', trackOrderId:order.id, payProcessing:false, guestName:'', guestPhone:'', guestAddress:'', orderNotes:'', orderCutlery:false });
+    toast('Поръчката е изпратена! Изпрати съобщението във Viber.');
+  }catch(e){ setState({ payProcessing:false }); toast('Грешка: ' + e.message); }
+};
+
+/* ============================= AI ASSISTANT (VIRTUAL WAITER) ============================= */
+const AI_TOOLS = [
+  { name:'search_menu', description:'Търси ястия/напитки в менюто по име, описание или категория. Връща списък със съвпадения (id, име, цена, описание, категория).',
+    parameters:{ type:'OBJECT', properties:{ query:{ type:'STRING', description:'Дума или фраза за търсене, напр. "скара" или "салата"' } }, required:['query'] } },
+  { name:'list_categories', description:'Връща списък с всички категории от менюто.', parameters:{ type:'OBJECT', properties:{} } },
+  { name:'add_item_to_cart', description:'Добавя продукт в количката на клиента по неговия точен item_id (взет от search_menu).',
+    parameters:{ type:'OBJECT', properties:{ item_id:{ type:'STRING' }, qty:{ type:'NUMBER', description:'Брой (по подразбиране 1)' } }, required:['item_id'] } },
+  { name:'set_item_qty', description:'Променя количеството на вече добавен продукт в количката. qty:0 премахва продукта.',
+    parameters:{ type:'OBJECT', properties:{ item_id:{ type:'STRING' }, qty:{ type:'NUMBER' } }, required:['item_id','qty'] } },
+  { name:'get_cart', description:'Връща текущото съдържание на количката с цени и общата сума за плащане.', parameters:{ type:'OBJECT', properties:{} } },
+  { name:'set_guest_name', description:'Записва САМО името на клиента, точно както го е казал — никога не предполагай или съкращавай.',
+    parameters:{ type:'OBJECT', properties:{ name:{ type:'STRING' } }, required:['name'] } },
+  { name:'set_guest_phone', description:'Записва САМО телефонния номер на клиента, точно както го е казал.',
+    parameters:{ type:'OBJECT', properties:{ phone:{ type:'STRING' } }, required:['phone'] } },
+  { name:'set_guest_address', description:'Записва САМО адреса за доставка, точно както го е казал клиентът — НИКОГА не предполагай или измисляй адрес от името или от друга информация.',
+    parameters:{ type:'OBJECT', properties:{ address:{ type:'STRING' } }, required:['address'] } },
+  { name:'set_order_details', description:'Задава бележка към поръчката, дали клиентът иска прибори, и начин на плащане.',
+    parameters:{ type:'OBJECT', properties:{
+      notes:{ type:'STRING', description:'Свободен текст с допълнителни инструкции' },
+      cutlery:{ type:'BOOLEAN', description:'true ако клиентът иска прибори' },
+      payment_method:{ type:'STRING', description:'"cash" (в брой) или "card_on_delivery" (карта при доставка)' }
+    } } },
+  { name:'confirm_order_summary', description:'Показва на клиента пълно резюме на поръчката (продукти, сума, име, телефон, адрес, прибори, плащане) за преглед и потвърждение. ЗАДЪЛЖИТЕЛНО се извиква преди place_order — никога не пропускай тази стъпка.',
+    parameters:{ type:'OBJECT', properties:{} } },
+  { name:'place_order', description:'Финализира и изпраща поръчката към ресторанта. Може да се извика само СЛЕД като: 1) confirm_order_summary вече е показал резюме, и 2) клиентът изрично е потвърдил с нов отговор ("да", "потвърждавам" и подобни) СЛЕД като е видял резюмето.',
+    parameters:{ type:'OBJECT', properties:{} } }
+];
+const AI_SYSTEM_PROMPT = `Ти си приятелски виртуален сервитьор на ресторант "${'__REST_NAME__'}". Говориш само на български, кратко и топло, като жив сервитьор.
+КРИТИЧНО ПРАВИЛО #1 (менюто): Никога не изброявай конкретни ястия, цени или категории от паметта си или измислени. Единственият начин да знаеш какво има в менюто е чрез истинско извикване на инструментите search_menu / list_categories — изчакай резултата от инструмента и чак тогава отговори на клиента с реалните имена и цени от резултата. Ако клиент попита "какво предлагате" или "препоръчай ми нещо" — ВИНАГИ първо извикай search_menu или list_categories, никога не отговаряй директно с измислен списък.
+КРИТИЧНО ПРАВИЛО #2 (данни на клиента): Име, телефон и адрес трябва да бъдат КАЗАНИ БУКВАЛНО от клиента — попитай за всяко едно ИЗРИЧНО и поотделно, ако липсва (напр. "Как е твоето име?", после "На какъв телефон да се свържем?", после "На какъв адрес да доставим поръчката?"). НИКОГА не предполагай, не съкращавай и не извеждай адрес, телефон или име от друга информация (напр. от фамилия, от име на квартал, от предишен разговор) — ако клиентът не го е казал буквално, го НЯМАШ и трябва да попиташ.
+КРИТИЧНО ПРАВИЛО #3 (потвърждение): Преди place_order ЗАДЪЛЖИТЕЛНО извикай confirm_order_summary, който показва точно резюме на поръчката на клиента. След това ИЗЧАКАЙ нов отговор от клиента с изрично потвърждение ("да", "потвърждавам", "точно така" и подобни) — само тогава викай place_order. Ако клиентът поиска промяна след резюмето, направи я и пак викай confirm_order_summary, преди да продължиш.
+КРИТИЧНО ПРАВИЛО #4 (валута): Всички цени в менюто и количката са в ЕВРО (€), НИКОГА в лева/BGN. Когато съобщаваш цена на клиента, винаги казвай "евро" или ползвай знака €, например "5.20 евро" или "5.20 €" — никога "лева" или "лв".
+КРИТИЧНО ПРАВИЛО #5 (формат): Пиши САМО чист текст, без markdown форматиране — никакви звездички (**, *), долни черти (_), решетки (#) или други символи за форматиране. Текстът се чете директно на глас, така символите се чуват като думи.
+Задачи:
+- Помагаш на клиента да избере храна — питаш за предпочитания (месо/риба/вегетарианско/бюджет) и предлагаш конкретни ястия само от резултатите на search_menu.
+- Когато клиентът поиска нещо конкретно, добави го в количката с add_item_to_cart (с точния item_id от search_menu).
+- Ако клиентът няма профил (гост), събери име, телефон и адрес поотделно — с set_guest_name, set_guest_phone, set_guest_address — преди confirm_order_summary.
+- Винаги питай "Желаете ли прибори?" преди confirm_order_summary, ако клиентът не е споменал вече.
+- Питай за начин на плащане: в брой или с карта при доставка (куриерът носи ПОС терминал). Запиши го със set_order_details.
+- Ако количката е празна и клиентът поиска да поръчва, обясни му любезно, че количката е празна и предложи да добавите нещо.
+- Бъди кратък — 1-3 изречения на отговор, без излишни обяснения.
+- Никога не пиши инструменти/функции като текст (напр. <function=...>). Извиквай ги само през истинския механизъм за tool calls.`;
+
+function toGroqToolSchema(schema){
+  if(!schema) return { type:'object', properties:{} };
+  const out = { ...schema, type:(schema.type||'OBJECT').toLowerCase() };
+  if(out.properties){
+    out.properties = Object.fromEntries(Object.entries(out.properties).map(([k,v])=>[k, { ...v, type:(v.type||'STRING').toLowerCase() }]));
+  } else out.properties = {};
+  return out;
+}
+const GROQ_TOOLS = AI_TOOLS.map(t=>({ type:'function', function:{ name:t.name, description:t.description, parameters:toGroqToolSchema(t.parameters) } }));
+
+function aiChatSlot(){
+  const allowed = ['cust-menu','cust-category','cust-cart','cust-checkout','cust-dish','cust-promo','cust-profile','cust-track'];
+  if(!allowed.includes(App.state.screen)) return '';
+  if(!EMBEDDED_WORKER_URL) return '';
+  return (App.state.aiChatOpen ? '' : aiFab()) + (App.state.aiChatOpen ? aiPanel() : '');
+}
+function aiFab(){
+  return `<button class="ai-fab" onclick="App.aiOpen()" title="AI Сервитьор">${icon('sparkle',24)}</button>`;
+}
+function aiPanel(){
+  const msgs = App.state.aiMessages;
+  return `<div class="ai-panel">
+    <div class="ai-panel-head">
+      <div class="icon-btn" style="background:rgba(255,255,255,.18);border-color:transparent;color:#fff;">${icon('sparkle',18)}</div>
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:15px;">AI Сервитьор</div>
+        <div style="font-size:11.5px;opacity:.85;">Питай за менюто или диктувай поръчката си</div>
+      </div>
+      <button class="ai-head-btn" onclick="App.aiToggleVoice()" title="Гласов отговор">${icon(App.state.aiVoiceEnabled?'speaker':'speakerOff',20)}</button>
+      <button class="ai-head-btn" onclick="App.aiClose()">${icon('x',20)}</button>
+    </div>
+    <div class="ai-panel-body" id="ai-panel-body">
+      ${msgs.length===0 ? `<div class="ai-bubble bot">Здравей! 👋 Аз съм твоят виртуален сервитьор. Кажи ми какво ти се яде, или натисни микрофона и ми диктувай поръчката.</div>` : ''}
+      ${msgs.map(m=> m.role==='viber-cta'
+        ? `<div class="ai-bubble bot">${escapeHtml(m.text)}<div style="margin-top:10px;"><button class="btn btn-primary" style='padding:10px 16px;font-size:13px;width:auto;' onclick='App.openViberLink(${JSON.stringify(m.link)})'>${icon('share',14)} Отвори Viber</button></div></div>`
+        : `<div class="ai-bubble ${m.role==='user'?'user':'bot'}">${escapeHtml(m.text)}</div>`
+      ).join('')}
+      ${App.state.aiThinking ? `<div class="ai-bubble typing">${App.state.aiListening?'Слушам...':'Пише...'}</div>` : ''}
+    </div>
+    <div class="ai-panel-foot">
+      <button class="ai-mic-btn ${App.state.aiListening?'listening':''}" onclick="App.aiToggleMic()" ${App.state.aiThinking&&!App.state.aiListening?'disabled':''} title="Гласова поръчка">${icon('mic',18)}</button>
+      <input id="ai-text-input" placeholder="Напиши съобщение..." value="${escapeHtml(App.state.aiInput)}" oninput="App.state.aiInput=this.value" onkeydown="if(event.key==='Enter'){event.preventDefault();App.aiSend();}" ${App.state.aiThinking?'disabled':''}>
+      <button onclick="App.aiSend()" ${App.state.aiThinking?'disabled':''}>${icon('send',18)}</button>
+    </div>
+  </div>`;
+}
+function escapeHtml(str){ return (str||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function stripMarkdown(s){
+  return (s||'')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/__([^_]+)__/g, '$1')
+    .replace(/_([^_]+)_/g, '$1')
+    .replace(/`{1,3}([^`]*)`{1,3}/g, '$1')
+    .replace(/#{1,6}\s?/g, '')
+    .trim();
+}
+App.aiOpen = function(){
+  if(!App.state.aiHistory.length){
+    App.state.aiHistory = []; App.state.aiMessages = []; App.state.aiOrderSummaryShown = false;
+  }
+  setState({ aiChatOpen:true });
+};
+App.aiClose = function(){ App.aiStopListening(); window.speechSynthesis && window.speechSynthesis.cancel(); setState({ aiChatOpen:false }); };
+App.openViberLink = function(link){ window.open(link, '_blank'); };
+
+/* ---------- Voice: TTS (говорим отговор) ---------- */
+let _bgVoice = null;
+function pickBgVoice(){
+  if(!('speechSynthesis' in window)) return null;
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find(v=>v.lang && v.lang.toLowerCase().startsWith('bg')) || null;
+}
+if('speechSynthesis' in window){
+  window.speechSynthesis.onvoiceschanged = function(){ _bgVoice = pickBgVoice(); };
+  _bgVoice = pickBgVoice();
+}
+function stripEmojiForSpeech(s){
+  return (s||'')
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}\uFE0F\u200D]/gu, '')
+    .replace(/\s{2,}/g, ' ').trim();
+}
+function speakBg(text){
+  if(!App.state.aiVoiceEnabled || !text) return;
+  if(!('speechSynthesis' in window)) return;
+  const clean = stripEmojiForSpeech(text);
+  if(!clean) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(clean);
+  if(_bgVoice){ u.voice = _bgVoice; u.lang = _bgVoice.lang; } else { u.lang = 'bg-BG'; }
+  u.rate = 1; u.pitch = 1;
+  window.speechSynthesis.speak(u);
+}
+App.aiToggleVoice = function(){
+  const next = !App.state.aiVoiceEnabled;
+  if(!next) window.speechSynthesis && window.speechSynthesis.cancel();
+  setState({ aiVoiceEnabled: next });
+};
+
+/* ---------- Voice: STT (диктовка) ---------- */
+App._aiRecognition = null;
+App.aiToggleMic = function(){
+  if(App.state.aiListening){ App.aiStopListening(); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ toast('Браузърът не поддържа гласово разпознаване. Пробвай с Chrome.'); return; }
+  try{
+    const rec = new SR();
+    rec.lang = 'bg-BG';
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    rec.onresult = function(e){
+      const transcript = e.results[0][0].transcript;
+      setState({ aiListening:false, aiInput:transcript, aiVoiceEnabled:true });
+      App.aiSend();
+    };
+    rec.onerror = function(){ setState({ aiListening:false }); toast('Не успях да чуя добре — пробвай пак.'); };
+    rec.onend = function(){ if(App.state.aiListening) setState({ aiListening:false }); };
+    App._aiRecognition = rec;
+    setState({ aiListening:true });
+    rec.start();
+  }catch(e){ setState({ aiListening:false }); toast('Грешка при достъп до микрофона: ' + e.message); }
+};
+App.aiStopListening = function(){
+  if(App._aiRecognition){ try{ App._aiRecognition.stop(); }catch(e){} App._aiRecognition = null; }
+  if(App.state.aiListening) setState({ aiListening:false });
+};
+
+/* ---------- tool implementations ---------- */
+const AI_TOOL_IMPL = {
+  search_menu({ query }){
+    const norm = s=>(s||'').toLowerCase().trim();
+    const wordMatch = (a,b)=>{
+      if(!a||!b) return false;
+      if(a.includes(b) || b.includes(a)) return true;
+      const n = Math.min(a.length,b.length);
+      return n>=4 && a.slice(0,4)===b.slice(0,4); // улавя форми като "кюфте"/"кюфтета", "айрян"/"айряна"
+    };
+    const qWords = norm(query).split(/[\s,]+/).filter(Boolean);
+    const matches = App.state.items.filter(i=>{
+      if(i.available===false) return false;
+      if(!qWords.length) return true;
+      const haystackWords = norm(i.name + ' ' + (i.desc||'') + ' ' + (i.categoryIds||[]).map(categoryName).join(' ')).split(/[\s,]+/).filter(Boolean);
+      return qWords.some(qw=>haystackWords.some(hw=>wordMatch(hw,qw)));
+    }).slice(0, 12);
+    return { currency:'EUR', results: matches.map(i=>({ item_id:i.id, name:i.name, price_eur:i.price, desc:i.desc, category:(i.categoryIds||[]).map(categoryName).join(', ') })) };
+  },
+  list_categories(){
+    return { categories: App.state.categories.map(c=>c.name) };
+  },
+  add_item_to_cart({ item_id, qty }){
+    const item = itemById(item_id);
+    if(!item) return { error:'Няма продукт с такъв item_id. Използвай search_menu първо.' };
+    const n = Math.max(1, parseInt(qty)||1);
+    const cart = App.state.cart; const line = cart.find(c=>c.itemId===item_id);
+    if(line) line.qty += n; else cart.push({ itemId:item_id, qty:n });
+    cartSet(cart); App.state.aiOrderSummaryShown=false; render();
+    return { ok:true, cart:AI_TOOL_IMPL.get_cart() };
+  },
+  set_item_qty({ item_id, qty }){
+    const n = Math.max(0, parseInt(qty)||0);
+    let cart = App.state.cart;
+    if(n<=0) cart = cart.filter(c=>c.itemId!==item_id);
+    else { const line = cart.find(c=>c.itemId===item_id); if(line) line.qty = n; else cart.push({ itemId:item_id, qty:n }); }
+    App.state.cart = cart; cartSet(cart); App.state.aiOrderSummaryShown=false; render();
+    return { ok:true, cart:AI_TOOL_IMPL.get_cart() };
+  },
+  get_cart(){
+    const lines = cartLines(); const t = cartTotals();
+    return { currency:'EUR', items: lines.map(l=>({ item_id:l.itemId, name:l.name, qty:l.qty, unit_price_eur:l.unitPrice })), total_eur:t.total, subtotal_eur:t.subtotal };
+  },
+  set_guest_name({ name }){
+    if(!name || !name.trim()) return { error:'Името е празно.' };
+    App.state.guestName = name.trim(); App.state.aiOrderSummaryShown=false; render();
+    return { ok:true, name:App.state.guestName };
+  },
+  set_guest_phone({ phone }){
+    if(!phone || !phone.trim()) return { error:'Телефонът е празен.' };
+    App.state.guestPhone = phone.trim(); App.state.aiOrderSummaryShown=false; render();
+    return { ok:true, phone:App.state.guestPhone };
+  },
+  set_guest_address({ address }){
+    if(!address || !address.trim()) return { error:'Адресът е празен.' };
+    App.state.guestAddress = address.trim(); App.state.aiOrderSummaryShown=false; render();
+    return { ok:true, address:App.state.guestAddress };
+  },
+  set_order_details({ notes, cutlery, payment_method }){
+    if(typeof notes === 'string') App.state.orderNotes = notes;
+    if(typeof cutlery === 'boolean') App.state.orderCutlery = cutlery;
+    if(payment_method && ['cash','card_on_delivery'].includes(payment_method)) App.state.paymentMethod = payment_method;
+    App.state.aiOrderSummaryShown=false;
+    render();
+    return { ok:true };
+  },
+  confirm_order_summary(){
+    const lines = cartLines(); const t = cartTotals();
+    if(!lines.length) return { error:'Количката е празна — добави продукти преди резюме.' };
+    const isGuest = !App.state.profile;
+    const custName = isGuest ? (App.state.guestName||'').trim() : App.state.profile.name;
+    const custPhone = isGuest ? (App.state.guestPhone||'').trim() : App.state.profile.phone;
+    const custAddress = isGuest ? (App.state.guestAddress||'').trim() : (App.state.addressEdit||App.state.profile.address||'').trim();
+    if(isGuest){
+      if(!custName||custName.length<2) return { error:'Липсва име на клиента — поискай го изрично, после пак извикай confirm_order_summary.' };
+      if(!custPhone||custPhone.length<6) return { error:'Липсва валиден телефон — поискай го изрично, после пак извикай confirm_order_summary.' };
+      if(!custAddress||custAddress.length<3) return { error:'Липсва адрес за доставка — поискай го изрично (никога не го предполагай), после пак извикай confirm_order_summary.' };
+    }
+    const itemsTxt = lines.map(l=>`${l.qty}× ${l.name} — ${lv(l.unitPrice*l.qty)}`).join('\n');
+    const pmTxt = paymentLabel(App.state.paymentMethod||'cash', true);
+    const summary = `📋 Резюме на поръчката:\n${itemsTxt}\n\n👤 ${custName}\n📞 ${custPhone}\n📍 ${custAddress}\n🍴 ${App.state.orderCutlery?'С прибори':'Без прибори'}\n💳 Плащане: ${pmTxt}\n\n💰 Общо: ${lv(t.total)}\n\nПотвърждаваш ли поръчката?`;
+    App.state.aiMessages.push({ role:'model', text:summary });
+    speakBg('Резюме на поръчката е готово. Моля, потвърди дали всичко е точно.');
+    App.state.aiOrderSummaryShown = true;
+    return { ok:true, shown:true, summary };
+  },
+  async place_order(){
+    const lines = cartLines();
+    if(!lines.length) return { error:'Количката е празна.' };
+    const isGuest = !App.state.profile;
+    if(!App.state.aiOrderSummaryShown) return { error:'Трябва първо да извикаш confirm_order_summary и да изчакаш изрично потвърждение от клиента в нов отговор.' };
+    if(isGuest){
+      const name = (App.state.guestName||'').trim(), phone=(App.state.guestPhone||'').trim(), address=(App.state.guestAddress||'').trim();
+      if(!name||name.length<2) return { error:'Липсва име на клиента — поискай го.' };
+      if(!phone||phone.length<6) return { error:'Липсва валиден телефон — поискай го.' };
+      if(!address||address.length<3) return { error:'Липсва адрес за доставка — поискай го.' };
+    }
+    const t = cartTotals();
+    const orderNum = 'ОГ-' + String(App.state.orders.length+1).padStart(4,'0');
+    const pm = (App.state.paymentMethod==='online') ? 'cash' : (App.state.paymentMethod||'cash');
+    const order = {
+      id:uid(), orderNum, createdAt:Date.now(),
+      customer: isGuest
+        ? { username:null, name:App.state.guestName.trim(), phone:App.state.guestPhone.trim(), address:App.state.guestAddress.trim() }
+        : { username:App.state.profile.username, name:App.state.profile.name, phone:App.state.profile.phone, address:App.state.addressEdit||App.state.profile.address },
+      items: lines.map(l=>({ name:l.name, qty:l.qty, price:l.unitPrice })),
+      paymentMethod: pm, totals:t, status:'pending', source:'ai',
+      notes:(App.state.orderNotes||'').trim(), cutlery:!!App.state.orderCutlery
+    };
+    try{
+      await DB.saveOrder(order);
+      App.state.orders = [order, ...App.state.orders];
+      if(!isGuest){
+        await DB.updatePoints(App.state.profile.username, (App.state.profile.points||0) + t.pointsEarned);
+        App.state.profile = { ...App.state.profile, points:(App.state.profile.points||0) + t.pointsEarned };
+      }
+      App.state.cart = []; cartSet([]);
+      App.state.aiOrderPlaced = true;
+      if(isGuest){
+        const link = 'viber://forward?text=' + encodeURIComponent(orderShareText(order));
+        App.state.aiMessages.push({ role:'viber-cta', text:`Поръчка ${order.orderNum} е записана при ресторанта! Натисни бутона, за да я изпратиш и във Viber:`, link });
+      }
+      setState({ screen:'cust-track', trackOrderId:order.id, guestName:'', guestPhone:'', guestAddress:'', orderNotes:'', orderCutlery:false, aiOrderSummaryShown:false, aiChatOpen:!isGuest ? false : App.state.aiChatOpen });
+      return { ok:true, order_num:order.orderNum, total:t.total };
+    }catch(e){ return { error:'Грешка при запис: ' + e.message }; }
+  }
+};
+
+/* ---------- Groq API call loop (OpenAI-compatible chat completions) ---------- */
+async function callProviderOnce(provider, model, messages){
+  const headers = { 'Content-Type':'application/json' };
+  if(WORKER_SHARED_SECRET) headers['X-App-Secret'] = WORKER_SHARED_SECRET;
+  const res = await fetch(EMBEDDED_WORKER_URL, {
+    method:'POST',
+    headers,
+    body:JSON.stringify({ provider:provider.id, model, messages, tools:GROQ_TOOLS, tool_choice:'auto', temperature:0.2 })
+  });
+  if(res.ok){
+    const data = await res.json();
+    const msg = data.choices && data.choices[0] && data.choices[0].message;
+    if(!msg) throw { transient:false, message:'Празен отговор от AI.' };
+    return msg;
+  }
+  const t = await res.text();
+  if(res.status===429) throw { rateLimited:true, message:'Достигнат е безплатният лимит на ' + provider.name + '.' };
+  if(res.status===503 || res.status===500 || res.status===529) throw { transient:true, message:'Моделът е временно претоварен.' };
+  let parsedCode = '';
+  try{ parsedCode = (JSON.parse(t).error||{}).code || ''; }catch(e){}
+  if(parsedCode==='tool_use_failed') throw { transient:true, message:'Моделът не успя да форматира заявката коректно, ще пробвам пак.' };
+  throw { transient:false, message:provider.name + ' API: ' + t.slice(0,200) };
+}
+function buildAiChain(){
+  const chain = [];
+  if(!EMBEDDED_WORKER_URL) return chain;
+  const groqProvider = { name:'Groq', id:'groq' };
+  chain.push({ provider:groqProvider, model:GROQ_MODEL });
+  GROQ_FALLBACK_MODELS.forEach(m=>chain.push({ provider:groqProvider, model:m }));
+  const orProvider = { name:'OpenRouter', id:'openrouter' };
+  chain.push({ provider:orProvider, model:OPENROUTER_MODELS[0] });
+  OPENROUTER_MODELS.slice(1).forEach(m=>chain.push({ provider:orProvider, model:m }));
+  return chain;
+}
+async function callGroq(messages){
+  const chain = buildAiChain();
+  if(!chain.length) throw new Error('Няма зададен нито един AI ключ.');
+  let lastMsg = 'AI доставчиците са временно недостъпни.';
+  for(let i=0; i<chain.length; i++){
+    const { provider, model } = chain[i];
+    const isLast = (i === chain.length-1);
+    if(!isLast){
+      // не е последното звено във веригата — при rate limit просто преминаваме напред, без чакане
+      for(let attempt=0; attempt<2; attempt++){
+        try{ return await callProviderOnce(provider, model, messages); }
+        catch(err){
+          if(err && err.rateLimited){ lastMsg = err.message; break; } // премини веднага към следващия модел/доставчик
+          if(err && err.transient===false) throw new Error(err.message);
+          lastMsg = (err && err.message) || lastMsg;
+          await new Promise(r=>setTimeout(r, 900*(attempt+1)));
+        }
+      }
+    } else {
+      // последно звено във веригата — изчерпваме всички опити, включително изчакване при rate limit
+      for(let attempt=0; attempt<2; attempt++){
+        try{ return await callProviderOnce(provider, model, messages); }
+        catch(err){
+          if(err && err.transient===false && !err.rateLimited) throw new Error(err.message);
+          lastMsg = (err && err.message) || lastMsg;
+          await new Promise(r=>setTimeout(r, 1100*(attempt+1)));
+        }
+      }
+    }
+  }
+  throw new Error('Всички AI модели са временно претоварени или с изчерпан лимит. Опитай пак след малко. (' + lastMsg + ')');
+}
+function extractPseudoToolCalls(content){
+  if(!content || content.indexOf('<function')===-1) return null;
+  const calls = []; let cleaned = content;
+  // По-широк regex — улавя <function=NAME ...>...</function> И <function=NAME={json}</function> (без затваряща '>')
+  const re = /<function\s*=\s*([a-zA-Z_][\w]*)\s*=?\s*([\s\S]*?)<\/function>/g;
+  let m, found = false;
+  while((m = re.exec(content))){
+    found = true;
+    const name = m[1]; let mid = (m[2]||'').trim();
+    mid = mid.replace(/^>/, '').trim();
+    let args = {};
+    let parsedJson = false;
+    try{ const j = JSON.parse(mid); if(j && typeof j === 'object'){ args = j; parsedJson = true; } }catch(e){}
+    if(!parsedJson){
+      const attrRe = /([a-zA-Z_][\w]*)\s*=\s*"([^"]*)"/g; let am;
+      while((am = attrRe.exec(mid))){ args[am[1]] = am[2]; }
+    }
+    calls.push({ id:'pseudo_' + calls.length + '_' + Date.now(), type:'function', function:{ name, arguments: JSON.stringify(args) } });
+    cleaned = cleaned.replace(m[0], '');
+  }
+  if(!found) return null;
+  return { calls, cleaned: cleaned.trim() };
+}
+function stripStrayTags(s){
+  // защитна мрежа — премахва каквото е останало от недоразпознат/непълен <function...> тага
+  return (s||'').replace(/<function[\s\S]*?(<\/function>|$)/gi, '').trim();
+}
+function looksBulgarian(text){
+  const stripped = (text||'').replace(/[0-9.,€%\s\-:;!?()'"]/g, '');
+  if(stripped.length < 6) return true; // твърде кратко за надеждна преценка
+  const cyr = (stripped.match(/[а-яА-ЯЁё]/g) || []).length;
+  return (cyr / stripped.length) > 0.5;
+}
+App.aiSend = async function(){
+  const text = (App.state.aiInput||'').trim();
+  if(!text || App.state.aiThinking) return;
+  if(!EMBEDDED_WORKER_URL){ toast('AI не е настроен (липсва Worker URL).'); return; }
+  if(!App.state.aiHistory.length){
+    App.state.aiHistory.push({ role:'system', content: AI_SYSTEM_PROMPT.replace('__REST_NAME__', App.state.restaurant.name||'Огнище') });
+  }
+  App.state.aiMessages.push({ role:'user', text });
+  App.state.aiHistory.push({ role:'user', content:text });
+  setState({ aiInput:'', aiThinking:true });
+  try{
+    let guard = 0;
+    let langRetries = 0;
+    while(guard++ < 6){
+      const msg = await callGroq(App.state.aiHistory);
+      let toolCalls = msg.tool_calls || [];
+      let visibleText = (msg.content||'').trim();
+      if(!toolCalls.length){
+        const pseudo = extractPseudoToolCalls(msg.content||'');
+        if(pseudo && pseudo.calls.length){ toolCalls = pseudo.calls; visibleText = ''; }
+      }
+      if(toolCalls.length){
+        App.state.aiHistory.push({ role:'assistant', content:null, tool_calls:toolCalls });
+        for(const tc of toolCalls){
+          const impl = AI_TOOL_IMPL[tc.function.name];
+          let result;
+          try{
+            const args = tc.function.arguments ? JSON.parse(tc.function.arguments) : {};
+            result = impl ? await impl(args) : { error:'Непознат инструмент. Наличните инструменти са: ' + Object.keys(AI_TOOL_IMPL).join(', ') };
+          }catch(e){ result = { error: e.message }; }
+          App.state.aiHistory.push({ role:'tool', tool_call_id:tc.id, content:JSON.stringify(result) });
+        }
+        const calledSummary = toolCalls.some(tc=>tc.function.name==='confirm_order_summary');
+        if(calledSummary){
+          // спираме автоматичния цикъл тук — резюмето вече е показано в чата;
+          // изчакваме реален отговор от клиента, преди да позволим place_order
+          App.state.aiHistory.push({ role:'assistant', content:'Изчаквам изрично потвърждение от клиента преди да продължа с поръчката.' });
+          break;
+        }
+        continue;
+      }
+      // няма извикване на инструмент — финален текстов отговор
+      visibleText = stripMarkdown(stripStrayTags(visibleText));
+      if(visibleText && !looksBulgarian(visibleText) && langRetries < 1){
+        // отговорът изглежда неразбираем/на друг език — пробваме веригата отново, без да го пазим в историята
+        langRetries++;
+        continue;
+      }
+      if(visibleText){
+        App.state.aiHistory.push({ role:'assistant', content:visibleText });
+        App.state.aiMessages.push({ role:'model', text:visibleText });
+        speakBg(visibleText);
+      }
+      break;
+    }
+  }catch(e){
+    App.state.aiMessages.push({ role:'model', text:'Извинявам се, възникна грешка: ' + e.message });
+  }finally{
+    setState({ aiThinking:false });
+  }
+};
+
+/* ============================= CUSTOMER: TRACK ============================= */
+const STATUS_STEPS = [{id:'pending',label:'Прието'},{id:'preparing',label:'Приготвя се'},{id:'delivering',label:'В доставка'},{id:'delivered',label:'Доставено'}];
+function scrCustTrack(){
+  const order = App.state.orders.find(o=>o.id===App.state.trackOrderId);
+  if(!order) return `<div class="scr">${custBar('Поръчка', { back:true })}<div class="empty-state">Поръчката не е намерена.</div></div>`;
+  const cancelled = order.status==='cancelled';
+  const curIdx = STATUS_STEPS.findIndex(s=>s.id===order.status);
+  return `<div class="scr">
+    ${custBar('Поръчка ' + order.orderNum, { back:true, onBack:"App.goCustTab('menu')", cart:false })}
+    <div class="pad">
+    ${cancelled ? `<div class="card" style="border-color:var(--red);"><div style="color:var(--red);font-weight:700;">Поръчката е отказана</div></div>` : `
+      <div class="stepper">
+        ${STATUS_STEPS.map((s,i)=>`
+          <div class="step ${i<=curIdx?'lit':''}">
+            <div style="position:relative;width:100%;display:flex;justify-content:center;">
+              <div class="step-line"></div><div class="step-dot"></div>
+            </div>
+            <div class="step-label">${s.label}</div>
+          </div>`).join('')}
+      </div>`}
+    <div class="card col gap8" style="margin-top:8px;">
+      ${order.items.map(i=>`<div class="row between" style="font-size:13.5px;"><span>${i.qty}× ${i.name}</span><span class="mono">${lv(i.price*i.qty)}</span></div>`).join('')}
+      <div class="ember-divider" style="margin:10px 0;"></div>
+      <div class="row between" style="font-weight:700;"><span>Общо</span><span class="mono">${lv(order.totals.total)}</span></div>
+      <div class="muted" style="font-size:12px;">${paymentLabel(order.paymentMethod)}</div>
+      <div class="muted" style="font-size:12px;">Адрес: ${order.customer.address}</div>
+      ${order.cutlery ? `<div class="muted" style="font-size:12px;">${icon('check',12)} С прибори</div>` : ''}
+      ${order.notes ? `<div class="muted" style="font-size:12px;">Бележка: ${order.notes}</div>` : ''}
+    </div>
+    </div>
+  </div>`;
+}
+
+/* ============================= CUSTOMER: PROFILE ============================= */
+function scrCustProfile(){
+  const p = App.state.profile;
+  if(!p) return `<div class="scr">
+    ${custBar('Профил', { cart:true })}
+    <div class="pad" style="text-align:center;padding-top:40px;">
+      <div class="icon-btn" style="width:54px;height:54px;margin:0 auto 14px;">${icon('user',24)}</div>
+      <h2 style="font-size:19px;">Поръчваш като гост</h2>
+      <div class="muted" style="font-size:13px;margin-top:6px;line-height:1.5;">Регистрирай се, за да пазиш история на поръчките и да събираш точки лоялност.</div>
+      <button class="btn btn-primary" style="margin-top:18px;" onclick="setState({screen:'cust-auth',authMode:'register'})">Регистрация</button>
+      <button class="btn btn-ghost" style="margin-top:10px;" onclick="setState({screen:'cust-auth',authMode:'login'})">Вече имам профил</button>
+    </div>
+  </div>`;
+  const tier = tierFor(p.points||0);
+  const tiers = (App.state.loyalty.tiers||[]).slice().sort((a,b)=>a.minPoints-b.minPoints);
+  const nextTier = tiers.find(t=>t.minPoints > (p.points||0));
+  const myOrders = App.state.orders.filter(o=>o.customer.username===p.username).slice(0,12);
+  return `<div class="scr">
+    ${custBar('Профил', { cart:true })}
+    <div class="pad">
+    <div class="card">
+      <div class="row gap12">
+        <div class="icon-btn" style="width:46px;height:46px;">${icon('user',22)}</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;">${p.name}</div>
+          <div class="muted" style="font-size:12.5px;">${p.phone}</div>
+        </div>
+      </div>
+    </div>
+    <div class="eyebrow" style="margin:18px 0 8px;">Програма за лоялност</div>
+    <div class="card" style="background:linear-gradient(135deg,#2A0E10,#160708);border-color:#160708;">
+      <div class="row between">
+        <div>
+          <div style="font-size:12px;color:var(--gold);font-weight:700;">НИВО ${tier.name.toUpperCase()}</div>
+          <div style="font-size:26px;font-weight:800;margin-top:2px;color:#fff;">${p.points||0} т.</div>
+        </div>
+        <div class="icon-btn" style="border-color:var(--gold);color:var(--gold);width:42px;height:42px;background:transparent;">${icon('star',20)}</div>
+      </div>
+      ${nextTier ? `<div style="font-size:12px;margin-top:8px;color:#D9C9C9;">Още ${nextTier.minPoints-(p.points||0)} т. до ниво ${nextTier.name} (-${nextTier.percent}%)</div>` : `<div style="font-size:12px;margin-top:8px;color:#D9C9C9;">Достигнато най-високо ниво 🎉</div>`}
+    </div>
+    <div class="eyebrow" style="margin:18px 0 8px;">История на поръчките</div>
+    ${myOrders.length===0 ? `<div class="empty-state" style="padding:24px 0;">Все още няма поръчки.</div>` :
+      myOrders.map(o=>`
+        <div class="card" style="margin-bottom:8px;cursor:pointer;" onclick="App.viewOrder('${o.id}')">
+          <div class="row between"><span style="font-weight:600;font-size:13.5px;">${o.orderNum}</span><span class="badge ${o.status}">${statusLabel(o.status)}</span></div>
+          <div class="muted" style="font-size:12px;margin-top:4px;">${new Date(o.createdAt).toLocaleString('bg-BG')}</div>
+          <div class="row between" style="margin-top:6px;"><span class="muted" style="font-size:12.5px;">${o.items.length} продукта</span><span class="mono">${lv(o.totals.total)}</span></div>
+        </div>`).join('')}
+    <button class="btn btn-ghost" style="margin-top:10px;" onclick="App.logoutCustomer()">Изход</button>
+    </div>
+    ${custTabbar()}
+  </div>`;
+}
+function statusLabel(s){ return ({pending:'Прието',preparing:'Приготвя се',delivering:'В доставка',delivered:'Доставено',cancelled:'Отказана'})[s]||s; }
+App.viewOrder = function(id){ setState({ screen:'cust-track', trackOrderId:id }); };
+App.logoutCustomer = function(){ sessionClear(); setState({ screen:'role', profile:null }); };
+
+/* ============================= RESTAURANT: PASSCODE ============================= */
+function scrRestPass(){
+  return `<div class="scr center-screen">
+    <button class="icon-btn" style="position:absolute;top:18px;left:18px;" onclick="setState({screen:'role',showAdminEntry:false})">${icon('chevL',18)}</button>
+    <div class="icon-btn" style="width:54px;height:54px;margin-bottom:16px;">${icon('box',26)}</div>
+    <h2 style="font-size:20px;margin-bottom:4px;">Вход за ресторанта</h2>
+    <div class="muted" style="font-size:13px;margin-bottom:20px;text-align:center;">Демо код: <span class="mono">1234</span></div>
+    <input id="rest-pass-input" placeholder="Код за достъп" style="text-align:center;letter-spacing:.2em;background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:13px;width:100%;font-size:16px;margin-bottom:12px;" maxlength="8">
+    <button class="btn btn-primary" onclick="App.unlockRest()">Влез</button>
+  </div>`;
+}
+App.unlockRest = function(){
+  const v = document.getElementById('rest-pass-input').value.trim();
+  if(v==='1234'){ ensureAudioCtx(); setState({restUnlocked:true,screen:'rest-orders',restTab:'orders'}); }
+  else toast('Грешен код');
+};
+
+/* ============================= RESTAURANT: SHARED TABS / HEADER ============================= */
+function restTabs(){
+  const t = App.state.restTab;
+  const tabs = [['orders','Поръчки','box'],['menu','Меню','list'],['promo','Промоции','tag'],['loyalty','Лоялност','star'],['design','Облик','image']];
+  return `<div class="admin-tabs">${tabs.map(([id,label,ic])=>`<button class="admin-tab ${t===id?'active':''}" onclick="App.goRestTab('${id}')">${label}</button>`).join('')}</div>`;
+}
+App.goRestTab = function(tab){
+  if(tab==='design'){
+    App._pendingCoverImage = App.state.restaurant.cover_image || null;
+    App._pendingLogoImage = App.state.restaurant.logo_image || null;
+  }
+  setState({ restTab:tab, screen:'rest-'+tab });
+};
+function restHeader(){
+  return `<div class="topbar row between">${brandHeader(true)}<button class="btn btn-ghost btn-sm" onclick="App.exitRest()">Изход</button></div>`;
+}
+App.exitRest = function(){ setState({ screen:'role', restUnlocked:false, showAdminEntry:false }); };
+
+/* ============================= RESTAURANT: ORDERS ============================= */
+function scrRestOrders(){
+  const active = App.state.orders.filter(o=>!['delivered','cancelled'].includes(o.status));
+  const past = App.state.orders.filter(o=>['delivered','cancelled'].includes(o.status));
+  return `<div class="scr">${restHeader()}${restTabs()}
+    <div class="pad" style="padding-top:0;">
+      <div class="eyebrow" style="margin-bottom:8px;">Активни (${active.length})</div>
+      ${active.length===0 ? `<div class="empty-state" style="padding:24px 0;">Няма активни поръчки.</div>` : active.map(o=>orderCard(o)).join('')}
+      ${past.length>0 ? `<div class="eyebrow" style="margin:18px 0 8px;">Завършени</div>${past.slice(0,8).map(o=>orderCard(o)).join('')}` : ''}
+    </div>
+  </div>`;
+}
+function orderCard(o){
+  return `<div class="card order-card" style="margin-bottom:10px;">
+    <div class="row between">
+      <span class="row gap8">
+        <span style="font-weight:700;font-size:14.5px;">${o.orderNum}</span>
+        ${o.source==='viber' ? `<span class="badge" style="background:#7B519C20;color:#7B519C;">Viber</span>` : ''}
+      </span>
+      <span class="badge ${o.status}">${statusLabel(o.status)}</span>
+    </div>
+    <div class="muted" style="font-size:12px;margin-top:3px;">${new Date(o.createdAt).toLocaleString('bg-BG')}</div>
+    <div style="margin-top:10px;font-size:13px;">
+      <div style="font-weight:600;">${o.customer.name} · ${o.customer.phone}</div>
+      <div class="muted" style="margin-top:2px;">${o.customer.address}</div>
+    </div>
+    <div class="col" style="margin-top:10px;gap:3px;">
+      ${o.items.map(i=>`<div class="row between" style="font-size:13px;"><span>${i.qty}× ${i.name}</span><span class="mono">${lv(i.price*i.qty)}</span></div>`).join('')}
+    </div>
+    ${o.cutlery || o.notes ? `<div class="col" style="margin-top:8px;gap:3px;">
+      ${o.cutlery ? `<div class="muted" style="font-size:12px;">${icon('check',12)} Желае прибори</div>` : ''}
+      ${o.notes ? `<div class="muted" style="font-size:12px;">📝 ${o.notes}</div>` : ''}
+    </div>` : ''}
+    <div class="row between" style="margin-top:8px;font-weight:700;font-size:14px;"><span>Общо · ${paymentLabel(o.paymentMethod, true)}</span><span class="mono">${lv(o.totals.total)}</span></div>
+    ${o.status==='pending' ? `
+      <button class="btn btn-primary" style="margin-top:12px;" onclick="App.updateOrderStatus('${o.id}','preparing')">${icon('check',16)} Приемам поръчката</button>
+    ` : ''}
+    ${!['delivered','cancelled'].includes(o.status) ? `
+      <select onchange="App.updateOrderStatus('${o.id}', this.value)" style="margin-top:12px;width:100%;background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px;">
+        ${STATUS_STEPS.map(s=>`<option value="${s.id}" ${o.status===s.id?'selected':''}>${s.label}</option>`).join('')}
+        <option value="cancelled" ${o.status==='cancelled'?'selected':''}>Отказана</option>
+      </select>` : ''}
+    <div class="row gap8" style="margin-top:10px;">
+      <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="App.shareOrder('${o.id}')">${icon('share',14)} Сподели</button>
+      <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="App.shareOrderWhatsApp('${o.id}')">WhatsApp</button>
+      <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="App.shareOrderViber('${o.id}')">Viber</button>
+    </div>
+  </div>`;
+}
+function orderShareText(o){
+  const lines = o.items.map(i=>`${i.qty}× ${i.name} — ${lv(i.price*i.qty)}`).join('\n');
+  const extra = [
+    o.cutlery ? '🍴 Желае прибори' : '',
+    o.notes ? `📝 Бележка: ${o.notes}` : ''
+  ].filter(Boolean).join('\n');
+  return `📦 Поръчка ${o.orderNum}\n👤 ${o.customer.name} · ${o.customer.phone}\n📍 ${o.customer.address}\n\n${lines}${extra?'\n\n'+extra:''}\n\nОбщо: ${lv(o.totals.total)} (${paymentLabel(o.paymentMethod, true)})`;
+}
+App.shareOrder = async function(id){
+  const o = App.state.orders.find(x=>x.id===id); if(!o) return;
+  const text = orderShareText(o);
+  if(navigator.share){
+    try{ await navigator.share({ title:'Поръчка '+o.orderNum, text }); return; }catch(e){ return; }
+  }
+  try{ await navigator.clipboard.writeText(text); toast('Поръчката е копирана в клипборда'); }
+  catch(e){ toast('Не може да се копира автоматично'); }
+};
+App.shareOrderWhatsApp = function(id){
+  const o = App.state.orders.find(x=>x.id===id); if(!o) return;
+  window.open('https://wa.me/?text=' + encodeURIComponent(orderShareText(o)), '_blank');
+};
+App.shareOrderViber = function(id){
+  const o = App.state.orders.find(x=>x.id===id); if(!o) return;
+  window.open('viber://forward?text=' + encodeURIComponent(orderShareText(o)), '_blank');
+};
+App.updateOrderStatus = async function(id, status){
+  try{
+    await DB.updateOrderStatus(id, status);
+    App.state.orders = App.state.orders.map(o=>o.id===id?{...o,status}:o);
+    render(); toast('Статусът е обновен');
+  }catch(e){ toast('Грешка: '+e.message); }
+};
+
+/* ============================= RESTAURANT: MENU ============================= */
+function scrRestMenu(){
+  return `<div class="scr">${restHeader()}${alarmBanner()}${restTabs()}
+    <div class="pad" style="padding-top:0;">
+      <div class="row gap8" style="margin-bottom:16px;">
+        <button class="btn btn-primary" style="flex:1;width:auto;" onclick="App.openItemModal(null)">${icon('plus',16)} Нов продукт</button>
+        <button class="btn btn-ghost" style="width:auto;" onclick="App.openCategoryModal(null)">${icon('plus',16)} Категория</button>
+      </div>
+      ${App.state.categories.length===0 ? `<div class="empty-state">Все още няма категории.</div>` : ''}
+      ${App.state.categories.map(c=>`
+        <div class="row between" style="margin:14px 0 6px;">
+          <div><div class="eyebrow" style="margin:0;">${c.name}</div>${c.description ? `<div class="muted" style="font-size:12.5px;line-height:1.35;margin-top:3px;">${c.description}</div>` : ''}</div>
+          <div class="row gap8">
+            <button class="icon-btn" style="width:28px;height:28px;" onclick="App.openCategoryModal('${c.id}')">${icon('pencil',12)}</button>
+            <button class="icon-btn" style="width:28px;height:28px;" onclick="App.deleteCategory('${c.id}')">${icon('trash',12)}</button>
+          </div>
+        </div>
+        ${App.state.items.filter(i=>(i.categoryIds||[]).includes(c.id)).map(i=>`
+          <div class="card row between" style="margin-bottom:8px;">
+            <div class="row gap12">
+              <div class="item-emoji" style="width:42px;height:42px;font-size:19px;">${thumbHtml(i)}</div>
+              <div>
+                <div style="font-weight:600;font-size:14px;${i.available?'':'opacity:.45;'}">${i.name}</div>
+                <div class="mono" style="font-size:13px;color:var(--text-dim);">${lv(i.price)} ${i.available?'':'· скрит'}</div>
+              </div>
+            </div>
+            <div class="row gap8">
+              <button class="icon-btn" onclick="App.openItemModal('${i.id}')">${icon('pencil',15)}</button>
+              <button class="icon-btn" onclick="App.deleteItem('${i.id}')">${icon('trash',15)}</button>
+            </div>
+          </div>`).join('') || `<div class="muted" style="font-size:13px;padding:6px 0;">Няма продукти.</div>`}
+      `).join('')}
+    </div>
+    ${App.state.showItemModal ? itemModal() : ''}
+    ${App.state.showCategoryModal ? categoryModal() : ''}
+  </div>`;
+}
+App.state.showCategoryModal = false;
+App.openCategoryModal = function(catId){
+  const cat = catId ? App.state.categories.find(c=>c.id===catId) : { id:null, name:'', description:'', image:null };
+  App._pendingCategoryImage = cat.image || null;
+  setState({ editingCategory:cat, showCategoryModal:true });
+};
+App.closeCategoryModal = function(){ setState({ editingCategory:null, showCategoryModal:false }); };
+function categoryModal(){
+  const c = App.state.editingCategory; if(!c) return '';
+  return `<div class="modal-overlay" onclick="if(event.target===this) App.closeCategoryModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <h3 style="font-size:17px;margin-bottom:14px;">${c.id?'Редактирай категория':'Нова категория'}</h3>
+      <div class="field"><label>Име на категорията</label><input id="cat-name" value="${c.name}" placeholder="напр. Супи"></div>
+      <div class="field"><label>Описание на категорията</label><textarea id="cat-desc" placeholder="Кратко описание за клиентите">${c.description||''}</textarea></div>
+      <div class="field">
+        <label>Снимка на категорията</label>
+        <input type="file" accept="image/*" onchange="App.handleCategoryPhotoUpload(event)" style="background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px;">
+        <div id="category-photo-preview" style="margin-top:8px;">${photoPreviewHtml(c.image||null, 'App.removeCategoryPhoto()')}</div>
+      </div>
+      <div class="row gap8" style="margin-top:18px;">
+        <button class="btn btn-ghost" onclick="App.closeCategoryModal()">Отказ</button>
+        <button class="btn btn-primary" onclick="App.saveCategory()">Запази</button>
+      </div>
+    </div>
+  </div>`;
+}
+App.handleCategoryPhotoUpload = async function(event){
+  const file = event.target.files && event.target.files[0]; if(!file) return;
+  if(!file.type.startsWith('image/')){ toast('Избери файл с изображение'); return; }
+  try{
+    const d = await resizeImageFile(file, 480, 0.72);
+    App._pendingCategoryImage = d;
+    const prev = document.getElementById('category-photo-preview');
+    if(prev) prev.innerHTML = photoPreviewHtml(d, 'App.removeCategoryPhoto()');
+  }catch(e){ toast('Снимката не може да се зареди'); }
+};
+App.removeCategoryPhoto = function(){
+  App._pendingCategoryImage = null;
+  const prev = document.getElementById('category-photo-preview');
+  if(prev) prev.innerHTML = photoPreviewHtml(null, 'App.removeCategoryPhoto()');
+};
+App.saveCategory = async function(){
+  const c = App.state.editingCategory;
+  const name = document.getElementById('cat-name').value.trim();
+  const description = (document.getElementById('cat-desc')?.value || '').trim();
+  if(!name){ toast('Въведи име на категорията'); return; }
+  const newId = c.id || uid();
+  const sortOrder = c.id ? App.state.categories.findIndex(x=>x.id===c.id) : App.state.categories.length;
+  const image = App._pendingCategoryImage || null;
+  try{
+    await DB.saveCategory({ id:newId, name, description, sort_order: sortOrder, image });
+    let cats = App.state.categories;
+    if(c.id) cats = cats.map(x=>x.id===c.id ? { id:c.id, name, description, image } : x);
+    else cats = [...cats, { id:newId, name, description, image }];
+    App.state.categories = cats;
+    setState({ editingCategory:null, showCategoryModal:false });
+    toast('Категорията е запазена');
+  }catch(e){ toast('Грешка: '+e.message); }
+};
+App.deleteCategory = async function(id){
+  const itemsInCat = App.state.items.filter(i=>(i.categoryIds||[]).includes(id));
+  const wouldOrphan = itemsInCat.filter(i=>(i.categoryIds||[]).length<=1);
+  if(wouldOrphan.length>0){
+    toast(`„${wouldOrphan[0].name}" остава без категория — добави му друга категория първо`);
+    return;
+  }
+  try{
+    for(const it of itemsInCat){
+      const updated = { ...it, categoryIds: it.categoryIds.filter(c=>c!==id) };
+      await DB.saveItem(updated);
+      App.state.items = App.state.items.map(x=>x.id===it.id ? updated : x);
+    }
+    await DB.deleteCategory(id);
+    App.state.categories = App.state.categories.filter(c=>c.id!==id);
+    render(); toast('Категорията е изтрита');
+  }catch(e){ toast('Грешка: '+e.message); }
+};
+App.openItemModal = function(itemId){
+  if(!itemId && App.state.categories.length===0){ toast('Добави поне една категория първо'); return; }
+  const item = itemId ? itemById(itemId) : { id:null, categoryIds:[App.state.categories[0].id], name:'', desc:'', price:0, emoji:'🍽️', image:null, available:true };
+  App._pendingImage = item.image || null;
+  setState({ editingItem:item, showItemModal:true });
+};
+App.closeItemModal = function(){ setState({ editingItem:null, showItemModal:false }); };
+function itemModal(){
+  const it = App.state.editingItem; if(!it) return '';
+  const ids = it.categoryIds || [];
+  return `<div class="modal-overlay" onclick="if(event.target===this) App.closeItemModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <h3 style="font-size:17px;margin-bottom:14px;">${it.id?'Редактирай':'Нов продукт'}</h3>
+      <div class="field"><label>Категории (може да избереш повече от една)</label>
+        <div class="col gap8" style="background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;">
+          ${App.state.categories.map(c=>`
+            <label class="row gap8" style="font-size:14px;">
+              <input type="checkbox" class="m-cat-cb" value="${c.id}" ${ids.includes(c.id)?'checked':''}>
+              ${c.name}
+            </label>`).join('')}
+        </div>
+      </div>
+      <div class="field"><label>Име</label><input id="m-name" value="${it.name}"></div>
+      <div class="field"><label>Описание</label><textarea id="m-desc">${it.desc||''}</textarea></div>
+      <div class="field">
+        <label>Снимка</label>
+        <input type="file" id="m-photo" accept="image/*" onchange="App.handlePhotoUpload(event)" style="background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px;">
+        <div id="photo-preview" style="margin-top:8px;">${photoPreviewHtml(it.image||null, 'App.removePhoto()')}</div>
+      </div>
+      <div class="row gap8">
+        <div class="field" style="flex:1;"><label>Цена (€)</label><input id="m-price" type="number" step="0.10" value="${it.price}"></div>
+        <div class="field" style="flex:1;"><label>Емоджи</label><input id="m-emoji" value="${it.emoji||'🍽️'}"></div>
+      </div>
+      <div class="switchrow"><span style="font-size:14px;">Видим в менюто</span><button class="switch ${it.available?'on':''}" onclick="App.toggleAvailable(this)"></button></div>
+      <div class="row gap8" style="margin-top:18px;">
+        <button class="btn btn-ghost" onclick="App.closeItemModal()">Отказ</button>
+        <button class="btn btn-primary" onclick="App.saveItem()">Запази</button>
+      </div>
+    </div>
+  </div>`;
+}
+App.toggleAvailable = function(btn){ btn.classList.toggle('on'); };
+function resizeImageFile(file, maxDim, quality){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        let w=img.width, h=img.height;
+        if(w>=h){ if(w>maxDim){ h=Math.round(h*maxDim/w); w=maxDim; } }
+        else { if(h>maxDim){ w=Math.round(w*maxDim/h); h=maxDim; } }
+        const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror=()=>reject(new Error('bad image'));
+      img.src=e.target.result;
+    };
+    reader.onerror=()=>reject(new Error('read failed'));
+    reader.readAsDataURL(file);
+  });
+}
+function photoPreviewHtml(src, removeHandler){
+  removeHandler = removeHandler || 'App.removePhoto()';
+  return src
+    ? `<div class="row gap8" style="align-items:center;"><img src="${src}" style="width:64px;height:64px;object-fit:cover;border-radius:10px;border:1px solid var(--border);">
+         <button class="btn btn-ghost btn-sm" onclick="${removeHandler}">Премахни</button></div>`
+    : `<div class="muted" style="font-size:12px;">Няма снимка — ще се показва емоджи.</div>`;
+}
+App.handlePhotoUpload = async function(event){
+  const file = event.target.files && event.target.files[0]; if(!file) return;
+  if(!file.type.startsWith('image/')){ toast('Избери файл с изображение'); return; }
+  try{ const d = await resizeImageFile(file, 480, 0.72); App._pendingImage = d; const prev=document.getElementById('photo-preview'); if(prev) prev.innerHTML=photoPreviewHtml(d,'App.removePhoto()'); }
+  catch(e){ toast('Снимката не може да се зареди'); }
+};
+App.removePhoto = function(){ App._pendingImage=null; const prev=document.getElementById('photo-preview'); if(prev) prev.innerHTML=photoPreviewHtml(null,'App.removePhoto()'); };
+App.saveItem = async function(){
+  const it = App.state.editingItem;
+  const categoryIds = Array.from(document.querySelectorAll('.m-cat-cb:checked')).map(cb=>cb.value);
+  const updated = { id:it.id||uid(), categoryIds, name:document.getElementById('m-name').value.trim(),
+    desc:document.getElementById('m-desc').value.trim(), price:parseFloat(document.getElementById('m-price').value)||0,
+    emoji:document.getElementById('m-emoji').value||'🍽️', image:App._pendingImage||null,
+    available:document.querySelector('.switch').classList.contains('on') };
+  if(!updated.name){ toast('Въведи име'); return; }
+  if(categoryIds.length===0){ toast('Избери поне една категория'); return; }
+  try{
+    await DB.saveItem(updated);
+    let items = App.state.items;
+    if(it.id) items = items.map(i=>i.id===it.id?updated:i); else items = [...items, updated];
+    App.state.items = items;
+    setState({ editingItem:null, showItemModal:false }); toast('Продуктът е запазен');
+  }catch(e){ toast('Грешка: '+e.message); }
+};
+App.deleteItem = async function(id){
+  try{
+    await DB.deleteItem(id);
+    App.state.items = App.state.items.filter(i=>i.id!==id);
+    render(); toast('Продуктът е изтрит');
+  }catch(e){ toast('Грешка: '+e.message); }
+};
+
+/* ============================= RESTAURANT: PROMOTIONS ============================= */
+function scrRestPromo(){
+  return `<div class="scr">${restHeader()}${alarmBanner()}${restTabs()}
+    <div class="pad" style="padding-top:0;">
+      <button class="btn btn-primary" style="margin-bottom:16px;" onclick="App.openPromoModal(null)">${icon('plus',16)} Нова промоция</button>
+      ${App.state.promos.length===0 ? `<div class="empty-state">Няма промоции.</div>` :
+        App.state.promos.map(p=>`
+          <div class="card" style="margin-bottom:10px;">
+            <div class="row gap12" style="align-items:flex-start;">
+              ${p.image ? `<div class="item-emoji" style="width:50px;height:50px;flex:0 0 50px;"><img src="${p.image}" alt=""></div>` : ''}
+              <div style="flex:1;">
+                <div class="row between"><span style="font-weight:600;font-size:14.5px;">${p.title}</span><span class="badge ${p.active?'delivered':'cancelled'}">${p.active?'Активна':'Изключена'}</span></div>
+                <div class="muted" style="font-size:12.5px;margin-top:4px;">
+                  ${p.type==='code' ? `Код: <span class="mono">${p.code}</span> · -${p.percent}%` :
+                    p.type==='combo' ? `Комбо · ${(p.comboItems||[]).length} артикула · ${lv(p.comboPrice||0)}` :
+                    p.scope==='category' ? `Авто · -${p.percent}% на „${categoryName(p.categoryId)}"` : `Авто · -${p.percent}% от поръчката`}
+                </div>
+                <div class="row gap8" style="margin-top:10px;">
+                  <button class="btn btn-ghost btn-sm" onclick="App.openPromoModal('${p.id}')">Редактирай</button>
+                  <button class="btn btn-danger btn-sm" onclick="App.deletePromo('${p.id}')">Изтрий</button>
+                </div>
+              </div>
+            </div>
+          </div>`).join('')}
+    </div>
+    ${App.state.showPromoModal ? promoModal() : ''}
+  </div>`;
+}
+App.state.showPromoModal = false;
+App.openPromoModal = function(promoId){
+  const p = promoId ? App.state.promos.find(x=>x.id===promoId) : { id:null, title:'', desc:'', image:null, type:'auto', scope:'order', categoryId:App.state.categories[0]?.id, code:'', percent:10, comboItems:[], comboPrice:0, active:true };
+  App._pendingPromoImage = p.image||null;
+  App._pendingComboItems = (p.comboItems||[]).map(ci=>({...ci}));
+  setState({ editingPromo:p, showPromoModal:true });
+};
+App.closePromoModal = function(){ setState({ editingPromo:null, showPromoModal:false }); };
+function promoModal(){
+  const p = App.state.editingPromo; if(!p) return '';
+  return `<div class="modal-overlay" onclick="if(event.target===this) App.closePromoModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <h3 style="font-size:17px;margin-bottom:14px;">${p.id?'Редактирай промоция':'Нова промоция'}</h3>
+      <div class="field"><label>Заглавие</label><input id="p-title" value="${p.title}"></div>
+      <div class="field"><label>Описание</label><textarea id="p-desc">${p.desc||''}</textarea></div>
+      <div class="field">
+        <label>Снимка</label>
+        <input type="file" accept="image/*" onchange="App.handlePromoPhotoUpload(event)" style="background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px;">
+        <div id="promo-photo-preview" style="margin-top:8px;">${photoPreviewHtml(p.image||null, 'App.removePromoPhoto()')}</div>
+      </div>
+      <div class="field"><label>Тип</label>
+        <select id="p-type" onchange="App.renderPromoTypeFields(this.value)">
+          <option value="auto" ${p.type==='auto'?'selected':''}>Автоматична отстъпка</option>
+          <option value="code" ${p.type==='code'?'selected':''}>Промо код</option>
+          <option value="combo" ${p.type==='combo'?'selected':''}>Комбо оферта</option>
+        </select>
+      </div>
+      <div id="promo-type-fields">${promoTypeFields(p)}</div>
+      <div class="switchrow"><span style="font-size:14px;">Активна</span><button class="switch ${p.active?'on':''}" onclick="App.toggleAvailable(this)"></button></div>
+      <div class="row gap8" style="margin-top:18px;">
+        <button class="btn btn-ghost" onclick="App.closePromoModal()">Отказ</button>
+        <button class="btn btn-primary" onclick="App.savePromo()">Запази</button>
+      </div>
+    </div>
+  </div>`;
+}
+function categoryFieldHtml(selectedId){
+  return `<div class="field"><label>Категория</label><select id="p-cat">${App.state.categories.map(c=>`<option value="${c.id}" ${selectedId===c.id?'selected':''}>${c.name}</option>`).join('')}</select></div>`;
+}
+function promoTypeFields(p){
+  if(p.type==='code') return `<div class="field"><label>Промо код</label><input id="p-code" value="${p.code||''}"></div><div class="field"><label>Отстъпка %</label><input id="p-percent" type="number" value="${p.percent||0}"></div>`;
+  if(p.type==='combo') return comboItemsHtml(p);
+  return `<div class="field"><label>Обхват</label>
+    <select id="p-scope" onchange="App.renderScopeFields(this.value)">
+      <option value="order" ${p.scope==='order'?'selected':''}>Цялата поръчка</option>
+      <option value="category" ${p.scope==='category'?'selected':''}>Конкретна категория</option>
+    </select>
+  </div>
+  <div id="scope-fields">${p.scope==='category' ? categoryFieldHtml(p.categoryId) : ''}</div>
+  <div class="field"><label>Отстъпка %</label><input id="p-percent" type="number" value="${p.percent||0}"></div>`;
+}
+function comboItemsHtml(p){
+  const list = App._pendingComboItems||[];
+  return `<div class="field"><label>Артикули в комбото</label></div>
+    <div id="combo-items-list">
+      ${list.length===0 ? `<div class="muted" style="font-size:12.5px;margin-bottom:10px;">Няма артикули.</div>` :
+        list.map((ci,idx)=>`
+          <div class="row gap8" style="margin-bottom:8px;align-items:center;">
+            <select style="flex:1;background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px;" onchange="App.updateComboItem(${idx},'itemId',this.value)">
+              ${App.state.items.map(it=>`<option value="${it.id}" ${ci.itemId===it.id?'selected':''}>${it.name}</option>`).join('')}
+            </select>
+            <input type="number" min="1" value="${ci.qty}" style="width:56px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px;text-align:center;" onchange="App.updateComboItem(${idx},'qty',this.value)">
+            <button class="icon-btn" onclick="App.removeComboItem(${idx})">${icon('x',14)}</button>
+          </div>`).join('')}
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="App.addComboItemRow()">${icon('plus',14)} Добави</button>
+    <div class="field" style="margin-top:14px;"><label>Крайна цена на комбото (€)</label><input id="p-combo-price" type="number" step="0.10" value="${p.comboPrice||0}"></div>`;
+}
+App.renderPromoTypeFields = function(type){ App.state.editingPromo.type=type; document.getElementById('promo-type-fields').innerHTML=promoTypeFields(App.state.editingPromo); };
+App.renderScopeFields = function(scope){ App.state.editingPromo.scope=scope; document.getElementById('scope-fields').innerHTML=scope==='category'?categoryFieldHtml(App.state.categories[0]?.id):''; };
+App.updateComboItem = function(idx,field,value){ App._pendingComboItems[idx][field]=field==='qty'?(parseInt(value,10)||1):value; };
+App.addComboItemRow = function(){ App._pendingComboItems.push({itemId:App.state.items[0]?.id,qty:1}); document.getElementById('promo-type-fields').innerHTML=promoTypeFields(App.state.editingPromo); };
+App.removeComboItem = function(idx){ App._pendingComboItems.splice(idx,1); document.getElementById('promo-type-fields').innerHTML=promoTypeFields(App.state.editingPromo); };
+App.handlePromoPhotoUpload = async function(event){
+  const file=event.target.files&&event.target.files[0]; if(!file) return;
+  try{ const d=await resizeImageFile(file,800,0.72); App._pendingPromoImage=d; const prev=document.getElementById('promo-photo-preview'); if(prev) prev.innerHTML=photoPreviewHtml(d,'App.removePromoPhoto()'); }
+  catch(e){ toast('Снимката не може да се зареди'); }
+};
+App.removePromoPhoto = function(){ App._pendingPromoImage=null; const prev=document.getElementById('promo-photo-preview'); if(prev) prev.innerHTML=photoPreviewHtml(null,'App.removePromoPhoto()'); };
+App.savePromo = async function(){
+  const p = App.state.editingPromo;
+  const type = document.getElementById('p-type').value;
+  const updated = { id:p.id||uid(), title:document.getElementById('p-title').value.trim(), desc:(document.getElementById('p-desc').value||'').trim(), image:App._pendingPromoImage||null, type, active:document.querySelector('.switch').classList.contains('on') };
+  if(type==='code'){ updated.code=(document.getElementById('p-code').value||'').trim().toUpperCase(); updated.percent=parseFloat(document.getElementById('p-percent').value)||0; updated.scope='order'; if(!updated.code){ toast('Въведи код'); return; } }
+  else if(type==='combo'){ updated.comboPrice=parseFloat(document.getElementById('p-combo-price')?.value||0)||0; updated.comboItems=(App._pendingComboItems||[]).filter(ci=>ci.itemId); if(!updated.comboItems.length){ toast('Добави артикул'); return; } }
+  else { updated.scope=document.getElementById('p-scope').value; if(updated.scope==='category'){ const cEl=document.getElementById('p-cat'); updated.categoryId=cEl?cEl.value:App.state.categories[0]?.id; } updated.percent=parseFloat(document.getElementById('p-percent').value)||0; }
+  if(!updated.title){ toast('Въведи заглавие'); return; }
+  try{
+    await DB.savePromo(updated);
+    let promos = App.state.promos;
+    if(p.id) promos=promos.map(x=>x.id===p.id?updated:x); else promos=[...promos, updated];
+    App.state.promos = promos;
+    setState({ editingPromo:null, showPromoModal:false }); toast('Промоцията е запазена');
+  }catch(e){ toast('Грешка: '+e.message); }
+};
+App.deletePromo = async function(id){
+  try{ await DB.deletePromo(id); App.state.promos=App.state.promos.filter(p=>p.id!==id); render(); toast('Изтрита'); }
+  catch(e){ toast('Грешка: '+e.message); }
+};
+
+/* ============================= RESTAURANT: LOYALTY ============================= */
+function scrRestLoyalty(){
+  const l = App.state.loyalty;
+  return `<div class="scr">${restHeader()}${alarmBanner()}${restTabs()}
+    <div class="pad" style="padding-top:0;">
+      <div class="card">
+        <div class="field"><label>Точки за всеки 1 € от поръчката</label><input id="l-points" type="number" step="0.1" value="${l.pointsPerLev}"></div>
+        <div class="field"><label>Такса доставка (€)</label><input id="l-delivery" type="number" step="0.10" value="${l.deliveryFee}"></div>
+      </div>
+      <div class="eyebrow" style="margin:18px 0 8px;">Нива на лоялност</div>
+      ${l.tiers.map((t,idx)=>`
+        <div class="card row gap8" style="margin-bottom:8px;align-items:flex-end;">
+          <div class="field" style="flex:1;margin-bottom:0;"><label>Име</label><input value="${t.name}" onchange="App.updateTier(${idx},'name',this.value)"></div>
+          <div class="field" style="flex:1;margin-bottom:0;"><label>От точки</label><input type="number" value="${t.minPoints}" onchange="App.updateTier(${idx},'minPoints',this.value)"></div>
+          <div class="field" style="flex:1;margin-bottom:0;"><label>Отстъпка %</label><input type="number" value="${t.percent}" onchange="App.updateTier(${idx},'percent',this.value)"></div>
+        </div>`).join('')}
+      <button class="btn btn-ghost btn-sm" onclick="App.addTier()">${icon('plus',14)} Добави ниво</button>
+      <button class="btn btn-primary" style="margin-top:20px;" onclick="App.saveLoyalty()">Запази настройките</button>
+    </div>
+  </div>`;
+}
+App.updateTier = function(idx,field,value){ App.state.loyalty.tiers[idx][field]=(field==='name')?value:parseFloat(value)||0; };
+App.addTier = function(){ App.state.loyalty.tiers.push({name:'Ново ниво',minPoints:0,percent:0}); render(); };
+App.saveLoyalty = async function(){
+  App.state.loyalty.pointsPerLev = parseFloat(document.getElementById('l-points').value)||0;
+  App.state.loyalty.deliveryFee = parseFloat(document.getElementById('l-delivery').value)||0;
+  try{ await DB.saveLoyalty(App.state.loyalty); toast('Настройките са запазени'); render(); }
+  catch(e){ toast('Грешка: '+e.message); }
+};
+
+/* ============================= RESTAURANT: DESIGN ============================= */
+function scrRestDesign(){
+  const r = App.state.restaurant;
+  return `<div class="scr">${restHeader()}${alarmBanner()}${restTabs()}
+    <div class="pad" style="padding-top:0;">
+      <div class="eyebrow" style="margin-bottom:8px;">Облик на хедъра</div>
+      <div class="field"><label>Име на ресторанта</label><input id="r-name" value="${r.name}"></div>
+      <div class="field"><label>Слоган</label><input id="r-tagline" value="${r.tagline}"></div>
+      <div class="field"><label>Телефон за връзка</label><input id="r-phone" value="${r.contact_phone||''}" placeholder="+359 88 123 4567" inputmode="tel"></div>
+      <div class="field">
+        <label>Лого (показва се в горната лента)</label>
+        <input type="file" accept="image/*" onchange="App.handleLogoUpload(event)" style="background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px;">
+        <div id="logo-preview" style="margin-top:8px;">${logoPreviewHtml(r.logo_image||null)}</div>
+      </div>
+      <div class="field">
+        <label>Банер снимка (горна част на менюто)</label>
+        <input type="file" accept="image/*" onchange="App.handleCoverUpload(event)" style="background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px;">
+        <div id="cover-preview" style="margin-top:8px;">${coverPreviewHtml(r.cover_image||null)}</div>
+      </div>
+      <button class="btn btn-primary" onclick="App.saveRestaurantDesign()">Запази оформлението</button>
+
+      <div class="eyebrow" style="margin:26px 0 8px;">Начини на плащане за клиента</div>
+      <div class="muted" style="font-size:12.5px;margin-bottom:10px;">Изберете кои начини на плащане да се показват при завършване на поръчка.</div>
+      <div class="col gap8">
+        ${PAYMENT_METHODS.map(m=>{
+          const checked = (r.payment_methods||DEFAULT_RESTAURANT.payment_methods).includes(m.id);
+          return `<label class="role-card" style="padding:12px 14px;cursor:pointer;">
+            <input type="checkbox" id="pm-${m.id}" ${checked?'checked':''} style="width:18px;height:18px;accent-color:var(--ember);">
+            <div class="icon-btn">${icon(m.icon,16)}</div>
+            <div style="font-weight:600;font-size:13.5px;">${m.label}</div>
+          </label>`;
+        }).join('')}
+      </div>
+      <button class="btn btn-primary" style="margin-top:14px;" onclick="App.savePaymentMethods()">Запази начините на плащане</button>
+    </div>
+  </div>`;
+}
+function coverPreviewHtml(src){
+  return src
+    ? `<div class="col gap8"><img src="${src}" style="width:100%;height:110px;object-fit:cover;border-radius:10px;border:1px solid var(--border);"><button class="btn btn-ghost btn-sm" style="width:auto;" onclick="App.removeCoverImage()">Премахни</button></div>`
+    : `<div class="muted" style="font-size:12px;">Няма банер.</div>`;
+}
+function logoPreviewHtml(src){
+  return src
+    ? `<div class="row gap8" style="align-items:center;"><img src="${src}" style="width:56px;height:56px;object-fit:cover;border-radius:12px;border:1px solid var(--border);"><button class="btn btn-ghost btn-sm" onclick="App.removeLogoImage()">Премахни</button></div>`
+    : `<div class="muted" style="font-size:12px;">Няма лого — ще се показва пламъче.</div>`;
+}
+App.handleCoverUpload = async function(event){
+  const file=event.target.files&&event.target.files[0]; if(!file) return;
+  try{ const d=await resizeImageFile(file,1000,0.72); App._pendingCoverImage=d; const prev=document.getElementById('cover-preview'); if(prev) prev.innerHTML=coverPreviewHtml(d); }
+  catch(e){ toast('Снимката не може да се зареди'); }
+};
+App.removeCoverImage = function(){ App._pendingCoverImage=null; const prev=document.getElementById('cover-preview'); if(prev) prev.innerHTML=coverPreviewHtml(null); };
+App.handleLogoUpload = async function(event){
+  const file=event.target.files&&event.target.files[0]; if(!file) return;
+  try{ const d=await resizeImageFile(file,300,0.8); App._pendingLogoImage=d; const prev=document.getElementById('logo-preview'); if(prev) prev.innerHTML=logoPreviewHtml(d); }
+  catch(e){ toast('Снимката не може да се зареди'); }
+};
+App.removeLogoImage = function(){ App._pendingLogoImage=null; const prev=document.getElementById('logo-preview'); if(prev) prev.innerHTML=logoPreviewHtml(null); };
+App.saveRestaurantDesign = async function(){
+  const updated = { name:document.getElementById('r-name').value.trim()||'Огнище', tagline:document.getElementById('r-tagline').value.trim(), contact_phone:(document.getElementById('r-phone').value||'').trim(), cover_image:App._pendingCoverImage||null, logo_image:App._pendingLogoImage||null };
+  try{
+    await DB.saveRestaurant(updated);
+    App.state.restaurant = { ...App.state.restaurant, ...updated };
+    toast('Оформлението е запазено'); render();
+  }catch(e){ toast('Грешка: '+e.message); }
+};
+
+App.savePaymentMethods = async function(){
+  const ids = PAYMENT_METHODS.filter(m=>{ const el=document.getElementById('pm-'+m.id); return el && el.checked; }).map(m=>m.id);
+  if(!ids.length){ toast('Избери поне един начин на плащане'); return; }
+  const updated = { ...App.state.restaurant, payment_methods:ids };
+  try{
+    await DB.saveRestaurant(updated);
+    App.state.restaurant = updated;
+    if(!ids.includes(App.state.paymentMethod)) App.state.paymentMethod = ids[0];
+    toast('Начините на плащане са запазени'); render();
+  }catch(e){ toast('Грешка: '+e.message); }
+};
+
+/* ============================= START ============================= */
+init();
+
+</script>
+</body>
+</html>
