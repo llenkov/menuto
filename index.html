@@ -412,7 +412,7 @@ const EMBEDDED_WORKER_URL = 'https://weathered-silence-17f6.lenkov77.workers.dev
 const WORKER_SHARED_SECRET = ''; // по избор — трябва да съвпада с APP_SECRET във Worker-а
 const GROQ_MODEL = 'llama-3.3-70b-versatile';
 const GROQ_FALLBACK_MODELS = ['llama-3.1-8b-instant'];
-const OPENROUTER_MODELS = ['meta-llama/llama-3.3-70b-instruct:free', 'deepseek/deepseek-chat-v3.1:free', 'openrouter/free'];
+const OPENROUTER_MODELS = ['meta-llama/llama-3.3-70b-instruct:free', 'openrouter/free'];
 
 /* ============================= ICONS ============================= */
 function icon(name, size){
@@ -1721,6 +1721,12 @@ if('speechSynthesis' in window){
   window.speechSynthesis.onvoiceschanged = function(){ _bgVoice = pickBgVoice(); };
   _bgVoice = pickBgVoice();
 }
+function fixDecimalsForSpeech(s){
+  // "4.32" се чете от bg-BG TTS като подреден номер ("четвърти...") заради точката.
+  // Заменяме десетичната точка със запетая (стандартния разделител на български),
+  // само за число.число — не пипаме други точки (край на изречение и т.н.).
+  return (s||'').replace(/(\d+)\.(\d{1,2})(?!\d)/g, '$1,$2');
+}
 function stripEmojiForSpeech(s){
   return (s||'')
     .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}\uFE0F\u200D]/gu, '')
@@ -1729,7 +1735,7 @@ function stripEmojiForSpeech(s){
 function speakBg(text){
   if(!App.state.aiVoiceEnabled || !text) return;
   if(!('speechSynthesis' in window)) return;
-  const clean = stripEmojiForSpeech(text);
+  const clean = fixDecimalsForSpeech(stripEmojiForSpeech(text));
   if(!clean) return;
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(clean);
@@ -1916,6 +1922,7 @@ async function callProviderOnce(provider, model, messages){
   }
   const t = await res.text();
   if(res.status===429) throw { rateLimited:true, message:'Достигнат е безплатният лимит на ' + provider.name + '.' };
+  if(res.status===404) throw { rateLimited:true, message:'Моделът вече не е достъпен безплатно при ' + provider.name + '.' };
   if(res.status===503 || res.status===500 || res.status===529) throw { transient:true, message:'Моделът е временно претоварен.' };
   let parsedCode = '';
   try{ parsedCode = (JSON.parse(t).error||{}).code || ''; }catch(e){}
