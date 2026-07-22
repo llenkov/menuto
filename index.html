@@ -372,11 +372,26 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;margin:0;letter-spacing
 <script>
 
 /* ============================= SUPABASE CLIENT ============================= */
-// Config is stored in localStorage so the user only types it once
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  НАСТРОЙКА — попълни и запази файла веднъж                  ║
+// ║  Supabase Dashboard → Settings → API                        ║
+// ╚══════════════════════════════════════════════════════════════╝
+const SUPABASE_URL  = 'https://mefsshlwyuokdhetxlmy.supabase.co';   // напр. 'https://xxxx.supabase.co'
+const SUPABASE_ANON = 'sb_publishable_7SWmUNnMb3aDsJAK6tYr0g_5_NgPwfk';   // anon public key (eyJ…)
+// ──────────────────────────────────────────────────────────────
+// Ако горните константи са попълнени → setup екранът НИКОГА
+// не се показва на клиентите. Промяна само чрез 5 клика на лого.
+// ──────────────────────────────────────────────────────────────
+
 const CFG_KEY = 'og_supabase_cfg';
-let SB = null; // will be set after config
+let SB = null;
 
 function loadConfig(){
+  // 1. Ако константите са хардкоднати в кода → използвай ги
+  if(SUPABASE_URL && SUPABASE_ANON){
+    return { url: SUPABASE_URL, key: SUPABASE_ANON };
+  }
+  // 2. Иначе вземи от localStorage (admin setup)
   try{ return JSON.parse(localStorage.getItem(CFG_KEY)); }catch(e){ return null; }
 }
 function saveConfig(url, key){
@@ -813,6 +828,23 @@ function render(){
 /* ============================= SETUP SCREEN ============================= */
 function scrSetup(){
   const err = App.state.setupError;
+  const hardcoded = !!(SUPABASE_URL && SUPABASE_ANON);
+  // Ако URL и ключът са вградени в кода, показваме само кратък екран за смяна
+  if(hardcoded){
+    return `<div class="scr center-screen" style="gap:0;">
+      <div class="logo-mark" style="width:58px;height:58px;border-radius:16px;margin-bottom:16px;">${icon('db',28)}</div>
+      <h2 style="font-size:18px;margin-bottom:8px;">Smяна на Supabase проект</h2>
+      <div class="muted" style="font-size:12.5px;text-align:center;margin-bottom:18px;max-width:300px;">
+        В момента URL и ключът са вградени в кода на приложението.<br>
+        За смяна редактирай константите <b>SUPABASE_URL</b> и <b>SUPABASE_ANON</b> в началото на HTML файла.
+      </div>
+      <button class="btn btn-ghost" style="width:100%;" onclick="setState({screen:'role'})">Обратно</button>
+      <div class="muted" style="margin-top:14px;font-size:11px;text-align:center;">
+        <button class="btn btn-ghost btn-sm" style="margin-top:6px;" onclick="App.showSQL()">Виж SQL setup скрипта</button>
+      </div>
+      ${App.state.showSQLModal ? sqlModal() : ''}
+    </div>`;
+  }
   return `<div class="scr center-screen" style="gap:0;">
     <div class="logo-mark" style="width:58px;height:58px;border-radius:16px;margin-bottom:16px;">${icon('flame',28)}</div>
     <h2 style="font-size:20px;margin-bottom:4px;">Свързване с Supabase</h2>
