@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Огнище — Доставка</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -44,22 +42,6 @@ svg{stroke:currentColor;}
 input,select,textarea{font-family:inherit;}
 a{color:inherit;text-decoration:none;}
 ::selection{background:var(--ember-glow);}
-.ai-fab{position:fixed;right:16px;bottom:84px;z-index:60;width:54px;height:54px;border-radius:50%;background:var(--ember);color:#fff;border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(0,0,0,.25);cursor:pointer;}
-.ai-fab:active{transform:scale(.94);}
-.ai-panel{position:fixed;left:0;right:0;bottom:0;top:0;z-index:70;background:var(--bg);display:flex;flex-direction:column;max-width:480px;margin:0 auto;}
-.ai-panel-head{display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--ember);color:#fff;flex-shrink:0;}
-.ai-panel-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}
-.ai-bubble{max-width:82%;padding:10px 13px;border-radius:14px;font-size:13.5px;line-height:1.45;white-space:pre-wrap;}
-.ai-bubble.user{align-self:flex-end;background:var(--ember);color:#fff;border-bottom-right-radius:4px;}
-.ai-bubble.bot{align-self:flex-start;background:var(--surface);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:4px;}
-.ai-bubble.typing{align-self:flex-start;background:var(--surface);border:1px solid var(--border);color:var(--text-faint);}
-.ai-panel-foot{flex-shrink:0;display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border);background:var(--surface);}
-.ai-panel-foot input{flex:1;border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:20px;padding:11px 16px;font-size:14px;font-family:inherit;}
-.ai-panel-foot button{flex-shrink:0;width:42px;height:42px;border-radius:50%;background:var(--ember);color:#fff;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.ai-panel-foot button:disabled{opacity:.5;}
-.ai-mic-btn.listening{background:var(--ember-dim);animation:aiPulse 1.1s ease-in-out infinite;}
-@keyframes aiPulse{0%{box-shadow:0 0 0 0 rgba(226,32,44,.5);}70%{box-shadow:0 0 0 10px rgba(226,32,44,0);}100%{box-shadow:0 0 0 0 rgba(226,32,44,0);}}
-.ai-head-btn{background:none;border:none;color:#fff;cursor:pointer;padding:6px;display:flex;align-items:center;}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:4px;}
 
@@ -211,7 +193,6 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;margin:0;letter-spacing
 }
 .cat-tile-img img{width:100%;height:100%;object-fit:cover;display:block;}
 .cat-tile-label{margin-top:8px;font-weight:800;font-size:12.5px;text-align:center;text-transform:uppercase;letter-spacing:.02em;color:var(--text);}
-.cat-tile-desc{margin-top:4px;font-size:11.5px;line-height:1.35;text-align:center;color:var(--text-dim);}
 
 /* ---------- category chips ---------- */
 .chiprow{display:flex;gap:8px;overflow-x:auto;padding:4px 18px 14px;scrollbar-width:none;}
@@ -279,6 +260,36 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;margin:0;letter-spacing
 }
 
 /* ---------- product detail footer ---------- */
+/* ---------- AI chat widget ---------- */
+.ai-fab{
+  position:fixed;bottom:92px;right:16px;
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(180deg,var(--ember),var(--ember-dim));
+  border:none;color:#fff;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px -4px var(--ember-glow);z-index:9;cursor:pointer;
+}
+.ai-panel{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;height:70vh;
+  background:var(--surface);border:1px solid var(--border);border-radius:20px 20px 0 0;
+  display:flex;flex-direction:column;z-index:20;
+  box-shadow:0 -10px 40px rgba(0,0,0,.12);animation:slideup .22s ease;
+}
+.ai-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.ai-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--ember),var(--gold));display:flex;align-items:center;justify-content:center;color:#fff;flex:0 0 auto;}
+.ai-messages{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+.ai-msg{max-width:82%;padding:10px 13px;border-radius:14px;font-size:13.5px;line-height:1.45;}
+.ai-msg.bot{background:var(--surface-2);align-self:flex-start;border-bottom-left-radius:4px;}
+.ai-msg.user{background:var(--ember);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+.ai-msg.typing{opacity:.6;}
+.ai-input-row{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px;}
+.ai-input-row input{flex:1;background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:22px;padding:10px 14px;font-size:14px;outline:none;}
+.ai-input-row input:focus{border-color:var(--ember);}
+.ai-send{width:40px;height:40px;border-radius:50%;background:var(--ember);border:none;color:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.ai-mic{width:40px;height:40px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.ai-mic.listening{background:var(--ember-glow);border-color:var(--ember);color:var(--ember);animation:pulse 1s ease infinite;}
+.ai-checkout-btn{display:block;width:100%;margin-top:10px;background:linear-gradient(180deg,var(--ember),var(--ember-dim));color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;}
+
 .detail-footer{
   position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;
   background:#fff;border-top:1px solid var(--border);padding:12px 16px calc(12px + env(safe-area-inset-bottom));
@@ -355,41 +366,17 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;margin:0;letter-spacing
 <body>
 <div id="shell">
   <div id="root"></div>
-  <div id="ai-chat-slot"></div>
 </div>
 <div id="toast"></div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-/* ============================= SUPABASE CLIENT ============================= */
-// ── ЗА ВСЕКИ НОВ РЕСТОРАНТ (deploy на отделно копие на това приложение) ──
-// Попълни тук URL и anon key от Supabase Dashboard > Settings > API на ТОЗИ
-// клиент, преди да публикуваш файла. Ако оставиш и двете празни, приложението
-// ще опита да вземе настройките от ?u=...&k=... в линка, а ако няма — ще
-// покаже еднократен екран за ръчно въвеждане (запазва се в localStorage,
-// само като резервен вариант за бързо тестване).
-const EMBEDDED_SUPABASE_URL = 'https://mefsshlwyuokdhetxlmy.supabase.co';
-const EMBEDDED_SUPABASE_KEY = 'sb_publishable_7SWmUNnMb3aDsJAK6tYr0g_5_NgPwfk';
 
+/* ============================= SUPABASE CLIENT ============================= */
+// Config is stored in localStorage so the user only types it once
 const CFG_KEY = 'og_supabase_cfg';
 let SB = null; // will be set after config
 
 function loadConfig(){
-  // 1) Вградена конфигурация — важи за всички устройства и браузъри на този деплой
-  if(EMBEDDED_SUPABASE_URL && EMBEDDED_SUPABASE_KEY){
-    return { url:EMBEDDED_SUPABASE_URL, key:EMBEDDED_SUPABASE_KEY };
-  }
-  // 2) Параметри в линка ?u=...&k=... — позволява един файл да служи на няколко клиента с различни линкове
-  try{
-    const params = new URLSearchParams(window.location.search);
-    const u = params.get('u'); const k = params.get('k');
-    if(u && k){
-      const cfg = { url:decodeURIComponent(u), key:decodeURIComponent(k) };
-      saveConfig(cfg.url, cfg.key); // кешира локално, за да не зависи от линка занапред
-      return cfg;
-    }
-  }catch(e){}
-  // 3) Резервен вариант — ръчно въведена конфигурация, запазена локално в този браузър
   try{ return JSON.parse(localStorage.getItem(CFG_KEY)); }catch(e){ return null; }
 }
 function saveConfig(url, key){
@@ -403,16 +390,6 @@ function initSupabase(url, key){
   });
   return SB;
 }
-
-/* ============================= AI ASSISTANT (Groq) ============================= */
-// ВНИМАНИЕ: AI заявките минават през Cloudflare Worker прокси (виж файла
-// ognishte-ai-worker.js) — реалните API ключове се пазят там като Worker
-// Secrets, НЕ тук в кода на сайта. Това е безопасно за публикуване на GitHub.
-const EMBEDDED_WORKER_URL = 'https://weathered-silence-17f6.lenkov77.workers.dev/'; // Cloudflare Worker прокси за AI заявки
-const WORKER_SHARED_SECRET = ''; // по избор — трябва да съвпада с APP_SECRET във Worker-а
-const GROQ_MODEL = 'llama-3.3-70b-versatile';
-const GROQ_FALLBACK_MODELS = ['llama-3.1-8b-instant'];
-const OPENROUTER_MODELS = ['meta-llama/llama-3.3-70b-instruct:free', 'openrouter/free'];
 
 /* ============================= ICONS ============================= */
 function icon(name, size){
@@ -432,11 +409,6 @@ function icon(name, size){
     minus:`<svg ${s}><path d="M5 12h14"/></svg>`,
     check:`<svg ${s}><path d="M5 12.5l4.5 4.5L19 7"/></svg>`,
     x:`<svg ${s}><path d="M6 6l12 12"/><path d="M18 6 6 18"/></svg>`,
-    sparkle:`<svg ${s}><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/><path d="M12 9a3 3 0 0 0 3 3 3 3 0 0 0-3 3 3 3 0 0 0-3-3 3 3 0 0 0 3-3Z"/></svg>`,
-    send:`<svg ${s}><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7Z"/></svg>`,
-    mic:`<svg ${s}><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><path d="M12 18v4"/><path d="M9 22h6"/></svg>`,
-    speaker:`<svg ${s}><path d="M11 5 6 9H3v6h3l5 4Z"/><path d="M16 8.5a4.5 4.5 0 0 1 0 7"/><path d="M19 5.5a8 8 0 0 1 0 13"/></svg>`,
-    speakerOff:`<svg ${s}><path d="M11 5 6 9H3v6h3l5 4Z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>`,
     cash:`<svg ${s}><rect x="3" y="6.5" width="18" height="11" rx="2"/><circle cx="12" cy="12" r="2.6"/></svg>`,
     card:`<svg ${s}><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 9.5h18"/></svg>`,
     pencil:`<svg ${s}><path d="M4 20l1-4L16 5l3 3L8 19l-4 1Z"/></svg>`,
@@ -447,7 +419,6 @@ function icon(name, size){
     db:`<svg ${s}><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v4c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 10v4c0 1.7 3.6 3 8 3s8-1.3 8-3v-4"/></svg>`,
     heart:`<svg ${s}><path d="M12 20.5s-7.8-4.4-9.7-9.3C1 8 2.4 4.7 5.8 4.1 8 3.7 10.2 4.9 12 7.5c1.8-2.6 4-3.8 6.2-3.4 3.4.6 4.8 3.9 3.5 7.1-1.9 4.9-9.7 9.3-9.7 9.3Z"/></svg>`,
     share:`<svg ${s}><circle cx="18" cy="5" r="2.4"/><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="19" r="2.4"/><path d="M8.2 10.8 15.8 6.2"/><path d="M8.2 13.2 15.8 17.8"/></svg>`
-    ,phone:`<svg ${s}><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.7 19.7 0 0 1-8.6-3.1 19.3 19.3 0 0 1-6-6A19.7 19.7 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.7.6 2.5a2 2 0 0 1-.4 2.1L8 9.6a16 16 0 0 0 6.4 6.4l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.6.5 2.5.6a2 2 0 0 1 1.7 2Z"/></svg>`
   };
   return map[name] || '';
 }
@@ -484,23 +455,9 @@ const DEFAULT_PROMOS = [
   {id:'p3', title:'Комбо: Кебапче + Кюфте', description:'Перфектно изкушение от скарата, на специална цена.', image:null, type:'combo', scope:null, category_id:null, percent:0, code:null, combo_items:[{itemId:'i3', qty:1},{itemId:'i6', qty:1}], combo_price:7.00, active:true}
 ];
 const DEFAULT_RESTAURANT = {
-  id:1, name:'Огнище', tagline:'Скара и домашна кухня · доставка до адрес', contact_phone:'', cover_image:null, logo_image:null,
-  payment_methods:['cash','online','card_on_delivery'],
+  id:1, name:'Огнище', tagline:'Скара и домашна кухня · доставка до адрес', cover_image:null, logo_image:null, groq_key:null,
   loyalty:{pointsPerLev:1, deliveryFee:1.30, tiers:[{name:'Бронз',minPoints:0,percent:0},{name:'Сребро',minPoints:150,percent:5},{name:'Злато',minPoints:400,percent:10}]}
 };
-const PAYMENT_METHODS = [
-  { id:'cash', label:'В брой при доставка', shortLabel:'в брой', icon:'cash' },
-  { id:'online', label:'Онлайн плащане с карта', shortLabel:'онлайн', icon:'card' },
-  { id:'card_on_delivery', label:'С карта при доставка (ПОС у куриера)', shortLabel:'с карта при доставка', icon:'card' }
-];
-function enabledPaymentMethods(){
-  const ids = (App.state.restaurant.payment_methods && App.state.restaurant.payment_methods.length) ? App.state.restaurant.payment_methods : ['cash'];
-  return PAYMENT_METHODS.filter(m=>ids.includes(m.id));
-}
-function paymentLabel(pm, short){
-  const m = PAYMENT_METHODS.find(x=>x.id===pm);
-  return m ? (short ? m.shortLabel : m.label) : (short ? pm : pm);
-}
 
 /* ============================= GLOBAL STATE ============================= */
 const App = {
@@ -515,16 +472,14 @@ const App = {
     viewingItemId:null, viewingPromoId:null,
     custTab:'menu', restTab:'orders',
     restUnlocked:false,
+    restLoginError:'', restLoginLoading:false,
+    guestMode:false,
     trackOrderId:null,
     promoCodeInput:'', promoCodeApplied:null,
     editingItem:null, editingPromo:null, editingCategory:null,
     showItemModal:false, showPromoModal:false,
-    showAdminEntry:false,
-    addressEdit:'', guestName:'', guestPhone:'', guestAddress:'', paymentMethod:'cash',
-    orderNotes:'', orderCutlery:false,
+    addressEdit:'', paymentMethod:'cash',
     cardNum:'', cardExp:'', cardCvc:'', payProcessing:false,
-    aiChatOpen:false, aiMessages:[], aiHistory:[], aiThinking:false, aiInput:'', aiOrderPlaced:false,
-    aiVoiceEnabled:false, aiListening:false, aiOrderSummaryShown:false,
     setupError:'', setupLoading:false, initLoading:true
   }
 };
@@ -550,7 +505,6 @@ const DB = {
     return { id:row.id, orderNum:row.order_num, createdAt:new Date(row.created_at).getTime(),
              customer:{ username:row.customer_username, name:row.customer_name, phone:row.customer_phone, address:row.customer_address },
              items:row.items, paymentMethod:row.payment_method, totals:row.totals, status:row.status,
-             notes:row.notes||'', cutlery:!!row.cutlery,
              source: row.source || 'app' };
   },
 
@@ -567,15 +521,14 @@ const DB = {
     if(catRes.error) throw catRes.error;
     if(!catRes.data || catRes.data.length===0){ await DB.seed(); return DB.loadAll(); }
 
-    const cats   = (catRes.data||[]).map(r=>({ id:r.id, name:r.name, description:r.description||'', image:r.image||null }));
+    const cats   = (catRes.data||[]).map(r=>({ id:r.id, name:r.name, image:r.image||null }));
     const items  = (itemRes.data||[]).map(DB._toItem);
     const promos = (promoRes.data||[]).map(DB._toPromo);
     const orders = (orderRes.data||[]).map(DB._toOrder);
     let rest = DEFAULT_RESTAURANT;
     if(restRes.data){
       const r = restRes.data;
-      rest = { id:1, name:r.name, tagline:r.tagline, contact_phone:r.contact_phone||'', cover_image:r.cover_image||null, logo_image:r.logo_image||null,
-               payment_methods: (r.payment_methods && r.payment_methods.length) ? r.payment_methods : DEFAULT_RESTAURANT.payment_methods,
+      rest = { id:1, name:r.name, tagline:r.tagline, cover_image:r.cover_image||null, logo_image:r.logo_image||null, groq_key:r.groq_key||null,
                loyalty: r.loyalty || DEFAULT_RESTAURANT.loyalty };
     }
     return { cats, items, promos, orders, rest };
@@ -583,15 +536,15 @@ const DB = {
 
   // ---------- seed default data (first run) ----------
   async seed(){
-    await SB.from('restaurant_settings').upsert([{ id:1, name:DEFAULT_RESTAURANT.name, tagline:DEFAULT_RESTAURANT.tagline, contact_phone:'', cover_image:null, logo_image:null, payment_methods:DEFAULT_RESTAURANT.payment_methods, loyalty:DEFAULT_RESTAURANT.loyalty }]);
-    await SB.from('categories').upsert(DEFAULT_CATEGORIES.map(c=>({ id:c.id, name:c.name, description:c.description||'', sort_order:c.sort_order, image:null })));
+    await SB.from('restaurant_settings').upsert([{ id:1, name:DEFAULT_RESTAURANT.name, tagline:DEFAULT_RESTAURANT.tagline, cover_image:null, logo_image:null, loyalty:DEFAULT_RESTAURANT.loyalty }]);
+    await SB.from('categories').upsert(DEFAULT_CATEGORIES.map(c=>({ id:c.id, name:c.name, sort_order:c.sort_order, image:null })));
     await SB.from('menu_items').upsert(DEFAULT_ITEMS.map(i=>({ id:i.id, category_id:i.category_id, category_ids:[i.category_id], name:i.name, description:i.description, price:i.price, emoji:i.emoji, image:null, available:i.available })));
     await SB.from('promotions').upsert(DEFAULT_PROMOS.map(p=>({ id:p.id, title:p.title, description:p.description, image:null, type:p.type, scope:p.scope||null, category_id:p.category_id||null, percent:p.percent, code:p.code||null, combo_items:p.combo_items||null, combo_price:p.combo_price||0, active:p.active })));
   },
 
   // ---------- categories ----------
   async saveCategory(cat){
-    const { error } = await SB.from('categories').upsert([{ id:cat.id, name:cat.name, description:cat.description||'', sort_order: cat.sort_order ?? 0, image: cat.image||null }]);
+    const { error } = await SB.from('categories').upsert([{ id:cat.id, name:cat.name, sort_order: cat.sort_order ?? 0, image: cat.image||null }]);
     if(error) throw error;
   },
   async deleteCategory(id){
@@ -623,12 +576,12 @@ const DB = {
 
   // ---------- restaurant settings ----------
   async saveRestaurant(data){
-    const { error } = await SB.from('restaurant_settings').upsert([{ id:1, name:data.name, tagline:data.tagline, contact_phone:data.contact_phone||'', cover_image:data.cover_image||null, logo_image:data.logo_image||null, payment_methods:data.payment_methods||App.state.restaurant.payment_methods, loyalty:App.state.loyalty }]);
+    const { error } = await SB.from('restaurant_settings').upsert([{ id:1, name:data.name, tagline:data.tagline, cover_image:data.cover_image||null, logo_image:data.logo_image||null, groq_key:data.groq_key||null, loyalty:App.state.loyalty }]);
     if(error) throw error;
   },
   async saveLoyalty(loyalty){
     const r = App.state.restaurant;
-    const { error } = await SB.from('restaurant_settings').upsert([{ id:1, name:r.name, tagline:r.tagline, contact_phone:r.contact_phone||'', cover_image:r.cover_image||null, logo_image:r.logo_image||null, payment_methods:r.payment_methods, loyalty }]);
+    const { error } = await SB.from('restaurant_settings').upsert([{ id:1, name:r.name, tagline:r.tagline, cover_image:r.cover_image||null, logo_image:r.logo_image||null, loyalty }]);
     if(error) throw error;
   },
 
@@ -653,8 +606,7 @@ const DB = {
   async saveOrder(order){
     const row = { id:order.id, order_num:order.orderNum, customer_username:order.customer.username||null,
       customer_name:order.customer.name, customer_phone:order.customer.phone, customer_address:order.customer.address,
-      items:order.items, payment_method:order.paymentMethod, totals:order.totals, status:order.status,
-      notes:order.notes||'', cutlery:!!order.cutlery, source:order.source||'app' };
+      items:order.items, payment_method:order.paymentMethod, totals:order.totals, status:order.status };
     const { error } = await SB.from('orders').insert([row]);
     if(error) throw error;
   },
@@ -715,6 +667,10 @@ async function init(){
       const s = App.state.screen;
       if(s==='cust-track' || App.state.restUnlocked) render();
     });
+
+    // Restore admin session if previously logged in
+    const { data:{ session:authSession } } = await SB.auth.getSession();
+    if(authSession) { App.state.restUnlocked = true; }
 
     setState({ screen:'role', initLoading:false, setupLoading:false });
   }catch(e){
@@ -843,7 +799,7 @@ function render(){
   const map = {
     'setup': scrSetup,
     'role': scrRole, 'cust-auth': scrCustAuth, 'cust-menu': scrCustMenu, 'cust-category': scrCustCategory, 'cust-cart': scrCustCart,
-    'cust-checkout': scrCustCheckout, 'cust-track': scrCustTrack, 'cust-profile': scrCustProfile,
+    'cust-checkout': scrCustCheckout, 'cust-checkout-gate': scrCustCheckoutGate, 'cust-track': scrCustTrack, 'cust-profile': scrCustProfile,
     'cust-dish': scrCustDish, 'cust-promo': scrCustPromo,
     'rest-pass': scrRestPass, 'rest-orders': scrRestOrders, 'rest-menu': scrRestMenu,
     'rest-promo': scrRestPromo, 'rest-loyalty': scrRestLoyalty, 'rest-design': scrRestDesign
@@ -851,9 +807,6 @@ function render(){
   root.innerHTML = (map[s] || scrRole)();
   const fab = document.getElementById('cart-fab-slot');
   if(fab) fab.innerHTML = cartFab();
-  const aiSlot = document.getElementById('ai-chat-slot');
-  if(aiSlot) aiSlot.innerHTML = aiChatSlot();
-  if(App.state.aiChatOpen){ const body=document.getElementById('ai-panel-body'); if(body) body.scrollTop = body.scrollHeight; }
   checkAlarm();
 }
 
@@ -896,124 +849,254 @@ App.connectSupabase = async function(){
 };
 App.showSQL = function(){ setState({ showSQLModal:true }); };
 App.hideSQL = function(){ setState({ showSQLModal:false }); };
-const SQL_SCRIPT = `-- Изпълни в Supabase > SQL Editor
+const SQL_SCRIPT = `-- ================================================================
+-- ОГНИЩЕ — Пълен SQL setup скрипт
+-- Изпълни в Supabase → SQL Editor → New query → Run
+-- Безопасен за повторно изпълнение (idempotent)
+-- ================================================================
+
+-- ----------------------------------------------------------------
+-- 1. ТАБЛИЦИ
+-- ----------------------------------------------------------------
 
 create table if not exists restaurant_settings (
-  id integer primary key default 1,
-  name text default 'Огнище',
-  tagline text default 'Скара и домашна кухня',
-  contact_phone text default '',
-  cover_image text,
-  logo_image text,
-  loyalty jsonb default '{}'::jsonb,
-  payment_methods jsonb default '["cash","online","card_on_delivery"]'::jsonb
+  id           integer primary key default 1,
+  name         text    default 'Огнище',
+  tagline      text    default 'Скара и домашна кухня',
+  cover_image  text,
+  logo_image   text,
+  groq_key     text,
+  loyalty      jsonb   default '{}'::jsonb
 );
 insert into restaurant_settings (id) values (1) on conflict do nothing;
-alter table restaurant_settings add column if not exists logo_image text;
-alter table restaurant_settings add column if not exists contact_phone text default '';
-alter table restaurant_settings add column if not exists payment_methods jsonb default '["cash","online","card_on_delivery"]'::jsonb;
+
+-- Нови колони (безопасно при повторно изпълнение)
+alter table restaurant_settings add column if not exists logo_image  text;
+alter table restaurant_settings add column if not exists groq_key    text;
+
+-- ----------------------------------------------------------------
 
 create table if not exists categories (
-  id text primary key,
-  name text not null,
-  description text default '',
+  id         text    primary key,
+  name       text    not null,
   sort_order integer default 0,
-  image text
-);
-
-create table if not exists menu_items (
-  id text primary key,
-  category_id text,
-  category_ids text[],
-  name text not null,
-  description text default '',
-  price numeric(10,2) default 0,
-  emoji text default '🍽️',
-  image text,
-  available boolean default true
+  image      text
 );
 alter table categories add column if not exists image text;
-alter table categories add column if not exists description text default '';
+
+-- ----------------------------------------------------------------
+
+create table if not exists menu_items (
+  id           text           primary key,
+  category_id  text,
+  category_ids text[],
+  name         text           not null,
+  description  text           default '',
+  price        numeric(10,2)  default 0,
+  emoji        text           default '🍽️',
+  image        text,
+  available    boolean        default true
+);
 alter table menu_items add column if not exists category_ids text[];
-update menu_items set category_ids = array[category_id] where category_ids is null and category_id is not null;
+-- Прехвърля съществуващите category_id → category_ids масив
+update menu_items
+  set category_ids = array[category_id]
+  where category_ids is null and category_id is not null;
+
+-- ----------------------------------------------------------------
 
 create table if not exists promotions (
-  id text primary key,
-  title text not null,
-  description text default '',
-  image text,
-  type text default 'auto',
-  scope text,
+  id          text          primary key,
+  title       text          not null,
+  description text          default '',
+  image       text,
+  type        text          default 'auto',
+  scope       text,
   category_id text,
-  percent numeric(5,2) default 0,
-  code text,
+  percent     numeric(5,2)  default 0,
+  code        text,
   combo_items jsonb,
   combo_price numeric(10,2) default 0,
-  active boolean default true
+  active      boolean       default true
 );
+
+-- ----------------------------------------------------------------
 
 create table if not exists customers (
-  id uuid primary key default gen_random_uuid(),
-  username text unique not null,
-  password text not null,
-  name text not null,
-  phone text not null,
-  address text not null,
-  points integer default 0,
+  id         uuid        primary key default gen_random_uuid(),
+  username   text        unique not null,
+  password   text        not null,
+  name       text        not null,
+  phone      text        not null,
+  address    text        not null,
+  points     integer     default 0,
   created_at timestamptz default now()
 );
+
+-- ----------------------------------------------------------------
 
 create table if not exists orders (
-  id text primary key,
-  order_num text not null,
+  id               text        primary key,
+  order_num        text        not null,
   customer_username text,
-  customer_name text not null,
-  customer_phone text not null,
-  customer_address text not null,
-  items jsonb default '[]'::jsonb,
-  payment_method text default 'cash',
-  totals jsonb default '{}'::jsonb,
-  status text default 'pending',
-  source text default 'app',
-  notes text default '',
-  cutlery boolean default false,
-  created_at timestamptz default now()
+  customer_name    text        not null,
+  customer_phone   text        not null,
+  customer_address text        not null,
+  items            jsonb       default '[]'::jsonb,
+  payment_method   text        default 'cash',
+  totals           jsonb       default '{}'::jsonb,
+  status           text        default 'pending',
+  source           text        default 'app',
+  viber_id         text,
+  created_at       timestamptz default now()
 );
-alter table orders add column if not exists source text default 'app';
-alter table orders add column if not exists notes text default '';
-alter table orders add column if not exists cutlery boolean default false;
+-- Нови колони за Viber интеграция (безопасно при повторно изпълнение)
+alter table orders add column if not exists source   text default 'app';
+alter table orders add column if not exists viber_id text;
 
--- RLS: разреши достъп на anon ключ
+-- ----------------------------------------------------------------
+
+create table if not exists viber_sessions (
+  viber_id   text        primary key,
+  step       text        default 'idle',
+  cart       jsonb       default '[]'::jsonb,
+  category_id text,
+  name       text,
+  phone      text,
+  address    text,
+  updated_at timestamptz default now()
+);
+
+-- ----------------------------------------------------------------
+-- 2. VIBER НОМЕРАЦИЯ НА ПОРЪЧКИ
+-- ----------------------------------------------------------------
+
+create sequence if not exists viber_order_seq start 1;
+
+create or replace function next_viber_order_num()
+returns text
+language sql
+as $$
+  select 'ОГ-V' || lpad(nextval('viber_order_seq')::text, 4, '0');
+$$;
+
+-- ----------------------------------------------------------------
+-- 3. ROW LEVEL SECURITY
+-- ----------------------------------------------------------------
+
 alter table restaurant_settings enable row level security;
-alter table categories enable row level security;
-alter table menu_items enable row level security;
-alter table promotions enable row level security;
-alter table customers enable row level security;
-alter table orders enable row level security;
+alter table categories          enable row level security;
+alter table menu_items          enable row level security;
+alter table promotions          enable row level security;
+alter table customers           enable row level security;
+alter table orders              enable row level security;
+alter table viber_sessions      enable row level security;
 
+-- Изчисти старите "allow all" политики преди да сложим новите
 do $$ begin
-  if not exists (select 1 from pg_policies where tablename='restaurant_settings' and policyname='allow all') then
-    create policy "allow all" on restaurant_settings for all using (true) with check (true);
-  end if;
-  if not exists (select 1 from pg_policies where tablename='categories' and policyname='allow all') then
-    create policy "allow all" on categories for all using (true) with check (true);
-  end if;
-  if not exists (select 1 from pg_policies where tablename='menu_items' and policyname='allow all') then
-    create policy "allow all" on menu_items for all using (true) with check (true);
-  end if;
-  if not exists (select 1 from pg_policies where tablename='promotions' and policyname='allow all') then
-    create policy "allow all" on promotions for all using (true) with check (true);
-  end if;
-  if not exists (select 1 from pg_policies where tablename='customers' and policyname='allow all') then
-    create policy "allow all" on customers for all using (true) with check (true);
-  end if;
-  if not exists (select 1 from pg_policies where tablename='orders' and policyname='allow all') then
-    create policy "allow all" on orders for all using (true) with check (true);
-  end if;
+  -- restaurant_settings
+  drop policy if exists "allow all"  on restaurant_settings;
+  drop policy if exists "anon read"  on restaurant_settings;
+  drop policy if exists "auth write" on restaurant_settings;
+  -- categories
+  drop policy if exists "allow all"  on categories;
+  drop policy if exists "anon read"  on categories;
+  drop policy if exists "auth write" on categories;
+  -- menu_items
+  drop policy if exists "allow all"  on menu_items;
+  drop policy if exists "anon read"  on menu_items;
+  drop policy if exists "auth write" on menu_items;
+  -- promotions
+  drop policy if exists "allow all"  on promotions;
+  drop policy if exists "anon read"  on promotions;
+  drop policy if exists "auth write" on promotions;
+  -- customers
+  drop policy if exists "allow all"       on customers;
+  drop policy if exists "anon insert"     on customers;
+  drop policy if exists "anon read own"   on customers;
+  drop policy if exists "anon update own" on customers;
+  drop policy if exists "auth all"        on customers;
+  -- orders
+  drop policy if exists "allow all"     on orders;
+  drop policy if exists "anon insert"   on orders;
+  drop policy if exists "anon read own" on orders;
+  drop policy if exists "auth all"      on orders;
+  -- viber_sessions
+  drop policy if exists "allow all"    on viber_sessions;
+  drop policy if exists "service only" on viber_sessions;
 end $$;
 
--- Realtime за поръчки
-alter publication supabase_realtime add table orders;`;
+-- restaurant_settings: анон чете, само auth пише
+create policy "anon read"  on restaurant_settings for select using (true);
+create policy "auth write" on restaurant_settings for all
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');
+
+-- categories: анон чете, само auth пише
+create policy "anon read"  on categories for select using (true);
+create policy "auth write" on categories for all
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');
+
+-- menu_items: анон вижда само available=true, auth вижда/пише всичко
+create policy "anon read"  on menu_items for select
+  using (available = true or auth.role() = 'authenticated');
+create policy "auth write" on menu_items for all
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');
+
+-- promotions: анон вижда само active=true, auth вижда/пише всичко
+create policy "anon read"  on promotions for select
+  using (active = true or auth.role() = 'authenticated');
+create policy "auth write" on promotions for all
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');
+
+-- customers: анон може да се регистрира и чете/ъпдейтва
+create policy "anon insert"     on customers for insert with check (true);
+create policy "anon read own"   on customers for select using (true);
+create policy "anon update own" on customers for update using (true) with check (true);
+create policy "auth all"        on customers for all
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');
+
+-- orders: анон вмъква нови и чете; auth управлява всичко
+create policy "anon insert"   on orders for insert with check (true);
+create policy "anon read own" on orders for select using (true);
+create policy "auth all"      on orders for all
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');
+
+-- viber_sessions: само service_role (Edge Function)
+create policy "service only" on viber_sessions for all
+  using (auth.role() = 'service_role')
+  with check (auth.role() = 'service_role');
+
+-- ----------------------------------------------------------------
+-- 4. REALTIME
+-- ----------------------------------------------------------------
+
+alter publication supabase_realtime add table orders;
+
+-- ----------------------------------------------------------------
+-- 5. АДМИНИСТРАТОРСКИ АКАУНТ
+-- ----------------------------------------------------------------
+-- След изпълнение на скрипта, създай администратор по един от начините:
+--
+-- А) Supabase → Authentication → Users → Add user
+--    (Попълни имейл + парола → маркирай "Auto Confirm User")
+--
+-- Б) SQL:
+-- insert into auth.users (
+--   email, encrypted_password, email_confirmed_at, role
+-- ) values (
+--   'admin@tvoirestaurant.bg',
+--   crypt('парола-тук', gen_salt('bf')),
+--   now(),
+--   'authenticated'
+-- );
+-- ================================================================
+`;
 
 function sqlModal(){
   return `<div class="modal-overlay" onclick="if(event.target===this) App.hideSQL()">
@@ -1058,14 +1141,11 @@ function custBar(title, opts){
   const onBack = opts.onBack || "App.goCustTab('menu')";
   const showCart = opts.cart !== false;
   const img = App.state.restaurant.logo_image;
-  const phone = (App.state.restaurant.contact_phone||'').trim();
-  const tel = phone.replace(/[^\d+]/g,'');
   return `<div class="redbar">
     ${back
       ? `<button class="bar-icon" onclick="${onBack}">${icon('chevL',20)}</button>`
       : `<div class="bar-logo">${img ? `<img src="${img}" alt="">` : icon('flame',16)}</div>`}
     <div class="bar-title">${title}</div>
-    ${phone ? `<a class="bar-icon" href="tel:${tel}" title="${phone}">${icon('phone',17)}</a>` : ''}
     ${showCart ? `<button class="bar-icon" onclick="App.goCustTab('cart')">${icon('cart',19)}${cartBadge()}</button>` : ''}
   </div>`;
 }
@@ -1115,10 +1195,12 @@ function categoryThumb(catId){
 }
 
 /* ============================= ROLE SELECT ============================= */
+let _logoTaps = 0, _logoTapTimer = null;
 function scrRole(){
   return `<div class="scr center-screen" style="min-height:100vh;">
     <div class="col" style="align-items:center;gap:6px;margin-bottom:36px;">
-      <div class="logo-mark" style="width:64px;height:64px;border-radius:18px;margin-bottom:14px;cursor:pointer;user-select:none;" title="Задръж за админ вход" onpointerdown="App.startAdminReveal()" onpointerup="App.cancelAdminReveal()" onpointerleave="App.cancelAdminReveal()" onpointercancel="App.cancelAdminReveal()" oncontextmenu="return false">${App.state.restaurant.logo_image ? `<img src="${App.state.restaurant.logo_image}" alt="">` : icon('flame',32)}</div>
+      <div class="logo-mark" style="width:64px;height:64px;border-radius:18px;margin-bottom:14px;cursor:pointer;"
+           onclick="App.secretTap()">${App.state.restaurant.logo_image ? `<img src="${App.state.restaurant.logo_image}" alt="">` : icon('flame',32)}</div>
       <h1 style="font-size:28px;">${App.state.restaurant.name}</h1>
       <div class="muted" style="font-size:13px;">${App.state.restaurant.tagline}</div>
     </div>
@@ -1131,52 +1213,39 @@ function scrRole(){
         </div>
         <div style="margin-left:auto;color:var(--text-faint);">${icon('chevR',18)}</div>
       </button>
-      <button class="role-card" onclick="App.enterGuest()">
-        <div class="icon-btn" style="background:#7B519C20;border-color:#7B519C;color:#7B519C;">${icon('phone',18)}</div>
-        <div>
-          <div style="font-weight:700;font-size:15px;">Поръчай чрез Viber</div>
-          <div class="muted" style="font-size:12.5px;">Без регистрация — само име, телефон и адрес</div>
-        </div>
-        <div style="margin-left:auto;color:var(--text-faint);">${icon('chevR',18)}</div>
-      </button>
-      ${App.state.showAdminEntry ? `<button class="role-card" onclick="App.goRest()">
+      <button class="role-card" onclick="App.goRest()">
         <div class="icon-btn">${icon('box',20)}</div>
         <div>
           <div style="font-weight:700;font-size:15px;">Вход за ресторанта</div>
-          <div class="muted" style="font-size:12.5px;">Поръчки, меню, промоции, лоялност</div>
+          <div class="muted" style="font-size:12.5px;">${App.state.restUnlocked ? 'Вписан · отиди към таблото' : 'Имейл и парола'}</div>
         </div>
         <div style="margin-left:auto;color:var(--text-faint);">${icon('chevR',18)}</div>
-      </button>` : ''}
-      <button class="btn btn-ghost btn-sm" style="margin-top:4px;" onclick="App.resetConfig()">
-        ${icon('db',14)} Смени Supabase проект
       </button>
     </div>
   </div>`;
 }
-App.startAdminReveal = function(){
-  clearTimeout(App._adminRevealTimer);
-  App._adminRevealTimer = setTimeout(()=>{
-    App.state.showAdminEntry = true;
-    render();
-    toast('Админ входът е отключен');
-  }, 800);
-};
-App.cancelAdminReveal = function(){
-  clearTimeout(App._adminRevealTimer);
+App.secretTap = function(){
+  _logoTaps++;
+  clearTimeout(_logoTapTimer);
+  if(_logoTaps >= 5){
+    _logoTaps = 0;
+    setState({ screen:'setup', setupError:'' });
+  } else {
+    _logoTapTimer = setTimeout(()=>{ _logoTaps = 0; }, 1500);
+  }
 };
 App.enterCustomer = function(){
-  setState({ screen: App.state.profile ? 'cust-menu' : 'cust-auth', custTab:'menu', showAdminEntry:false,
-             authMode: App.state.profile ? 'login' : 'register' });
+  // Винаги праща към менюто — auth се изисква само при поръчка
+  setState({ screen:'cust-menu', custTab:'menu' });
 };
-App.enterGuest = function(){
-  setState({ screen:'cust-menu', custTab:'menu', showAdminEntry:false, profile:null, isGuestMode:true });
+App.goRest = function(){
+  setState({ screen: App.state.restUnlocked ? 'rest-orders' : 'rest-pass' });
 };
-App.goRest = function(){ setState({ screen: App.state.restUnlocked ? 'rest-orders' : 'rest-pass' }); };
 App.resetConfig = function(){
   localStorage.removeItem(CFG_KEY);
   sessionClear();
   SB = null;
-  setState({ screen:'setup', setupError:'', setupLoading:false, profile:null, restUnlocked:false, showAdminEntry:false });
+  setState({ screen:'setup', setupError:'', setupLoading:false, profile:null, restUnlocked:false });
 };
 
 /* ============================= CUSTOMER: AUTH ============================= */
@@ -1251,6 +1320,8 @@ function scrCustMenu(){
     ${cats.length===0 ? `<div class="empty-state">Менюто все още няма категории.</div>` :
       `<div class="cat-grid">${cats.map(c=>catTileHtml(c)).join('')}</div>`}
     <div id="cart-fab-slot">${cartFab()}</div>
+    <div id="ai-fab-slot">${aiFloatingBtn()}</div>
+    <div id="ai-panel-slot">${aiPanel()}</div>
     ${custTabbar()}
   </div>`;
 }
@@ -1258,7 +1329,6 @@ function catTileHtml(cat){
   return `<div class="cat-tile" onclick="App.openCategory('${cat.id}')">
     <div class="cat-tile-img">${categoryThumb(cat.id)}</div>
     <div class="cat-tile-label">${cat.name}</div>
-    ${cat.description ? `<div class="cat-tile-desc">${cat.description}</div>` : ''}
   </div>`;
 }
 App.openCategory = function(id){ setState({ screen:'cust-category', activeCategory:id }); };
@@ -1267,12 +1337,12 @@ App.openCategory = function(id){ setState({ screen:'cust-category', activeCatego
 function scrCustCategory(){
   const cat = App.state.categories.find(c=>c.id===App.state.activeCategory);
   const items = App.state.items.filter(i=>i.available && (i.categoryIds||[]).includes(App.state.activeCategory));
-  const categoryIntro = cat && cat.description ? `<div class="pad" style="padding-bottom:4px;"><div class="muted" style="font-size:13.5px;line-height:1.45;">${cat.description}</div></div>` : '';
   return `<div class="scr">
     ${custBar(cat ? cat.name : 'Категория', { back:true, onBack:"App.goCustTab('menu')" })}
-    ${categoryIntro}
     ${items.length===0 ? `<div class="empty-state">Няма продукти в тази категория.</div>` : items.map(item=>menuItemRow(item)).join('')}
     <div id="cart-fab-slot">${cartFab()}</div>
+    <div id="ai-fab-slot">${aiFloatingBtn()}</div>
+    <div id="ai-panel-slot">${aiPanel()}</div>
   </div>`;
 }
 function promoBlurb(p){
@@ -1473,79 +1543,100 @@ App.applyPromoCode = function(){
   render();
 };
 App.goCheckout = function(){
-  const p = App.state.profile;
-  setState({
-    screen:'cust-checkout',
-    addressEdit: p ? p.address : App.state.guestAddress,
-    guestName: App.state.guestName || '',
-    guestPhone: App.state.guestPhone || '',
-    guestAddress: App.state.guestAddress || ''
-  });
+  if(!App.state.profile){
+    setState({ screen:'cust-checkout-gate' });
+    return;
+  }
+  setState({ screen:'cust-checkout', addressEdit: App.state.profile.address });
+};
+
+/* ============================= CUSTOMER: CHECKOUT GATE (вход / гост) ============================= */
+function scrCustCheckoutGate(){
+  return `<div class="scr">
+    ${custBar('Как искаш да продължиш?', { back:true, onBack:"App.goCustTab('cart')", cart:false })}
+    <div class="pad col gap12" style="padding-top:24px;">
+      <button class="role-card" onclick="App.enterCustomer(); App.state._afterAuth='checkout';">
+        <div class="icon-btn" style="background:var(--ember-glow);border-color:var(--ember);">${icon('user',20)}</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;">Влез / Регистрирай се</div>
+          <div class="muted" style="font-size:12.5px;">Натрупвай точки лоялност и следи поръчките си</div>
+        </div>
+        <div style="margin-left:auto;">${icon('chevR',18)}</div>
+      </button>
+      <button class="role-card" onclick="App.checkoutAsGuest()">
+        <div class="icon-btn">${icon('truck',20)}</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;">Продължи като гост</div>
+          <div class="muted" style="font-size:12.5px;">Само ime, телефон и адрес — без регистрация</div>
+        </div>
+        <div style="margin-left:auto;">${icon('chevR',18)}</div>
+      </button>
+    </div>
+  </div>`;
+}
+App.checkoutAsGuest = function(){
+  setState({ screen:'cust-checkout', addressEdit:'', guestMode:true });
 };
 
 /* ============================= CUSTOMER: CHECKOUT ============================= */
 function scrCustCheckout(){
-  const t = cartTotals(); const pm = App.state.paymentMethod; const isGuest = !App.state.profile;
-  const contactPhone = (App.state.restaurant.contact_phone||'').trim();
-  const methods = enabledPaymentMethods();
+  const t = cartTotals(); const pm = App.state.paymentMethod;
+  const isGuest = App.state.guestMode && !App.state.profile;
   return `<div class="scr">
-    ${custBar('Плащане и доставка', { back:true, onBack:"App.goCustTab('cart')", cart:false })}
+    ${custBar('Плащане и доставка', { back:true, onBack:"setState({screen:'cust-checkout-gate'})", cart:false })}
     <div class="pad">
     ${isGuest ? `
-      <div class="eyebrow" style="margin-bottom:8px;">Поръчка без регистрация</div>
-      <div class="field"><label>Име и фамилия</label><input id="guest-name" value="${App.state.guestName}" oninput="App.state.guestName=this.value" placeholder="Иван Иванов"></div>
-      <div class="field"><label>Телефон</label><input id="guest-phone" value="${App.state.guestPhone}" oninput="App.state.guestPhone=this.value" placeholder="08xx xxx xxx" inputmode="tel"></div>
-      <div class="field"><label>Адрес за доставка</label><textarea id="guest-address" oninput="App.state.guestAddress=this.value;App.state.addressEdit=this.value" placeholder="Град, квартал, улица, номер">${App.state.guestAddress}</textarea></div>
-      <div class="muted" style="font-size:12.5px;line-height:1.45;">Поръчката ще се запише в админ панела и ще се отвори Viber с готов текст за изпращане към ресторанта.</div>
-    ` : `
-      <div class="field"><label>Адрес за доставка</label>
-        <textarea id="checkout-addr" oninput="App.state.addressEdit=this.value">${App.state.addressEdit}</textarea>
-      </div>
-      <div class="eyebrow" style="margin:18px 0 8px;">Начин на плащане</div>
-      <div class="col gap8">
-        ${methods.map(m=>`
-        <button class="role-card" style="padding:14px;${pm===m.id?'border-color:var(--ember);':''}" onclick="App.setPayment('${m.id}')">
-          <div class="icon-btn" style="${pm===m.id?'border-color:var(--ember);color:var(--ember);':''}">${icon(m.icon,18)}</div>
-          <div style="font-weight:600;font-size:14px;">${m.label}</div>
-          <div style="margin-left:auto;">${pm===m.id?icon('check',18):''}</div>
-        </button>`).join('')}
-      </div>
-    `}
-    ${!isGuest && pm==='online' ? `
+      <div class="eyebrow" style="margin-bottom:8px;">Твоите данни</div>
+      <div class="field"><label>Имe и фамилия</label><input id="guest-name" placeholder="напр. Иван Петров"></div>
+      <div class="field"><label>Телефон</label><input id="guest-phone" placeholder="08xx xxx xxx" inputmode="tel"></div>
+      <div class="ember-divider" style="margin:4px 0 14px;"></div>` : ''}
+    <div class="field"><label>Адрес за доставка</label>
+      <textarea id="checkout-addr" oninput="App.state.addressEdit=this.value">${App.state.addressEdit||''}</textarea>
+    </div>
+    <div class="eyebrow" style="margin:18px 0 8px;">Начин на плащане</div>
+    <div class="col gap8">
+      <button class="role-card" style="padding:14px;${pm==='cash'?'border-color:var(--ember);':''}" onclick="App.setPayment('cash')">
+        <div class="icon-btn" style="${pm==='cash'?'border-color:var(--ember);color:var(--ember);':''}">${icon('cash',18)}</div>
+        <div style="font-weight:600;font-size:14px;">В брой при доставка</div>
+        <div style="margin-left:auto;">${pm==='cash'?icon('check',18):''}</div>
+      </button>
+      <button class="role-card" style="padding:14px;${pm==='online'?'border-color:var(--ember);':''}" onclick="App.setPayment('online')">
+        <div class="icon-btn" style="${pm==='online'?'border-color:var(--ember);color:var(--ember);':''}">${icon('card',18)}</div>
+        <div style="font-weight:600;font-size:14px;">Онлайн плащане с карта</div>
+        <div style="margin-left:auto;">${pm==='online'?icon('check',18):''}</div>
+      </button>
+    </div>
+    ${pm==='online' ? `
       <div class="card" style="margin-top:14px;">
-        <div class="field"><label>Номер на картата</label><input id="card-num" maxlength="19" placeholder="0000 0000 0000 0000" oninput="App.state.cardNum=this.value"></div>
+        <div class="field"><label>Номер на карта</label><input id="card-num" maxlength="19" placeholder="0000 0000 0000 0000" oninput="App.state.cardNum=this.value"></div>
         <div class="row gap8">
           <div class="field" style="flex:1;"><label>Валидност</label><input id="card-exp" maxlength="5" placeholder="MM/ГГ" oninput="App.state.cardExp=this.value"></div>
           <div class="field" style="flex:1;"><label>CVC</label><input id="card-cvc" maxlength="3" placeholder="•••" oninput="App.state.cardCvc=this.value"></div>
         </div>
         <div class="muted" style="font-size:11.5px;">Демо плащане — без реално таксуване.</div>
       </div>` : ''}
-    ${!isGuest && pm==='card_on_delivery' ? `
-      <div class="muted" style="font-size:12.5px;margin-top:10px;line-height:1.45;">Куриерът ще донесе мобилен ПОС терминал за разплащане с карта при доставка.</div>
-    ` : ''}
-    <div class="eyebrow" style="margin:18px 0 8px;">Допълнителни инструкции</div>
-    <div class="field"><textarea id="order-notes" oninput="App.state.orderNotes=this.value" placeholder="напр. без лук, позвънете преди да дойдете, оставете пред врата...">${App.state.orderNotes}</textarea></div>
-    <label class="row gap8" style="align-items:center;cursor:pointer;margin-top:6px;" onclick="event.preventDefault();App.state.orderCutlery=!App.state.orderCutlery;render();">
-      <input type="checkbox" ${App.state.orderCutlery?'checked':''} style="width:18px;height:18px;accent-color:var(--ember);" onclick="event.stopPropagation();App.state.orderCutlery=this.checked;">
-      <span style="font-size:14px;">Желаете ли прибори?</span>
-    </label>
     <div class="ember-divider"></div>
     <div class="row between" style="font-weight:700;font-size:17px;"><span>Общо за плащане</span><span class="mono">${lv(t.total)}</span></div>
-    ${isGuest ? `
-      <button class="btn btn-primary" style="margin-top:18px;" onclick="App.placeViberOrder()" ${App.state.payProcessing||!contactPhone?'disabled':''}>
-        ${contactPhone ? (App.state.payProcessing ? 'Подготовка...' : 'Поръчай чрез Viber') : 'Добави телефон на ресторанта'}
-      </button>
-    ` : `
-      <button class="btn btn-primary" style="margin-top:18px;" onclick="App.placeOrder()" ${App.state.payProcessing?'disabled':''}>
-        ${App.state.payProcessing ? 'Обработка...' : (pm==='online' ? `Плати ${lv(t.total)}` : 'Потвърди поръчката')}
-      </button>
-      <button class="btn btn-ghost" style="margin-top:10px;" onclick="App.placeViberOrder()" ${App.state.payProcessing||!contactPhone?'disabled':''}>Поръчай чрез Viber</button>
-    `}
+    <button class="btn btn-primary" style="margin-top:18px;" onclick="App.placeOrder()" ${App.state.payProcessing?'disabled':''}>
+      ${App.state.payProcessing ? 'Обработка…' : (pm==='cash' ? 'Потвърди поръчката' : `Плати ${lv(t.total)}`)}
+    </button>
     </div>
   </div>`;
 }
 App.setPayment = function(method){ setState({ paymentMethod:method }); };
 App.placeOrder = async function(){
+  const isGuest = App.state.guestMode && !App.state.profile;
+  let custName, custPhone, custUsername;
+  if(isGuest){
+    custName = (document.getElementById('guest-name')?.value||'').trim();
+    custPhone = (document.getElementById('guest-phone')?.value||'').trim();
+    if(!custName||!custPhone){ toast('Въведи име и телефон'); return; }
+    custUsername = null;
+  } else {
+    custName = App.state.profile.name;
+    custPhone = App.state.profile.phone;
+    custUsername = App.state.profile.username;
+  }
   if(!App.state.addressEdit||App.state.addressEdit.trim().length<3){ toast('Въведи адрес за доставка'); return; }
   if(App.state.paymentMethod==='online'){
     const { cardNum, cardExp, cardCvc } = App.state;
@@ -1556,515 +1647,20 @@ App.placeOrder = async function(){
   const orderNum = 'ОГ-' + String(App.state.orders.length+1).padStart(4,'0');
   const order = {
     id:uid(), orderNum, createdAt:Date.now(),
-    customer:{ username:App.state.profile.username, name:App.state.profile.name, phone:App.state.profile.phone, address:App.state.addressEdit },
+    customer:{ username:custUsername, name:custName, phone:custPhone, address:App.state.addressEdit },
     items:lines.map(l=>({ name:l.name, qty:l.qty, price:l.unitPrice })),
-    paymentMethod:App.state.paymentMethod, totals:t, status:'pending',
-    notes:(App.state.orderNotes||'').trim(), cutlery:!!App.state.orderCutlery
+    paymentMethod:App.state.paymentMethod, totals:t, status:'pending', source:'app'
   };
   try{
     await DB.saveOrder(order);
-    await DB.updatePoints(App.state.profile.username, (App.state.profile.points||0) + t.pointsEarned);
-    const profile = { ...App.state.profile, points:(App.state.profile.points||0) + t.pointsEarned };
-    App.state.profile = profile;
+    if(!isGuest && App.state.profile){
+      await DB.updatePoints(custUsername, (App.state.profile.points||0) + t.pointsEarned);
+      App.state.profile = { ...App.state.profile, points:(App.state.profile.points||0) + t.pointsEarned };
+    }
     App.state.cart = []; cartSet([]);
-    setState({ screen:'cust-track', trackOrderId:order.id, payProcessing:false, promoCodeApplied:null, promoCodeInput:'', cardNum:'', cardExp:'', cardCvc:'', orderNotes:'', orderCutlery:false });
+    setState({ screen:'cust-track', trackOrderId:order.id, payProcessing:false, guestMode:false, promoCodeApplied:null, promoCodeInput:'', cardNum:'', cardExp:'', cardCvc:'' });
     toast('Поръчката е изпратена!');
   }catch(e){ setState({ payProcessing:false }); toast('Грешка: ' + e.message); }
-};
-App.placeViberOrder = async function(){
-  const name = (App.state.guestName||'').trim();
-  const phone = (App.state.guestPhone||'').trim();
-  const address = (App.state.guestAddress||'').trim();
-  const contactPhone = (App.state.restaurant.contact_phone||'').trim();
-  if(!name||name.length<2){ toast('Въведи име и фамилия'); return; }
-  if(!phone||phone.length<6){ toast('Въведи валиден телефон'); return; }
-  if(!address||address.length<3){ toast('Въведи адрес за доставка'); return; }
-  if(!contactPhone){ toast('Ресторантът все още няма зададен телефон'); return; }
-  setState({ payProcessing:true });
-  const t = cartTotals(); const lines = cartLines();
-  const orderNum = 'ОГ-' + String(App.state.orders.length+1).padStart(4,'0');
-  const order = {
-    id:uid(), orderNum, createdAt:Date.now(),
-    customer:{ username:null, name, phone, address },
-    items:lines.map(l=>({ name:l.name, qty:l.qty, price:l.unitPrice })),
-    paymentMethod:'cash', totals:t, status:'pending', source:'viber',
-    notes:(App.state.orderNotes||'').trim(), cutlery:!!App.state.orderCutlery
-  };
-  try{
-    await DB.saveOrder(order);
-    App.state.orders = [order, ...App.state.orders];
-    App.state.cart = []; cartSet([]);
-    const text = orderShareText(order);
-    window.open('viber://forward?text=' + encodeURIComponent(text), '_blank');
-    setState({ screen:'cust-track', trackOrderId:order.id, payProcessing:false, guestName:'', guestPhone:'', guestAddress:'', orderNotes:'', orderCutlery:false });
-    toast('Поръчката е изпратена! Изпрати съобщението във Viber.');
-  }catch(e){ setState({ payProcessing:false }); toast('Грешка: ' + e.message); }
-};
-
-/* ============================= AI ASSISTANT (VIRTUAL WAITER) ============================= */
-const AI_TOOLS = [
-  { name:'search_menu', description:'Търси ястия/напитки в менюто по име, описание или категория. Връща списък със съвпадения (id, име, цена, описание, категория).',
-    parameters:{ type:'OBJECT', properties:{ query:{ type:'STRING', description:'Дума или фраза за търсене, напр. "скара" или "салата"' } }, required:['query'] } },
-  { name:'list_categories', description:'Връща списък с всички категории от менюто.', parameters:{ type:'OBJECT', properties:{} } },
-  { name:'add_item_to_cart', description:'Добавя продукт в количката на клиента по неговия точен item_id (взет от search_menu).',
-    parameters:{ type:'OBJECT', properties:{ item_id:{ type:'STRING' }, qty:{ type:'NUMBER', description:'Брой (по подразбиране 1)' } }, required:['item_id'] } },
-  { name:'set_item_qty', description:'Променя количеството на вече добавен продукт в количката. qty:0 премахва продукта.',
-    parameters:{ type:'OBJECT', properties:{ item_id:{ type:'STRING' }, qty:{ type:'NUMBER' } }, required:['item_id','qty'] } },
-  { name:'get_cart', description:'Връща текущото съдържание на количката с цени и общата сума за плащане.', parameters:{ type:'OBJECT', properties:{} } },
-  { name:'set_guest_name', description:'Записва САМО името на клиента, точно както го е казал — никога не предполагай или съкращавай.',
-    parameters:{ type:'OBJECT', properties:{ name:{ type:'STRING' } }, required:['name'] } },
-  { name:'set_guest_phone', description:'Записва САМО телефонния номер на клиента, точно както го е казал.',
-    parameters:{ type:'OBJECT', properties:{ phone:{ type:'STRING' } }, required:['phone'] } },
-  { name:'set_guest_address', description:'Записва САМО адреса за доставка, точно както го е казал клиентът — НИКОГА не предполагай или измисляй адрес от името или от друга информация.',
-    parameters:{ type:'OBJECT', properties:{ address:{ type:'STRING' } }, required:['address'] } },
-  { name:'set_order_details', description:'Задава бележка към поръчката, дали клиентът иска прибори, и начин на плащане.',
-    parameters:{ type:'OBJECT', properties:{
-      notes:{ type:'STRING', description:'Свободен текст с допълнителни инструкции' },
-      cutlery:{ type:'BOOLEAN', description:'true ако клиентът иска прибори' },
-      payment_method:{ type:'STRING', description:'"cash" (в брой) или "card_on_delivery" (карта при доставка)' }
-    } } },
-  { name:'confirm_order_summary', description:'Показва на клиента пълно резюме на поръчката (продукти, сума, име, телефон, адрес, прибори, плащане) за преглед и потвърждение. ЗАДЪЛЖИТЕЛНО се извиква преди place_order — никога не пропускай тази стъпка.',
-    parameters:{ type:'OBJECT', properties:{} } },
-  { name:'place_order', description:'Финализира и изпраща поръчката към ресторанта. Може да се извика само СЛЕД като: 1) confirm_order_summary вече е показал резюме, и 2) клиентът изрично е потвърдил с нов отговор ("да", "потвърждавам" и подобни) СЛЕД като е видял резюмето.',
-    parameters:{ type:'OBJECT', properties:{} } }
-];
-const AI_SYSTEM_PROMPT = `Ти си приятелски виртуален сервитьор на ресторант "${'__REST_NAME__'}". Говориш само на български, кратко и топло, като жив сервитьор.
-КРИТИЧНО ПРАВИЛО #1 (менюто): Никога не изброявай конкретни ястия, цени или категории от паметта си или измислени. Единственият начин да знаеш какво има в менюто е чрез истинско извикване на инструментите search_menu / list_categories — изчакай резултата от инструмента и чак тогава отговори на клиента с реалните имена и цени от резултата. Ако клиент попита "какво предлагате" или "препоръчай ми нещо" — ВИНАГИ първо извикай search_menu или list_categories, никога не отговаряй директно с измислен списък.
-КРИТИЧНО ПРАВИЛО #2 (данни на клиента): Име, телефон и адрес трябва да бъдат КАЗАНИ БУКВАЛНО от клиента — попитай за всяко едно ИЗРИЧНО и поотделно, ако липсва (напр. "Как е твоето име?", после "На какъв телефон да се свържем?", после "На какъв адрес да доставим поръчката?"). НИКОГА не предполагай, не съкращавай и не извеждай адрес, телефон или име от друга информация (напр. от фамилия, от име на квартал, от предишен разговор) — ако клиентът не го е казал буквално, го НЯМАШ и трябва да попиташ.
-КРИТИЧНО ПРАВИЛО #3 (потвърждение): Преди place_order ЗАДЪЛЖИТЕЛНО извикай confirm_order_summary, който показва точно резюме на поръчката на клиента. След това ИЗЧАКАЙ нов отговор от клиента с изрично потвърждение ("да", "потвърждавам", "точно така" и подобни) — само тогава викай place_order. Ако клиентът поиска промяна след резюмето, направи я и пак викай confirm_order_summary, преди да продължиш.
-КРИТИЧНО ПРАВИЛО #4 (валута): Всички цени в менюто и количката са в ЕВРО (€), НИКОГА в лева/BGN. Когато съобщаваш цена на клиента, винаги казвай "евро" или ползвай знака €, например "5.20 евро" или "5.20 €" — никога "лева" или "лв".
-КРИТИЧНО ПРАВИЛО #5 (формат): Пиши САМО чист текст, без markdown форматиране — никакви звездички (**, *), долни черти (_), решетки (#) или други символи за форматиране. Текстът се чете директно на глас, така символите се чуват като думи.
-Задачи:
-- Помагаш на клиента да избере храна — питаш за предпочитания (месо/риба/вегетарианско/бюджет) и предлагаш конкретни ястия само от резултатите на search_menu.
-- Когато клиентът поиска нещо конкретно, добави го в количката с add_item_to_cart (с точния item_id от search_menu).
-- Ако клиентът няма профил (гост), събери име, телефон и адрес поотделно — с set_guest_name, set_guest_phone, set_guest_address — преди confirm_order_summary.
-- Винаги питай "Желаете ли прибори?" преди confirm_order_summary, ако клиентът не е споменал вече.
-- Питай за начин на плащане: в брой или с карта при доставка (куриерът носи ПОС терминал). Запиши го със set_order_details.
-- Ако количката е празна и клиентът поиска да поръчва, обясни му любезно, че количката е празна и предложи да добавите нещо.
-- Бъди кратък — 1-3 изречения на отговор, без излишни обяснения.
-- Никога не пиши инструменти/функции като текст (напр. <function=...>). Извиквай ги само през истинския механизъм за tool calls.`;
-
-function toGroqToolSchema(schema){
-  if(!schema) return { type:'object', properties:{} };
-  const out = { ...schema, type:(schema.type||'OBJECT').toLowerCase() };
-  if(out.properties){
-    out.properties = Object.fromEntries(Object.entries(out.properties).map(([k,v])=>[k, { ...v, type:(v.type||'STRING').toLowerCase() }]));
-  } else out.properties = {};
-  return out;
-}
-const GROQ_TOOLS = AI_TOOLS.map(t=>({ type:'function', function:{ name:t.name, description:t.description, parameters:toGroqToolSchema(t.parameters) } }));
-
-function aiChatSlot(){
-  const allowed = ['cust-menu','cust-category','cust-cart','cust-checkout','cust-dish','cust-promo','cust-profile','cust-track'];
-  if(!allowed.includes(App.state.screen)) return '';
-  if(!EMBEDDED_WORKER_URL) return '';
-  return (App.state.aiChatOpen ? '' : aiFab()) + (App.state.aiChatOpen ? aiPanel() : '');
-}
-function aiFab(){
-  return `<button class="ai-fab" onclick="App.aiOpen()" title="AI Сервитьор">${icon('sparkle',24)}</button>`;
-}
-function aiPanel(){
-  const msgs = App.state.aiMessages;
-  return `<div class="ai-panel">
-    <div class="ai-panel-head">
-      <div class="icon-btn" style="background:rgba(255,255,255,.18);border-color:transparent;color:#fff;">${icon('sparkle',18)}</div>
-      <div style="flex:1;">
-        <div style="font-weight:700;font-size:15px;">AI Сервитьор</div>
-        <div style="font-size:11.5px;opacity:.85;">Питай за менюто или диктувай поръчката си</div>
-      </div>
-      <button class="ai-head-btn" onclick="App.aiToggleVoice()" title="Гласов отговор">${icon(App.state.aiVoiceEnabled?'speaker':'speakerOff',20)}</button>
-      <button class="ai-head-btn" onclick="App.aiClose()">${icon('x',20)}</button>
-    </div>
-    <div class="ai-panel-body" id="ai-panel-body">
-      ${msgs.length===0 ? `<div class="ai-bubble bot">Здравей! 👋 Аз съм твоят виртуален сервитьор. Кажи ми какво ти се яде, или натисни микрофона и ми диктувай поръчката.</div>` : ''}
-      ${msgs.map(m=> m.role==='viber-cta'
-        ? `<div class="ai-bubble bot">${escapeHtml(m.text)}<div style="margin-top:10px;"><button class="btn btn-primary" style='padding:10px 16px;font-size:13px;width:auto;' onclick='App.openViberLink(${JSON.stringify(m.link)})'>${icon('share',14)} Отвори Viber</button></div></div>`
-        : `<div class="ai-bubble ${m.role==='user'?'user':'bot'}">${escapeHtml(m.text)}</div>`
-      ).join('')}
-      ${App.state.aiThinking ? `<div class="ai-bubble typing">${App.state.aiListening?'Слушам...':'Пише...'}</div>` : ''}
-    </div>
-    <div class="ai-panel-foot">
-      <button class="ai-mic-btn ${App.state.aiListening?'listening':''}" onclick="App.aiToggleMic()" ${App.state.aiThinking&&!App.state.aiListening?'disabled':''} title="Гласова поръчка">${icon('mic',18)}</button>
-      <input id="ai-text-input" placeholder="Напиши съобщение..." value="${escapeHtml(App.state.aiInput)}" oninput="App.state.aiInput=this.value" onkeydown="if(event.key==='Enter'){event.preventDefault();App.aiSend();}" ${App.state.aiThinking?'disabled':''}>
-      <button onclick="App.aiSend()" ${App.state.aiThinking?'disabled':''}>${icon('send',18)}</button>
-    </div>
-  </div>`;
-}
-function escapeHtml(str){ return (str||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function stripMarkdown(s){
-  return (s||'')
-    .replace(/\*\*([^*]+)\*\*/g, '$1')
-    .replace(/\*([^*]+)\*/g, '$1')
-    .replace(/__([^_]+)__/g, '$1')
-    .replace(/_([^_]+)_/g, '$1')
-    .replace(/`{1,3}([^`]*)`{1,3}/g, '$1')
-    .replace(/#{1,6}\s?/g, '')
-    .trim();
-}
-App.aiOpen = function(){
-  if(!App.state.aiHistory.length){
-    App.state.aiHistory = []; App.state.aiMessages = []; App.state.aiOrderSummaryShown = false;
-  }
-  setState({ aiChatOpen:true });
-};
-App.aiClose = function(){ App.aiStopListening(); window.speechSynthesis && window.speechSynthesis.cancel(); setState({ aiChatOpen:false }); };
-App.openViberLink = function(link){ window.open(link, '_blank'); };
-
-/* ---------- Voice: TTS (говорим отговор) ---------- */
-let _bgVoice = null;
-function pickBgVoice(){
-  if(!('speechSynthesis' in window)) return null;
-  const voices = window.speechSynthesis.getVoices();
-  return voices.find(v=>v.lang && v.lang.toLowerCase().startsWith('bg')) || null;
-}
-if('speechSynthesis' in window){
-  window.speechSynthesis.onvoiceschanged = function(){ _bgVoice = pickBgVoice(); };
-  _bgVoice = pickBgVoice();
-}
-function fixDecimalsForSpeech(s){
-  // "4.32" се чете от bg-BG TTS като подреден номер ("четвърти...") заради точката.
-  // Заменяме десетичната точка със запетая (стандартния разделител на български),
-  // само за число.число — не пипаме други точки (край на изречение и т.н.).
-  return (s||'').replace(/(\d+)\.(\d{1,2})(?!\d)/g, '$1,$2');
-}
-function stripEmojiForSpeech(s){
-  return (s||'')
-    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}\uFE0F\u200D]/gu, '')
-    .replace(/\s{2,}/g, ' ').trim();
-}
-function speakBg(text){
-  if(!App.state.aiVoiceEnabled || !text) return;
-  if(!('speechSynthesis' in window)) return;
-  const clean = fixDecimalsForSpeech(stripEmojiForSpeech(text));
-  if(!clean) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(clean);
-  if(_bgVoice){ u.voice = _bgVoice; u.lang = _bgVoice.lang; } else { u.lang = 'bg-BG'; }
-  u.rate = 1; u.pitch = 1;
-  window.speechSynthesis.speak(u);
-}
-App.aiToggleVoice = function(){
-  const next = !App.state.aiVoiceEnabled;
-  if(!next) window.speechSynthesis && window.speechSynthesis.cancel();
-  setState({ aiVoiceEnabled: next });
-};
-
-/* ---------- Voice: STT (диктовка) ---------- */
-App._aiRecognition = null;
-App.aiToggleMic = function(){
-  if(App.state.aiListening){ App.aiStopListening(); return; }
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){ toast('Браузърът не поддържа гласово разпознаване. Пробвай с Chrome.'); return; }
-  try{
-    const rec = new SR();
-    rec.lang = 'bg-BG';
-    rec.interimResults = false;
-    rec.maxAlternatives = 1;
-    rec.onresult = function(e){
-      const transcript = e.results[0][0].transcript;
-      setState({ aiListening:false, aiInput:transcript, aiVoiceEnabled:true });
-      App.aiSend();
-    };
-    rec.onerror = function(){ setState({ aiListening:false }); toast('Не успях да чуя добре — пробвай пак.'); };
-    rec.onend = function(){ if(App.state.aiListening) setState({ aiListening:false }); };
-    App._aiRecognition = rec;
-    setState({ aiListening:true });
-    rec.start();
-  }catch(e){ setState({ aiListening:false }); toast('Грешка при достъп до микрофона: ' + e.message); }
-};
-App.aiStopListening = function(){
-  if(App._aiRecognition){ try{ App._aiRecognition.stop(); }catch(e){} App._aiRecognition = null; }
-  if(App.state.aiListening) setState({ aiListening:false });
-};
-
-/* ---------- tool implementations ---------- */
-const AI_TOOL_IMPL = {
-  search_menu({ query }){
-    const norm = s=>(s||'').toLowerCase().trim();
-    const wordMatch = (a,b)=>{
-      if(!a||!b) return false;
-      if(a.includes(b) || b.includes(a)) return true;
-      const n = Math.min(a.length,b.length);
-      return n>=4 && a.slice(0,4)===b.slice(0,4); // улавя форми като "кюфте"/"кюфтета", "айрян"/"айряна"
-    };
-    const qWords = norm(query).split(/[\s,]+/).filter(Boolean);
-    const matches = App.state.items.filter(i=>{
-      if(i.available===false) return false;
-      if(!qWords.length) return true;
-      const haystackWords = norm(i.name + ' ' + (i.desc||'') + ' ' + (i.categoryIds||[]).map(categoryName).join(' ')).split(/[\s,]+/).filter(Boolean);
-      return qWords.some(qw=>haystackWords.some(hw=>wordMatch(hw,qw)));
-    }).slice(0, 12);
-    return { currency:'EUR', results: matches.map(i=>({ item_id:i.id, name:i.name, price_eur:i.price, desc:i.desc, category:(i.categoryIds||[]).map(categoryName).join(', ') })) };
-  },
-  list_categories(){
-    return { categories: App.state.categories.map(c=>c.name) };
-  },
-  add_item_to_cart({ item_id, qty }){
-    const item = itemById(item_id);
-    if(!item) return { error:'Няма продукт с такъв item_id. Използвай search_menu първо.' };
-    const n = Math.max(1, parseInt(qty)||1);
-    const cart = App.state.cart; const line = cart.find(c=>c.itemId===item_id);
-    if(line) line.qty += n; else cart.push({ itemId:item_id, qty:n });
-    cartSet(cart); App.state.aiOrderSummaryShown=false; render();
-    return { ok:true, cart:AI_TOOL_IMPL.get_cart() };
-  },
-  set_item_qty({ item_id, qty }){
-    const n = Math.max(0, parseInt(qty)||0);
-    let cart = App.state.cart;
-    if(n<=0) cart = cart.filter(c=>c.itemId!==item_id);
-    else { const line = cart.find(c=>c.itemId===item_id); if(line) line.qty = n; else cart.push({ itemId:item_id, qty:n }); }
-    App.state.cart = cart; cartSet(cart); App.state.aiOrderSummaryShown=false; render();
-    return { ok:true, cart:AI_TOOL_IMPL.get_cart() };
-  },
-  get_cart(){
-    const lines = cartLines(); const t = cartTotals();
-    return { currency:'EUR', items: lines.map(l=>({ item_id:l.itemId, name:l.name, qty:l.qty, unit_price_eur:l.unitPrice })), total_eur:t.total, subtotal_eur:t.subtotal };
-  },
-  set_guest_name({ name }){
-    if(!name || !name.trim()) return { error:'Името е празно.' };
-    App.state.guestName = name.trim(); App.state.aiOrderSummaryShown=false; render();
-    return { ok:true, name:App.state.guestName };
-  },
-  set_guest_phone({ phone }){
-    if(!phone || !phone.trim()) return { error:'Телефонът е празен.' };
-    App.state.guestPhone = phone.trim(); App.state.aiOrderSummaryShown=false; render();
-    return { ok:true, phone:App.state.guestPhone };
-  },
-  set_guest_address({ address }){
-    if(!address || !address.trim()) return { error:'Адресът е празен.' };
-    App.state.guestAddress = address.trim(); App.state.aiOrderSummaryShown=false; render();
-    return { ok:true, address:App.state.guestAddress };
-  },
-  set_order_details({ notes, cutlery, payment_method }){
-    if(typeof notes === 'string') App.state.orderNotes = notes;
-    if(typeof cutlery === 'boolean') App.state.orderCutlery = cutlery;
-    if(payment_method && ['cash','card_on_delivery'].includes(payment_method)) App.state.paymentMethod = payment_method;
-    App.state.aiOrderSummaryShown=false;
-    render();
-    return { ok:true };
-  },
-  confirm_order_summary(){
-    const lines = cartLines(); const t = cartTotals();
-    if(!lines.length) return { error:'Количката е празна — добави продукти преди резюме.' };
-    const isGuest = !App.state.profile;
-    const custName = isGuest ? (App.state.guestName||'').trim() : App.state.profile.name;
-    const custPhone = isGuest ? (App.state.guestPhone||'').trim() : App.state.profile.phone;
-    const custAddress = isGuest ? (App.state.guestAddress||'').trim() : (App.state.addressEdit||App.state.profile.address||'').trim();
-    if(isGuest){
-      if(!custName||custName.length<2) return { error:'Липсва име на клиента — поискай го изрично, после пак извикай confirm_order_summary.' };
-      if(!custPhone||custPhone.length<6) return { error:'Липсва валиден телефон — поискай го изрично, после пак извикай confirm_order_summary.' };
-      if(!custAddress||custAddress.length<3) return { error:'Липсва адрес за доставка — поискай го изрично (никога не го предполагай), после пак извикай confirm_order_summary.' };
-    }
-    const itemsTxt = lines.map(l=>`${l.qty}× ${l.name} — ${lv(l.unitPrice*l.qty)}`).join('\n');
-    const pmTxt = paymentLabel(App.state.paymentMethod||'cash', true);
-    const summary = `📋 Резюме на поръчката:\n${itemsTxt}\n\n👤 ${custName}\n📞 ${custPhone}\n📍 ${custAddress}\n🍴 ${App.state.orderCutlery?'С прибори':'Без прибори'}\n💳 Плащане: ${pmTxt}\n\n💰 Общо: ${lv(t.total)}\n\nПотвърждаваш ли поръчката?`;
-    App.state.aiMessages.push({ role:'model', text:summary });
-    speakBg('Резюме на поръчката е готово. Моля, потвърди дали всичко е точно.');
-    App.state.aiOrderSummaryShown = true;
-    return { ok:true, shown:true, summary };
-  },
-  async place_order(){
-    const lines = cartLines();
-    if(!lines.length) return { error:'Количката е празна.' };
-    const isGuest = !App.state.profile;
-    if(!App.state.aiOrderSummaryShown) return { error:'Трябва първо да извикаш confirm_order_summary и да изчакаш изрично потвърждение от клиента в нов отговор.' };
-    if(isGuest){
-      const name = (App.state.guestName||'').trim(), phone=(App.state.guestPhone||'').trim(), address=(App.state.guestAddress||'').trim();
-      if(!name||name.length<2) return { error:'Липсва име на клиента — поискай го.' };
-      if(!phone||phone.length<6) return { error:'Липсва валиден телефон — поискай го.' };
-      if(!address||address.length<3) return { error:'Липсва адрес за доставка — поискай го.' };
-    }
-    const t = cartTotals();
-    const orderNum = 'ОГ-' + String(App.state.orders.length+1).padStart(4,'0');
-    const pm = (App.state.paymentMethod==='online') ? 'cash' : (App.state.paymentMethod||'cash');
-    const order = {
-      id:uid(), orderNum, createdAt:Date.now(),
-      customer: isGuest
-        ? { username:null, name:App.state.guestName.trim(), phone:App.state.guestPhone.trim(), address:App.state.guestAddress.trim() }
-        : { username:App.state.profile.username, name:App.state.profile.name, phone:App.state.profile.phone, address:App.state.addressEdit||App.state.profile.address },
-      items: lines.map(l=>({ name:l.name, qty:l.qty, price:l.unitPrice })),
-      paymentMethod: pm, totals:t, status:'pending', source:'ai',
-      notes:(App.state.orderNotes||'').trim(), cutlery:!!App.state.orderCutlery
-    };
-    try{
-      await DB.saveOrder(order);
-      App.state.orders = [order, ...App.state.orders];
-      if(!isGuest){
-        await DB.updatePoints(App.state.profile.username, (App.state.profile.points||0) + t.pointsEarned);
-        App.state.profile = { ...App.state.profile, points:(App.state.profile.points||0) + t.pointsEarned };
-      }
-      App.state.cart = []; cartSet([]);
-      App.state.aiOrderPlaced = true;
-      if(isGuest){
-        const link = 'viber://forward?text=' + encodeURIComponent(orderShareText(order));
-        App.state.aiMessages.push({ role:'viber-cta', text:`Поръчка ${order.orderNum} е записана при ресторанта! Натисни бутона, за да я изпратиш и във Viber:`, link });
-      }
-      setState({ screen:'cust-track', trackOrderId:order.id, guestName:'', guestPhone:'', guestAddress:'', orderNotes:'', orderCutlery:false, aiOrderSummaryShown:false, aiChatOpen:!isGuest ? false : App.state.aiChatOpen });
-      return { ok:true, order_num:order.orderNum, total:t.total };
-    }catch(e){ return { error:'Грешка при запис: ' + e.message }; }
-  }
-};
-
-/* ---------- Groq API call loop (OpenAI-compatible chat completions) ---------- */
-async function callProviderOnce(provider, model, messages){
-  const headers = { 'Content-Type':'application/json' };
-  if(WORKER_SHARED_SECRET) headers['X-App-Secret'] = WORKER_SHARED_SECRET;
-  const res = await fetch(EMBEDDED_WORKER_URL, {
-    method:'POST',
-    headers,
-    body:JSON.stringify({ provider:provider.id, model, messages, tools:GROQ_TOOLS, tool_choice:'auto', temperature:0.2 })
-  });
-  if(res.ok){
-    const data = await res.json();
-    const msg = data.choices && data.choices[0] && data.choices[0].message;
-    if(!msg) throw { transient:false, message:'Празен отговор от AI.' };
-    return msg;
-  }
-  const t = await res.text();
-  if(res.status===429) throw { rateLimited:true, message:'Достигнат е безплатният лимит на ' + provider.name + '.' };
-  if(res.status===404) throw { rateLimited:true, message:'Моделът вече не е достъпен безплатно при ' + provider.name + '.' };
-  if(res.status===503 || res.status===500 || res.status===529) throw { transient:true, message:'Моделът е временно претоварен.' };
-  let parsedCode = '';
-  try{ parsedCode = (JSON.parse(t).error||{}).code || ''; }catch(e){}
-  if(parsedCode==='tool_use_failed') throw { transient:true, message:'Моделът не успя да форматира заявката коректно, ще пробвам пак.' };
-  throw { transient:false, message:provider.name + ' API: ' + t.slice(0,200) };
-}
-function buildAiChain(){
-  const chain = [];
-  if(!EMBEDDED_WORKER_URL) return chain;
-  const groqProvider = { name:'Groq', id:'groq' };
-  chain.push({ provider:groqProvider, model:GROQ_MODEL });
-  GROQ_FALLBACK_MODELS.forEach(m=>chain.push({ provider:groqProvider, model:m }));
-  const orProvider = { name:'OpenRouter', id:'openrouter' };
-  chain.push({ provider:orProvider, model:OPENROUTER_MODELS[0] });
-  OPENROUTER_MODELS.slice(1).forEach(m=>chain.push({ provider:orProvider, model:m }));
-  return chain;
-}
-async function callGroq(messages){
-  const chain = buildAiChain();
-  if(!chain.length) throw new Error('Няма зададен нито един AI ключ.');
-  let lastMsg = 'AI доставчиците са временно недостъпни.';
-  for(let i=0; i<chain.length; i++){
-    const { provider, model } = chain[i];
-    const isLast = (i === chain.length-1);
-    if(!isLast){
-      // не е последното звено във веригата — при rate limit просто преминаваме напред, без чакане
-      for(let attempt=0; attempt<2; attempt++){
-        try{ return await callProviderOnce(provider, model, messages); }
-        catch(err){
-          if(err && err.rateLimited){ lastMsg = err.message; break; } // премини веднага към следващия модел/доставчик
-          if(err && err.transient===false) throw new Error(err.message);
-          lastMsg = (err && err.message) || lastMsg;
-          await new Promise(r=>setTimeout(r, 900*(attempt+1)));
-        }
-      }
-    } else {
-      // последно звено във веригата — изчерпваме всички опити, включително изчакване при rate limit
-      for(let attempt=0; attempt<2; attempt++){
-        try{ return await callProviderOnce(provider, model, messages); }
-        catch(err){
-          if(err && err.transient===false && !err.rateLimited) throw new Error(err.message);
-          lastMsg = (err && err.message) || lastMsg;
-          await new Promise(r=>setTimeout(r, 1100*(attempt+1)));
-        }
-      }
-    }
-  }
-  throw new Error('Всички AI модели са временно претоварени или с изчерпан лимит. Опитай пак след малко. (' + lastMsg + ')');
-}
-function extractPseudoToolCalls(content){
-  if(!content || content.indexOf('<function')===-1) return null;
-  const calls = []; let cleaned = content;
-  // По-широк regex — улавя <function=NAME ...>...</function> И <function=NAME={json}</function> (без затваряща '>')
-  const re = /<function\s*=\s*([a-zA-Z_][\w]*)\s*=?\s*([\s\S]*?)<\/function>/g;
-  let m, found = false;
-  while((m = re.exec(content))){
-    found = true;
-    const name = m[1]; let mid = (m[2]||'').trim();
-    mid = mid.replace(/^>/, '').trim();
-    let args = {};
-    let parsedJson = false;
-    try{ const j = JSON.parse(mid); if(j && typeof j === 'object'){ args = j; parsedJson = true; } }catch(e){}
-    if(!parsedJson){
-      const attrRe = /([a-zA-Z_][\w]*)\s*=\s*"([^"]*)"/g; let am;
-      while((am = attrRe.exec(mid))){ args[am[1]] = am[2]; }
-    }
-    calls.push({ id:'pseudo_' + calls.length + '_' + Date.now(), type:'function', function:{ name, arguments: JSON.stringify(args) } });
-    cleaned = cleaned.replace(m[0], '');
-  }
-  if(!found) return null;
-  return { calls, cleaned: cleaned.trim() };
-}
-function stripStrayTags(s){
-  // защитна мрежа — премахва каквото е останало от недоразпознат/непълен <function...> тага
-  return (s||'').replace(/<function[\s\S]*?(<\/function>|$)/gi, '').trim();
-}
-function looksBulgarian(text){
-  const stripped = (text||'').replace(/[0-9.,€%\s\-:;!?()'"]/g, '');
-  if(stripped.length < 6) return true; // твърде кратко за надеждна преценка
-  const cyr = (stripped.match(/[а-яА-ЯЁё]/g) || []).length;
-  return (cyr / stripped.length) > 0.5;
-}
-App.aiSend = async function(){
-  const text = (App.state.aiInput||'').trim();
-  if(!text || App.state.aiThinking) return;
-  if(!EMBEDDED_WORKER_URL){ toast('AI не е настроен (липсва Worker URL).'); return; }
-  if(!App.state.aiHistory.length){
-    App.state.aiHistory.push({ role:'system', content: AI_SYSTEM_PROMPT.replace('__REST_NAME__', App.state.restaurant.name||'Огнище') });
-  }
-  App.state.aiMessages.push({ role:'user', text });
-  App.state.aiHistory.push({ role:'user', content:text });
-  setState({ aiInput:'', aiThinking:true });
-  try{
-    let guard = 0;
-    let langRetries = 0;
-    while(guard++ < 6){
-      const msg = await callGroq(App.state.aiHistory);
-      let toolCalls = msg.tool_calls || [];
-      let visibleText = (msg.content||'').trim();
-      if(!toolCalls.length){
-        const pseudo = extractPseudoToolCalls(msg.content||'');
-        if(pseudo && pseudo.calls.length){ toolCalls = pseudo.calls; visibleText = ''; }
-      }
-      if(toolCalls.length){
-        App.state.aiHistory.push({ role:'assistant', content:null, tool_calls:toolCalls });
-        for(const tc of toolCalls){
-          const impl = AI_TOOL_IMPL[tc.function.name];
-          let result;
-          try{
-            const args = tc.function.arguments ? JSON.parse(tc.function.arguments) : {};
-            result = impl ? await impl(args) : { error:'Непознат инструмент. Наличните инструменти са: ' + Object.keys(AI_TOOL_IMPL).join(', ') };
-          }catch(e){ result = { error: e.message }; }
-          App.state.aiHistory.push({ role:'tool', tool_call_id:tc.id, content:JSON.stringify(result) });
-        }
-        const calledSummary = toolCalls.some(tc=>tc.function.name==='confirm_order_summary');
-        if(calledSummary){
-          // спираме автоматичния цикъл тук — резюмето вече е показано в чата;
-          // изчакваме реален отговор от клиента, преди да позволим place_order
-          App.state.aiHistory.push({ role:'assistant', content:'Изчаквам изрично потвърждение от клиента преди да продължа с поръчката.' });
-          break;
-        }
-        continue;
-      }
-      // няма извикване на инструмент — финален текстов отговор
-      visibleText = stripMarkdown(stripStrayTags(visibleText));
-      if(visibleText && !looksBulgarian(visibleText) && langRetries < 1){
-        // отговорът изглежда неразбираем/на друг език — пробваме веригата отново, без да го пазим в историята
-        langRetries++;
-        continue;
-      }
-      if(visibleText){
-        App.state.aiHistory.push({ role:'assistant', content:visibleText });
-        App.state.aiMessages.push({ role:'model', text:visibleText });
-        speakBg(visibleText);
-      }
-      break;
-    }
-  }catch(e){
-    App.state.aiMessages.push({ role:'model', text:'Извинявам се, възникна грешка: ' + e.message });
-  }finally{
-    setState({ aiThinking:false });
-  }
 };
 
 /* ============================= CUSTOMER: TRACK ============================= */
@@ -2091,28 +1687,36 @@ function scrCustTrack(){
       ${order.items.map(i=>`<div class="row between" style="font-size:13.5px;"><span>${i.qty}× ${i.name}</span><span class="mono">${lv(i.price*i.qty)}</span></div>`).join('')}
       <div class="ember-divider" style="margin:10px 0;"></div>
       <div class="row between" style="font-weight:700;"><span>Общо</span><span class="mono">${lv(order.totals.total)}</span></div>
-      <div class="muted" style="font-size:12px;">${paymentLabel(order.paymentMethod)}</div>
+      <div class="muted" style="font-size:12px;">${order.paymentMethod==='cash'?'Плащане в брой':'Платено онлайн'}</div>
       <div class="muted" style="font-size:12px;">Адрес: ${order.customer.address}</div>
-      ${order.cutlery ? `<div class="muted" style="font-size:12px;">${icon('check',12)} С прибори</div>` : ''}
-      ${order.notes ? `<div class="muted" style="font-size:12px;">Бележка: ${order.notes}</div>` : ''}
     </div>
     </div>
   </div>`;
 }
 
 /* ============================= CUSTOMER: PROFILE ============================= */
+function scrProfileGuest(){
+  return `<div class="scr">
+    ${custBar('Профил', { cart:true })}
+    <div class="pad" style="padding-top:28px;text-align:center;">
+      <div class="logo-mark" style="width:58px;height:58px;border-radius:16px;margin:0 auto 14px;">${icon('user',28)}</div>
+      <h2 style="font-size:20px;margin-bottom:8px;">Все още не си влязъл</h2>
+      <div class="muted" style="font-size:13.5px;margin-bottom:26px;line-height:1.5;">
+        Влез или се регистрирай, за да натрупваш точки<br>лоялност и да следиш историята на поръчките си.
+      </div>
+      <button class="btn btn-primary" style="margin-bottom:10px;" onclick="App.switchAuthMode('login'); setState({screen:'cust-auth'});">Влез в профила си</button>
+      <button class="btn btn-ghost" onclick="App.switchAuthMode('register'); setState({screen:'cust-auth'});">Регистрирай се</button>
+      <div class="ember-divider" style="margin:24px 0 16px;"></div>
+      <div class="muted" style="font-size:12.5px;">Можеш да поръчаш и без регистрация —<br>избери ястие и добави в количката.</div>
+      <button class="btn btn-ghost" style="margin-top:10px;" onclick="App.goCustTab('menu');">Към менюто</button>
+    </div>
+    ${custTabbar()}
+  </div>`;
+}
+
 function scrCustProfile(){
   const p = App.state.profile;
-  if(!p) return `<div class="scr">
-    ${custBar('Профил', { cart:true })}
-    <div class="pad" style="text-align:center;padding-top:40px;">
-      <div class="icon-btn" style="width:54px;height:54px;margin:0 auto 14px;">${icon('user',24)}</div>
-      <h2 style="font-size:19px;">Поръчваш като гост</h2>
-      <div class="muted" style="font-size:13px;margin-top:6px;line-height:1.5;">Регистрирай се, за да пазиш история на поръчките и да събираш точки лоялност.</div>
-      <button class="btn btn-primary" style="margin-top:18px;" onclick="setState({screen:'cust-auth',authMode:'register'})">Регистрация</button>
-      <button class="btn btn-ghost" style="margin-top:10px;" onclick="setState({screen:'cust-auth',authMode:'login'})">Вече имам профил</button>
-    </div>
-  </div>`;
+  if(!p) return scrProfileGuest();
   const tier = tierFor(p.points||0);
   const tiers = (App.state.loyalty.tiers||[]).slice().sort((a,b)=>a.minPoints-b.minPoints);
   const nextTier = tiers.find(t=>t.minPoints > (p.points||0));
@@ -2157,21 +1761,42 @@ function statusLabel(s){ return ({pending:'Прието',preparing:'Пригот
 App.viewOrder = function(id){ setState({ screen:'cust-track', trackOrderId:id }); };
 App.logoutCustomer = function(){ sessionClear(); setState({ screen:'role', profile:null }); };
 
-/* ============================= RESTAURANT: PASSCODE ============================= */
+/* ============================= RESTAURANT: AUTH LOGIN ============================= */
 function scrRestPass(){
+  const err = App.state.restLoginError || '';
+  const loading = App.state.restLoginLoading || false;
   return `<div class="scr center-screen">
-    <button class="icon-btn" style="position:absolute;top:18px;left:18px;" onclick="setState({screen:'role',showAdminEntry:false})">${icon('chevL',18)}</button>
-    <div class="icon-btn" style="width:54px;height:54px;margin-bottom:16px;">${icon('box',26)}</div>
+    <button class="icon-btn" style="position:absolute;top:18px;left:18px;" onclick="setState({screen:'role'})">${icon('chevL',18)}</button>
+    <div class="logo-mark" style="width:54px;height:54px;border-radius:16px;margin-bottom:16px;">
+      ${App.state.restaurant.logo_image ? `<img src="${App.state.restaurant.logo_image}" alt="">` : icon('flame',26)}
+    </div>
     <h2 style="font-size:20px;margin-bottom:4px;">Вход за ресторанта</h2>
-    <div class="muted" style="font-size:13px;margin-bottom:20px;text-align:center;">Демо код: <span class="mono">1234</span></div>
-    <input id="rest-pass-input" placeholder="Код за достъп" style="text-align:center;letter-spacing:.2em;background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:13px;width:100%;font-size:16px;margin-bottom:12px;" maxlength="8">
-    <button class="btn btn-primary" onclick="App.unlockRest()">Влез</button>
+    <div class="muted" style="font-size:13px;margin-bottom:20px;text-align:center;">Използвай администраторския имейл и парола</div>
+    ${err ? `<div style="background:#FBE0DE;border:1px solid var(--red);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;width:100%;">${err}</div>` : ''}
+    <div class="field" style="width:100%;"><label>Имейл</label>
+      <input id="rest-email" type="email" placeholder="admin@restaurant.bg" autocapitalize="off" inputmode="email">
+    </div>
+    <div class="field" style="width:100%;"><label>Парола</label>
+      <input id="rest-password" type="password" placeholder="••••••••">
+    </div>
+    <button class="btn btn-primary" style="width:100%;" onclick="App.loginRest()" ${loading?'disabled':''}>
+      ${loading ? 'Влизане…' : 'Влез'}
+    </button>
   </div>`;
 }
-App.unlockRest = function(){
-  const v = document.getElementById('rest-pass-input').value.trim();
-  if(v==='1234'){ ensureAudioCtx(); setState({restUnlocked:true,screen:'rest-orders',restTab:'orders'}); }
-  else toast('Грешен код');
+App.loginRest = async function(){
+  const email = (document.getElementById('rest-email').value||'').trim();
+  const password = document.getElementById('rest-password').value
+  if(!email || !password){ toast('Въведи имейл и парола'); return; }
+  setState({ restLoginLoading:true, restLoginError:'' });
+  ensureAudioCtx();
+  try{
+    const { data, error } = await SB.auth.signInWithPassword({ email, password });
+    if(error){ setState({ restLoginLoading:false, restLoginError:error.message }); return; }
+    setState({ restUnlocked:true, restLoginLoading:false, restLoginError:'', screen:'rest-orders', restTab:'orders' });
+  }catch(e){
+    setState({ restLoginLoading:false, restLoginError:'Грешка: ' + (e.message||e) });
+  }
 };
 
 /* ============================= RESTAURANT: SHARED TABS / HEADER ============================= */
@@ -2190,7 +1815,10 @@ App.goRestTab = function(tab){
 function restHeader(){
   return `<div class="topbar row between">${brandHeader(true)}<button class="btn btn-ghost btn-sm" onclick="App.exitRest()">Изход</button></div>`;
 }
-App.exitRest = function(){ setState({ screen:'role', restUnlocked:false, showAdminEntry:false }); };
+App.exitRest = async function(){
+  await SB.auth.signOut();
+  setState({ screen:'role', restUnlocked:false });
+};
 
 /* ============================= RESTAURANT: ORDERS ============================= */
 function scrRestOrders(){
@@ -2221,11 +1849,7 @@ function orderCard(o){
     <div class="col" style="margin-top:10px;gap:3px;">
       ${o.items.map(i=>`<div class="row between" style="font-size:13px;"><span>${i.qty}× ${i.name}</span><span class="mono">${lv(i.price*i.qty)}</span></div>`).join('')}
     </div>
-    ${o.cutlery || o.notes ? `<div class="col" style="margin-top:8px;gap:3px;">
-      ${o.cutlery ? `<div class="muted" style="font-size:12px;">${icon('check',12)} Желае прибори</div>` : ''}
-      ${o.notes ? `<div class="muted" style="font-size:12px;">📝 ${o.notes}</div>` : ''}
-    </div>` : ''}
-    <div class="row between" style="margin-top:8px;font-weight:700;font-size:14px;"><span>Общо · ${paymentLabel(o.paymentMethod, true)}</span><span class="mono">${lv(o.totals.total)}</span></div>
+    <div class="row between" style="margin-top:8px;font-weight:700;font-size:14px;"><span>Общо · ${o.paymentMethod==='cash'?'в брой':'онлайн'}</span><span class="mono">${lv(o.totals.total)}</span></div>
     ${o.status==='pending' ? `
       <button class="btn btn-primary" style="margin-top:12px;" onclick="App.updateOrderStatus('${o.id}','preparing')">${icon('check',16)} Приемам поръчката</button>
     ` : ''}
@@ -2243,11 +1867,7 @@ function orderCard(o){
 }
 function orderShareText(o){
   const lines = o.items.map(i=>`${i.qty}× ${i.name} — ${lv(i.price*i.qty)}`).join('\n');
-  const extra = [
-    o.cutlery ? '🍴 Желае прибори' : '',
-    o.notes ? `📝 Бележка: ${o.notes}` : ''
-  ].filter(Boolean).join('\n');
-  return `📦 Поръчка ${o.orderNum}\n👤 ${o.customer.name} · ${o.customer.phone}\n📍 ${o.customer.address}\n\n${lines}${extra?'\n\n'+extra:''}\n\nОбщо: ${lv(o.totals.total)} (${paymentLabel(o.paymentMethod, true)})`;
+  return `📦 Поръчка ${o.orderNum}\n👤 ${o.customer.name} · ${o.customer.phone}\n📍 ${o.customer.address}\n\n${lines}\n\nОбщо: ${lv(o.totals.total)} (${o.paymentMethod==='cash'?'в брой':'платено онлайн'})`;
 }
 App.shareOrder = async function(id){
   const o = App.state.orders.find(x=>x.id===id); if(!o) return;
@@ -2285,7 +1905,7 @@ function scrRestMenu(){
       ${App.state.categories.length===0 ? `<div class="empty-state">Все още няма категории.</div>` : ''}
       ${App.state.categories.map(c=>`
         <div class="row between" style="margin:14px 0 6px;">
-          <div><div class="eyebrow" style="margin:0;">${c.name}</div>${c.description ? `<div class="muted" style="font-size:12.5px;line-height:1.35;margin-top:3px;">${c.description}</div>` : ''}</div>
+          <div class="eyebrow" style="margin:0;">${c.name}</div>
           <div class="row gap8">
             <button class="icon-btn" style="width:28px;height:28px;" onclick="App.openCategoryModal('${c.id}')">${icon('pencil',12)}</button>
             <button class="icon-btn" style="width:28px;height:28px;" onclick="App.deleteCategory('${c.id}')">${icon('trash',12)}</button>
@@ -2313,7 +1933,7 @@ function scrRestMenu(){
 }
 App.state.showCategoryModal = false;
 App.openCategoryModal = function(catId){
-  const cat = catId ? App.state.categories.find(c=>c.id===catId) : { id:null, name:'', description:'', image:null };
+  const cat = catId ? App.state.categories.find(c=>c.id===catId) : { id:null, name:'', image:null };
   App._pendingCategoryImage = cat.image || null;
   setState({ editingCategory:cat, showCategoryModal:true });
 };
@@ -2325,7 +1945,6 @@ function categoryModal(){
       <div class="modal-handle"></div>
       <h3 style="font-size:17px;margin-bottom:14px;">${c.id?'Редактирай категория':'Нова категория'}</h3>
       <div class="field"><label>Име на категорията</label><input id="cat-name" value="${c.name}" placeholder="напр. Супи"></div>
-      <div class="field"><label>Описание на категорията</label><textarea id="cat-desc" placeholder="Кратко описание за клиентите">${c.description||''}</textarea></div>
       <div class="field">
         <label>Снимка на категорията</label>
         <input type="file" accept="image/*" onchange="App.handleCategoryPhotoUpload(event)" style="background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px;">
@@ -2356,16 +1975,15 @@ App.removeCategoryPhoto = function(){
 App.saveCategory = async function(){
   const c = App.state.editingCategory;
   const name = document.getElementById('cat-name').value.trim();
-  const description = (document.getElementById('cat-desc')?.value || '').trim();
   if(!name){ toast('Въведи име на категорията'); return; }
   const newId = c.id || uid();
   const sortOrder = c.id ? App.state.categories.findIndex(x=>x.id===c.id) : App.state.categories.length;
   const image = App._pendingCategoryImage || null;
   try{
-    await DB.saveCategory({ id:newId, name, description, sort_order: sortOrder, image });
+    await DB.saveCategory({ id:newId, name, sort_order: sortOrder, image });
     let cats = App.state.categories;
-    if(c.id) cats = cats.map(x=>x.id===c.id ? { id:c.id, name, description, image } : x);
-    else cats = [...cats, { id:newId, name, description, image }];
+    if(c.id) cats = cats.map(x=>x.id===c.id ? { id:c.id, name, image } : x);
+    else cats = [...cats, { id:newId, name, image }];
     App.state.categories = cats;
     setState({ editingCategory:null, showCategoryModal:false });
     toast('Категорията е запазена');
@@ -2653,12 +2271,12 @@ App.saveLoyalty = async function(){
 /* ============================= RESTAURANT: DESIGN ============================= */
 function scrRestDesign(){
   const r = App.state.restaurant;
+  const groqKey = App.state.restaurant.groq_key||'';
   return `<div class="scr">${restHeader()}${alarmBanner()}${restTabs()}
     <div class="pad" style="padding-top:0;">
       <div class="eyebrow" style="margin-bottom:8px;">Облик на хедъра</div>
       <div class="field"><label>Име на ресторанта</label><input id="r-name" value="${r.name}"></div>
       <div class="field"><label>Слоган</label><input id="r-tagline" value="${r.tagline}"></div>
-      <div class="field"><label>Телефон за връзка</label><input id="r-phone" value="${r.contact_phone||''}" placeholder="+359 88 123 4567" inputmode="tel"></div>
       <div class="field">
         <label>Лого (показва се в горната лента)</label>
         <input type="file" accept="image/*" onchange="App.handleLogoUpload(event)" style="background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px;">
@@ -2671,22 +2289,29 @@ function scrRestDesign(){
       </div>
       <button class="btn btn-primary" onclick="App.saveRestaurantDesign()">Запази оформлението</button>
 
-      <div class="eyebrow" style="margin:26px 0 8px;">Начини на плащане за клиента</div>
-      <div class="muted" style="font-size:12.5px;margin-bottom:10px;">Изберете кои начини на плащане да се показват при завършване на поръчка.</div>
-      <div class="col gap8">
-        ${PAYMENT_METHODS.map(m=>{
-          const checked = (r.payment_methods||DEFAULT_RESTAURANT.payment_methods).includes(m.id);
-          return `<label class="role-card" style="padding:12px 14px;cursor:pointer;">
-            <input type="checkbox" id="pm-${m.id}" ${checked?'checked':''} style="width:18px;height:18px;accent-color:var(--ember);">
-            <div class="icon-btn">${icon(m.icon,16)}</div>
-            <div style="font-weight:600;font-size:13.5px;">${m.label}</div>
-          </label>`;
-        }).join('')}
+      <div class="ember-divider"></div>
+      <div class="eyebrow" style="margin-bottom:8px;">AI асистент за поръчки</div>
+      <div class="muted" style="font-size:12.5px;margin-bottom:12px;">
+        Клиентите ще могат да питат AI за ястия и да добавят в количката с чат.
+        Безплатен Groq API ключ от <a href="https://console.groq.com" target="_blank" style="color:var(--ember);">console.groq.com</a>
       </div>
-      <button class="btn btn-primary" style="margin-top:14px;" onclick="App.savePaymentMethods()">Запази начините на плащане</button>
+      <div class="field">
+        <label>Groq API ключ</label>
+        <input id="r-groq-key" type="password" placeholder="gsk_…" value="${groqKey}">
+      </div>
+      <button class="btn btn-ghost" style="width:auto;" onclick="App.saveGroqKey()">Запази ключа</button>
     </div>
   </div>`;
 }
+App.saveGroqKey = async function(){
+  const k = (document.getElementById('r-groq-key').value||'').trim();
+  const updated = { ...App.state.restaurant, groq_key: k||null };
+  try{
+    await DB.saveRestaurant(updated);
+    App.state.restaurant = updated;
+    toast(k ? 'Groq ключът е запазен — AI асистентът е активен' : 'Groq ключът е премахнат');
+  }catch(e){ toast('Грешка: '+e.message); }
+};
 function coverPreviewHtml(src){
   return src
     ? `<div class="col gap8"><img src="${src}" style="width:100%;height:110px;object-fit:cover;border-radius:10px;border:1px solid var(--border);"><button class="btn btn-ghost btn-sm" style="width:auto;" onclick="App.removeCoverImage()">Премахни</button></div>`
@@ -2710,7 +2335,7 @@ App.handleLogoUpload = async function(event){
 };
 App.removeLogoImage = function(){ App._pendingLogoImage=null; const prev=document.getElementById('logo-preview'); if(prev) prev.innerHTML=logoPreviewHtml(null); };
 App.saveRestaurantDesign = async function(){
-  const updated = { name:document.getElementById('r-name').value.trim()||'Огнище', tagline:document.getElementById('r-tagline').value.trim(), contact_phone:(document.getElementById('r-phone').value||'').trim(), cover_image:App._pendingCoverImage||null, logo_image:App._pendingLogoImage||null };
+  const updated = { name:document.getElementById('r-name').value.trim()||'Огнище', tagline:document.getElementById('r-tagline').value.trim(), cover_image:App._pendingCoverImage||null, logo_image:App._pendingLogoImage||null };
   try{
     await DB.saveRestaurant(updated);
     App.state.restaurant = { ...App.state.restaurant, ...updated };
@@ -2718,20 +2343,231 @@ App.saveRestaurantDesign = async function(){
   }catch(e){ toast('Грешка: '+e.message); }
 };
 
-App.savePaymentMethods = async function(){
-  const ids = PAYMENT_METHODS.filter(m=>{ const el=document.getElementById('pm-'+m.id); return el && el.checked; }).map(m=>m.id);
-  if(!ids.length){ toast('Избери поне един начин на плащане'); return; }
-  const updated = { ...App.state.restaurant, payment_methods:ids };
-  try{
-    await DB.saveRestaurant(updated);
-    App.state.restaurant = updated;
-    if(!ids.includes(App.state.paymentMethod)) App.state.paymentMethod = ids[0];
-    toast('Начините на плащане са запазени'); render();
-  }catch(e){ toast('Грешка: '+e.message); }
+/* ============================= AI ASSISTANT ============================= */
+App.state.aiOpen = false;
+App.state.aiMessages = []; // { role:'bot'|'user', text, typing? }
+
+function aiSendIcon(){ return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7Z"/></svg>`; }
+function aiBotIcon(){ return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="9" cy="16" r="1.3"/><circle cx="15" cy="16" r="1.3"/></svg>`; }
+
+function aiFloatingBtn(){
+  const hasKey = !!(App.state.restaurant.groq_key||'').trim();
+  if(!hasKey || App.state.aiOpen) return '';
+  const screens = ['cust-menu','cust-category','cust-cart','cust-dish'];
+  if(!screens.includes(App.state.screen)) return '';
+  return `<button class="ai-fab" onclick="App.openAI()" title="AI Асистент">${aiBotIcon()}</button>`;
+}
+
+function micIcon(){ return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg>`; }
+function aiPanel(){
+  if(!App.state.aiOpen) return '';
+  const msgs = App.state.aiMessages;
+  const hasCheckout = App.state.aiReadyToCheckout;
+  const hasMic = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+  return `<div class="ai-panel">
+    <div class="ai-header">
+      <div class="ai-avatar">${aiBotIcon()}</div>
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:14px;">AI Асистент</div>
+        <div class="muted" style="font-size:11.5px;">Говори или пиши на български</div>
+      </div>
+      <button class="icon-btn" onclick="App.closeAI()">${icon('x',18)}</button>
+    </div>
+    <div class="ai-messages" id="ai-msgs">
+      ${msgs.length===0 ? `<div class="ai-msg bot">👋 Здравей! Кажи ми какво искаш да поръчаш и ще те помогна. Мога да добавям ястия в количката, да отговарям на въпроси за менюто и да приема цялата ти поръчка!</div>` :
+        msgs.map(m=>`<div class="ai-msg ${m.role}${m.typing?' typing':''}">${m.text.replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>')}</div>`).join('')}
+      ${hasCheckout ? `<button class="ai-checkout-btn" onclick="App.aiProceedToCheckout()">✅ Продължи към оформяне на поръчката</button>` : ''}
+    </div>
+    <div class="ai-input-row">
+      ${hasMic ? `<button class="ai-mic" id="ai-mic-btn" onclick="App.aiToggleMic()" title="Говори">${micIcon()}</button>` : ''}
+      <input id="ai-input" placeholder="${hasMic ? 'Напиши или говори…' : 'Напиши въпрос…'}" onkeydown="if(event.key==='Enter') App.aiSend()">
+      <button class="ai-send" onclick="App.aiSend()">${aiSendIcon()}</button>
+    </div>
+  </div>`;
+}
+
+App.openAI = function(){
+  App.state.aiOpen = true;
+  App.state.aiReadyToCheckout = false;
+  render();
+  setTimeout(()=>{ const el=document.getElementById('ai-input'); if(el) el.focus(); },100);
+};
+App.closeAI = function(){ App.state.aiOpen = false; App.state.aiReadyToCheckout = false; render(); };
+
+/* ---- Voice input ---- */
+let _aiRecognition = null;
+App.aiToggleMic = function(){
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SpeechRec){ toast('Гласовият вход не се поддържа в този браузър'); return; }
+  if(_aiRecognition){
+    _aiRecognition.stop(); _aiRecognition = null;
+    const btn = document.getElementById('ai-mic-btn');
+    if(btn) btn.classList.remove('listening');
+    return;
+  }
+  _aiRecognition = new SpeechRec();
+  _aiRecognition.lang = 'bg-BG';
+  _aiRecognition.continuous = false;
+  _aiRecognition.interimResults = false;
+  const btn = document.getElementById('ai-mic-btn');
+  if(btn) btn.classList.add('listening');
+  _aiRecognition.onresult = (e)=>{
+    const transcript = e.results[0][0].transcript;
+    const input = document.getElementById('ai-input');
+    if(input){ input.value = transcript; }
+    _aiRecognition = null;
+    if(btn) btn.classList.remove('listening');
+    App.state.aiLastWasVoice = true;
+    App.aiSend();
+  };
+  _aiRecognition.onerror = ()=>{
+    _aiRecognition = null;
+    if(btn) btn.classList.remove('listening');
+    toast('Не разпознах — опитай отново');
+  };
+  _aiRecognition.onend = ()=>{
+    _aiRecognition = null;
+    if(btn) btn.classList.remove('listening');
+  };
+  _aiRecognition.start();
 };
 
-/* ============================= START ============================= */
+/* ---- TTS — speak bot replies ---- */
+App.aiSpeak = function(text){
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  let clean = text
+    .replace(/<[^>]+>/g, '')
+    .replace(/\*\*/g, '')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}\u{2B00}-\u{2BFF}\u{FE00}-\u{FEFF}]/gu, '')
+    .replace(/[✅✓☑❌❎⭐🔔📦👤📍📞🎉🙏]/g, '')
+    .replace(/\n+/g, '. ')
+    .replace(/\.{2,}/g, '.')
+    .trim();
+  if(!clean) return;
+  const utt = new SpeechSynthesisUtterance(clean);
+  utt.lang = 'bg-BG'; utt.rate = 1.05;
+  const voices = window.speechSynthesis.getVoices();
+  const bg = voices.find(v=>v.lang.startsWith('bg'));
+  if(bg) utt.voice = bg;
+  window.speechSynthesis.speak(utt);
+};
+
+/* ---- Checkout from AI ---- */
+App.aiProceedToCheckout = function(){
+  App.state.aiReadyToCheckout = false;
+  App.closeAI();
+  App.goCheckout();
+};
+
+App.aiSend = async function(){
+  const input = document.getElementById('ai-input');
+  const text = (input?.value||'').trim();
+  if(!text) return;
+  input.value = '';
+  if(!App.state.aiLastWasVoice) App.state.aiLastWasVoice = false;
+  App.state.aiMessages.push({ role:'user', text });
+  App.state.aiMessages.push({ role:'bot', text:'…', typing:true });
+  renderAI();
+
+  const groqKey = App.state.restaurant.groq_key||'';
+  if(!groqKey){ App.state.aiMessages.pop(); App.state.aiMessages.push({ role:'bot', text:'AI асистентът не е конфигуриран. Моля свържете се с ресторанта.' }); renderAI(); return; }
+
+  // Build menu context
+  const menuCtx = App.state.categories.map(cat=>{
+    const items = App.state.items.filter(i=>i.available && (i.categoryIds||[]).includes(cat.id));
+    if(!items.length) return '';
+    return cat.name + ':\n' + items.map(i=>`  - ${i.name} (${lv(i.price)})${i.desc?' — '+i.desc:''}`).join('\n');
+  }).filter(Boolean).join('\n\n');
+
+  const cartCtx = cartLines().length>0
+    ? '\nКОЛИЧКА: ' + cartLines().map(l=>`${l.qty}× ${l.name} (${lv(l.unitPrice)})`).join(', ')
+      + `\nОбща сума: ${lv(cartTotals().total)}`
+    : '\nКОЛИЧКА: празна';
+
+  const systemPrompt = `Ти си гласов AI асистент на ресторант "${App.state.restaurant.name}". Говориш САМО на български. Отговаряй КРАТКО — 1-2 изречения максимум.
+
+МЕНЮ:
+${menuCtx}
+${cartCtx}
+
+ПРАВИЛА — ЗАДЪЛЖИТЕЛНИ:
+1. Добавяне на ястие: когато клиентът поиска конкретно ястие, добави го и отговори с: Добавено! \nACTION:{"action":"add","itemName":"ТОЧНОТО_ИМЕ_ОТ_МЕНЮТО"}
+2. Избор между ястия: изброй ги само с текст, попитай кое да добавиш. НЕ пускай ACTION докато не е уточнено.
+3. Финализиране: когато клиентът каже "поръчвам", "готово", "завърши поръчката" или подобно — ако количката НЕ е празна, отговори: Добре, ще оформим поръчката! \nACTION:{"action":"checkout"}
+4. Ако количката е празна и клиентът иска да поръча — помоли го да добави ястия първо.
+5. JSON командите (ACTION:...) НИКОГА не се показват на клиента — само ти ги виждаш.
+6. НЕ показвай JSON в отговора, само обикновен текст + ACTION на отделен ред накрая.`;
+
+  const history = App.state.aiMessages.filter(m=>!m.typing).slice(-12).map(m=>({
+    role: m.role==='user' ? 'user' : 'assistant',
+    content: m.text.replace(/<[^>]+>/g,'')
+  }));
+
+  try{
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{ 'Authorization':'Bearer '+groqKey, 'Content-Type':'application/json' },
+      body: JSON.stringify({ model:'llama-3.3-70b-versatile', max_tokens:250,
+        messages:[ {role:'system',content:systemPrompt}, ...history ] })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error?.message||'Groq грешка');
+    let reply = data.choices?.[0]?.message?.content || 'Не можах да отговоря.';
+
+    // ---- Parse ACTION commands ----
+    // Add to cart
+    const addMatch = reply.match(/ACTION:\s*\{[^}]*"action"\s*:\s*"add"[^}]*"itemName"\s*:\s*"([^"]+)"[^}]*\}/i);
+    if(addMatch){
+      reply = reply.replace(/ACTION:\s*\{[^}]+\}/gi, '').trim();
+      const itemName = addMatch[1].toLowerCase();
+      const found = App.state.items.find(i=>i.name.toLowerCase().includes(itemName) && i.available);
+      if(found){
+        App.changeQty(found.id, 1);
+        const cartCount = cartLines().reduce((s,l)=>s+l.qty,0);
+        if(!reply) reply = `✅ **${found.name}** е добавено! (${cartCount} артикула в количката)`;
+        else reply += `\n✅ **${found.name}** е добавено!`;
+      } else {
+        if(!reply) reply = `Съжалявам, "${addMatch[1]}" не е налично в момента.`;
+      }
+    }
+
+    // Checkout
+    const checkoutMatch = reply.match(/ACTION:\s*\{[^}]*"action"\s*:\s*"checkout"[^}]*\}/i);
+    if(checkoutMatch){
+      reply = reply.replace(/ACTION:\s*\{[^}]+\}/gi, '').trim();
+      if(!reply) reply = '✅ Страхотно! Натисни бутона по-долу за да оформиш поръчката.';
+      App.state.aiReadyToCheckout = true;
+    }
+
+    // Safety net — strip ALL remaining JSON-like blocks
+    reply = reply.replace(/ACTION:\s*\{[^}]+\}/gi, '').trim();
+    reply = reply.replace(/\{\s*"action"[^}]+\}/gi, '').trim();
+    reply = reply.replace(/\n{3,}/g, '\n\n').trim();
+
+    App.state.aiMessages.pop();
+    App.state.aiMessages.push({ role:'bot', text: reply });
+    if(App.state.aiLastWasVoice){ App.aiSpeak(reply); }
+    App.state.aiLastWasVoice = false;
+  }catch(e){
+    App.state.aiMessages.pop();
+    App.state.aiMessages.push({ role:'bot', text:'Грешка при свързване с AI. Провери интернет връзката.' });
+  }
+  renderAI();
+};
+
+function renderAI(){
+  // Lightweight partial re-render — only the panel and fab, not the whole screen
+  const fab = document.getElementById('ai-fab-slot');
+  const panel = document.getElementById('ai-panel-slot');
+  if(fab) fab.innerHTML = aiFloatingBtn();
+  if(panel) panel.innerHTML = aiPanel();
+  // Auto-scroll messages
+  setTimeout(()=>{ const el=document.getElementById('ai-msgs'); if(el) el.scrollTop=el.scrollHeight; },50);
+}
 init();
+
 
 </script>
 </body>
