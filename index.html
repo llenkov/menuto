@@ -376,7 +376,7 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;margin:0;letter-spacing
 // ║  НАСТРОЙКА — попълни и запази файла веднъж                  ║
 // ║  Supabase Dashboard → Settings → API                        ║
 // ╚══════════════════════════════════════════════════════════════╝
-const SUPABASE_URL  = 'https://mefsshlwyuokdhetxlmy.supabase.co';   // напр. 'https://xxxx.supabase.co'
+const SUPABASE_URL  = ''; const SUPABASE_URL  = 'https://mefsshlwyuokdhetxlmy.supabase.co';   // напр. 'https://xxxx.supabase.co'
 const SUPABASE_ANON = 'sb_publishable_7SWmUNnMb3aDsJAK6tYr0g_5_NgPwfk';   // anon public key (eyJ…)
 // ──────────────────────────────────────────────────────────────
 // Ако горните константи са попълнени → setup екранът НИКОГА
@@ -2490,7 +2490,7 @@ App.aiSpeak = function(text){
 App.aiProceedToCheckout = function(){
   App.state.aiReadyToCheckout = false;
   App.closeAI();
-  App.goCheckout();
+  App.goCustTab('cart');
 };
 
 App.aiSend = async function(){
